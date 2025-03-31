@@ -37,20 +37,30 @@
           <span class="flex-shrink mx-4 text-gray-400">or</span>
           <div class="flex-grow border-t border-gray-300"></div>
         </div>
-
-        <form v-if="activeTab === 'login'" @submit.prevent="handleLogin" class="space-y-4">
-          <input type="email" v-model="loginForm.email" placeholder="Email" class="input-field" required />
-          <input type="password" v-model="loginForm.password" placeholder="Password" class="input-field" required />
-          <button type="submit" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">Login</button>
-        </form>
-
-        <form v-if="activeTab === 'register'" @submit.prevent="handleRegister" class="space-y-4">
-          <input type="text" v-model="registerForm.name" placeholder="Full Name" class="input-field" required />
-          <input type="email" v-model="registerForm.email" placeholder="Email Address" class="input-field" required />
-          <input type="password" v-model="registerForm.password" placeholder="Password" class="input-field" required />
+      <!--change to from later on after testing for password reset, also make a function which handles the login and the redirect to the homepage instead of binding fetchtoken-->
+        <div v-if="activeTab === 'login'"  class="space-y-4">
+          <input type="email" v-model="email" placeholder="Email" class="input-field" required />
+          <input type="password" v-model="password" placeholder="Password" class="input-field" required />
+          <button
+            @click="loginAndRedirect(email, password)"
+            type="submit"
+            class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            :disabled="loading"
+          >
+            <span v-if="loading" class="loader"></span>
+            <span v-else>Login</span>
+          </button>
+        </div>
+  <!--change to from later on after testing for password reset, also make a function which handles the register and the redirect to the homepage instead of binding fetchtoken-->
+        <div v-if="activeTab === 'register'"  class="space-y-4">
+          <input type="text" v-model="firstName" placeholder="First Name" class="input-field" required />
+          <input type="text" v-model="lastName" placeholder="Last Name" class="input-field" required />
+          <input type="text" v-model="username" placeholder="Username" class="input-field" required />
+          <input type="email" v-model="email" placeholder="Email Address" class="input-field" required />
+          <input type="password" v-model="password" placeholder="Password" class="input-field" required />
           <p class="text-xs text-gray-500">By creating an account, I am agreeing to the company's <span class="text-blue-400 font-bold">Terms of Service</span>  and <span class="text-blue-400 font-bold">Privacy Policy.</span> </p>
-          <button type="submit" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">Register</button>
-        </form>
+          <button @click="registerUser(firstName, lastName, username, email, password)" type="submit" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">Register</button>
+        </div>
 
         <p v-if="activeTab === 'register'" class="text-center text-gray-500 mt-4">Already have an account? <button @click="switchTab()" class="text-blue-600 hover:underline">Log in</button></p>
         <p v-if="activeTab === 'login'" class="text-center text-gray-500 mt-4">Don't have an account yet? <button @click="switchTab()" class="text-blue-600 hover:underline">Register</button></p>
@@ -61,27 +71,26 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useUsers } from '@/modules/auth/useUsers';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+const loading = ref(false);
 const activeTab = ref<'login' | 'register'>('register');
+const {fetchToken, registerUser, firstName, lastName, username, email, password} = useUsers()
 
-const loginForm = ref({
-  email: '',
-  password: ''
-});
-
-const registerForm = ref({
-  name: '',
-  email: '',
-  password: ''
-});
-
-const handleLogin = () => {
-  console.log('Logging in:', loginForm.value);
+const loginAndRedirect = async (email: string, password: string) => {
+  loading.value = true;
+  try {
+    await fetchToken(email, password);
+    router.push('/');
+  } catch (error) {
+    console.error('Error logging in:', error);
+  } finally {
+    loading.value = false;
+  }
 };
 
-const handleRegister = () => {
-  console.log('Registering:', registerForm.value);
-};
 const switchTab = () => {
   if (activeTab.value === 'login'){
     activeTab.value = 'register';
@@ -91,6 +100,7 @@ const switchTab = () => {
 };
 
 </script>
+
 
 <style scoped>
 .input-field {
@@ -104,6 +114,22 @@ const switchTab = () => {
 .input-field:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
+}
+
+.loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
 
