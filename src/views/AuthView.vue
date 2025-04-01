@@ -7,8 +7,8 @@
     </div>
 
     <!-- Auth Card -->
-    <div class="w-1/2 flex justify-center items-center">
-      <div class="bg-white p-10 rounded-2xl shadow-lg w-full h-5/6 max-w-md">
+    <div class="w-1/2 flex justify-center">
+      <div class="bg-white p-10 rounded-2xl shadow-lg w-full  max-w-md">
         <h2 v-if="activeTab === 'register'" class="text-2xl font-bold text-center mb-6">Create your account</h2>
         <h2 v-else class="text-2xl font-bold text-center mb-6">Log in to your Account</h2>
 
