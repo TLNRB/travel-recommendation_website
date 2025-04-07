@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import LogoutBtn from '@/components/logoutBtn.vue';
-import footerElement from '@/components/footer-element.vue';
 
 const activeTab = ref<'destinations' | 'atractions'>('destinations');
 const activeTabTwo = ref<'beaches' | 'museums' | 'monuments' | 'other'>('beaches');
@@ -168,10 +166,5 @@ const activeTabTwo = ref<'beaches' | 'museums' | 'monuments' | 'other'>('beaches
         <p class="ms-4"> sample answer sample answer sample answer sample answer </p>
         <p class="flex justify-end">link to faq page maybe idk</p>
      </div>
-
-     <!-- Footer -->
-    <footerElement/>
-
-    <LogoutBtn />
   </main>
 </template>

@@ -2,8 +2,8 @@ import { ref } from "vue";
 import type { User } from "@/interfaces/interfaces"
 
 export const useUsers = () => {
-  const token = ref<string | null>(null)
-  const isLoggedIn = ref<boolean>(false)
+  const token = ref<string | null>(localStorage.getItem('lsToken'))
+  const isLoggedIn = ref<boolean>(!!token.value)
   const error = ref<string | null>(null)
   const user = ref<User | null>(null)
 
@@ -33,10 +33,12 @@ export const useUsers = () => {
       user.value = authResponse.data.user
       isLoggedIn.value = true
 
-      localStorage.setItem('lstoken', authResponse.data.token)
+      localStorage.setItem('lsToken', authResponse.data.token)
       localStorage.setItem('userIDToken', authResponse.data.userID)
       console.log( 'user is logged in', authResponse)
       console.log(token.value)
+      console.log(isLoggedIn.value)
+      console.log(user.value)
     }
     catch(err) {
       error.value = (err as Error).message
@@ -51,7 +53,7 @@ export const useUsers = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('lsToken') || ''
+          'auth-token': localStorage.getItem('lstoken') || ''
         },
         body: JSON.stringify({firstName, lastName, username, email, password})
       })
@@ -65,7 +67,7 @@ export const useUsers = () => {
       user.value = authResponse.data.user
       isLoggedIn.value = true
 
-      localStorage.setItem('lstoken', authResponse.data.token)
+      localStorage.setItem('lsToken', authResponse.data.token)
       console.log( 'user is registered', authResponse)
 
     }
@@ -81,7 +83,11 @@ export const useUsers = () => {
     user.value = null
     isLoggedIn.value = false
     localStorage.removeItem('lsToken')
+    localStorage.removeItem('userIDToken');
     console.log('user is logged out')
+    console.log(isLoggedIn.value)
+    console.log(token.value)
+    console.log(user.value)
   }
 
   return {
