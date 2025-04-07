@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import { useUsers } from '@/modules/auth/useUsers';
 import { useRouter } from 'vue-router';
 
@@ -83,7 +83,8 @@ const loginAndRedirect = async (email: string, password: string) => {
   loading.value = true;
   try {
     await fetchToken(email, password);
-    router.push('/');
+    await nextTick()
+    router.push('/')
   } catch (error) {
     console.error('Error logging in:', error);
   } finally {

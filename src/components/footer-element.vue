@@ -10,10 +10,10 @@
 
       <!-- Navigation Links -->
       <div class="flex justify-end gap-6 text-sm mt-4 md:mt-0">
-        <RouterLink to="/about" class="hover:underline">About Us</RouterLink>
-        <RouterLink to="/contact" class="hover:underline">Contact</RouterLink>
-        <RouterLink to="/privacy" class="hover:underline">Privacy Policy</RouterLink>
-        <RouterLink to="/terms" class="hover:underline">Terms of Service</RouterLink>
+        <RouterLink to="/" class="hover:underline">About Us</RouterLink>
+        <RouterLink to="/" class="hover:underline">Contact</RouterLink>
+        <RouterLink to="/" class="hover:underline">Privacy Policy</RouterLink>
+        <RouterLink to="/" class="hover:underline">Terms of Service</RouterLink>
       </div>
 
       <!-- Social Media Links -->
