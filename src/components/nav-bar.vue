@@ -13,13 +13,7 @@
         </button>
 
         <div v-if="isOpen" class="absolute left-0 mt-2 w-auto bg-white rounded-lg shadow-lg">
-          <ul class="py-2">
-            <RouterLink to="/continent">
-              <li v-for="continent in continents" :key="continent" class="px-4 py-2 hover:bg-gray-200">
-                {{ continent }}
-              </li>
-            </RouterLink>
-          </ul>
+          <continentList/>
         </div>
       </div>
     </div>
@@ -33,11 +27,6 @@
       <SuggestPlaceModal v-if="showModal" @close="showModal = false" @submit="handleSuggestion" />
     </div>
     <div class="flex gap-4 items-center w-64 justify-center">
-      <!-- <div v-if="loggedIn">
-        <LogoutBtn />
-      </div>
-      <RouterLink v-else to="/auth">Login</RouterLink> -->
-
       <div v-if="loggedIn" class="relative">
       <img
         @click="toggleProfileDropdown"
@@ -77,6 +66,7 @@ import { RouterLink, useRoute } from 'vue-router';
 import { useUsers } from '@/modules/auth/useUsers';
 import LogoutBtn from '@/components/logoutBtn.vue';
 import SuggestPlaceModal from '@/components/suggestionModal.vue';
+import continentList from '@/components/continentList.vue';
 
 const { isLoggedIn, token } = useUsers();
 // fix the state not being updated reactively for some reason, after the refresh the state
@@ -89,8 +79,6 @@ const showModal = ref(false);
 const route = useRoute();
 const isOpen = ref(false);
 const profileDropdownOpen = ref(false)
-const continents = ref(["Africa", "Asia", "Europe", "North America", "South America", "Oceania", "Antarctica"]);
-
 const toggleProfileDropdown = () => {
   profileDropdownOpen.value = !profileDropdownOpen.value
 }
