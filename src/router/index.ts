@@ -23,19 +23,22 @@ const router = createRouter({
       component: AuthView,
     },
     {
-      path: '/continent',
-      name: 'continent',
+      path: '/continent/:id',
+      name: 'ContinentView',
       component: ContinentView,
+      props: true
     },
     {
-      path: '/country',
-      name: 'country',
+      path: '/country/:id',
+      name: 'CountryView',
       component: CountryView,
+      props: true
     },
     {
-      path: '/city',
-      name: 'city',
+      path: '/city/:id',
+      name: 'CityView',
       component: CityView,
+      props: true
     },
     {
       path: '/place',
