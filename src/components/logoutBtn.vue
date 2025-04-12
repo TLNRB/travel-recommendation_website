@@ -9,19 +9,21 @@
 
 </template>
 <script setup lang="ts">
-import { useUsers } from '@/modules/auth/useUsers';
+/* import { useUsers } from '@/modules/auth/useUsers'; */
+import { useAuthStore } from '@/stores/authStore';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 // import { defineProps } from 'vue';
 
 const router = useRouter();
-const {logout} = useUsers()
+/* const {logout} = useUsers() */
+const authStore = useAuthStore();
 const loading = ref(false);
 
 const logoutAndRedirect = async () => {
   loading.value = true;
   try {
-    await logout();
+    await authStore.logout();
     router.push('/auth');
   } catch (error) {
     console.error('Error logging out:', error);

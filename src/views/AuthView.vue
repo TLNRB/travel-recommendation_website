@@ -28,9 +28,12 @@
 
         <!--change to from later on after testing for password reset, also make a function which handles the login and the redirect to the homepage instead of binding fetchtoken-->
         <div v-if="activeTab === 'login'" class="space-y-4">
-          <input type="email" v-model="email" placeholder="Email" class="input-field" required />
-          <input type="password" v-model="password" placeholder="Password" class="input-field" required />
-          <button @click="loginAndRedirect(email, password)" type="submit"
+          <input type="email" v-model="authStore.email" placeholder="Email" class="input-field" required />
+          <input type="password" v-model="authStore.password" placeholder="Password" class="input-field" required />
+          <div v-if="authStore.error" class="text-red-500 text-sm mt-2">
+            {{ authStore.error }}
+          </div>
+          <button @click="loginAndRedirect(authStore.email, authStore.password)" type="submit"
             class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition cursor-pointer"
             :disabled="loading">
             <span v-if="loading" class="loader"></span>
@@ -39,13 +42,22 @@
         </div>
         <!--change to from later on after testing for password reset, also make a function which handles the register and the redirect to the homepage instead of binding fetchtoken-->
         <div v-if="activeTab === 'register'" class="space-y-4">
-          <input type="text" v-model="firstName" placeholder="First Name" class="input-field" required />
-          <input type="text" v-model="lastName" placeholder="Last Name" class="input-field" required />
-          <input type="text" v-model="username" placeholder="Username" class="input-field" required />
-          <input type="email" v-model="email" placeholder="Email Address" class="input-field" required />
-          <input type="password" v-model="password" placeholder="Password" class="input-field" required />
-          <button @click="registerUser(firstName, lastName, username, email, password)" type="submit"
-            class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition cursor-pointer">Register</button>
+          <input type="text" v-model="authStore.firstName" placeholder="First Name" class="input-field" required />
+          <input type="text" v-model="authStore.lastName" placeholder="Last Name" class="input-field" required />
+          <input type="text" v-model="authStore.username" placeholder="Username" class="input-field" required />
+          <input type="email" v-model="authStore.email" placeholder="Email Address" class="input-field" required />
+          <input type="password" v-model="authStore.password" placeholder="Password" class="input-field" required />
+          <div v-if="authStore.error" class="text-red-500 text-sm mt-2">
+            {{ authStore.error }}
+          </div>
+          <button
+            @click="registerAndSwitchTab(authStore.firstName, authStore.lastName, authStore.username, authStore.email, authStore.password)"
+            type="submit"
+            class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition cursor-pointer"
+            :disabled="loading">
+            <span v-if="loading" class="loader"></span>
+            <span v-else>Register</span>
+          </button>
         </div>
 
         <p v-if="activeTab === 'register'" class="text-center text-gray-500 mt-4">Already have an account? <button
@@ -59,10 +71,58 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue';
-import { useUsers } from '@/modules/auth/useUsers';
 import { useRouter } from 'vue-router';
+/* import { useUsers } from '@/modules/auth/useUsers'; */
+import { useAuthStore } from '@/stores/authStore';
 
+const authStore = useAuthStore();
 const router = useRouter();
+
+const loading = ref(false);
+const activeTab = ref<'login' | 'register'>('register');
+
+const loginAndRedirect = async (email: string, password: string): Promise<void> => {
+  loading.value = true;
+  try {
+    const success: boolean = await authStore.fetchToken(email, password);
+    if (success) {
+      await nextTick();
+      router.push('/');
+    } else {
+      throw new Error('Login failed!')
+    }
+  } catch (err) {
+    console.error('Error logging in:', err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const registerAndSwitchTab = async (firstName: string, lastName: string, username: string, email: string, password: string): Promise<void> => {
+  loading.value = true;
+  try {
+    const success: boolean = await authStore.registerUser(firstName, lastName, username, email, password);
+    if (success) {
+      switchTab();
+    } else {
+      throw new Error('Registration failed!')
+    }
+  } catch (err) {
+    console.error('Error registering:', err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const switchTab = () => {
+  if (activeTab.value === 'login') {
+    activeTab.value = 'register';
+  } else {
+    activeTab.value = 'login';
+  }
+};
+
+/* const router = useRouter();
 const loading = ref(false);
 const activeTab = ref<'login' | 'register'>('register');
 const { fetchToken, registerUser, firstName, lastName, username, email, password } = useUsers()
@@ -86,7 +146,9 @@ const switchTab = () => {
   } else {
     activeTab.value = 'login';
   }
-};
+}; */
+
+
 
 </script>
 

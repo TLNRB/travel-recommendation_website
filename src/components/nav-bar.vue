@@ -27,7 +27,7 @@
       <SuggestPlaceModal v-if="showModal" @close="showModal = false" @submit="handleSuggestion" />
     </div>
     <div class="flex gap-4 items-center w-64 justify-center">
-      <div v-if="isLoggedIn" class="relative">
+      <div v-if="authStore.isLoggedIn" class="relative">
         <img @click="toggleProfileDropdown" src="https://i.pravatar.cc/40" alt="avatar"
           class="w-10 h-10 rounded-full cursor-pointer border border-gray-300" />
 
@@ -63,12 +63,13 @@ import { useUsers } from '@/modules/auth/useUsers';
 import LogoutBtn from '@/components/logoutBtn.vue';
 import SuggestPlaceModal from '@/components/suggestionModal.vue';
 import continentList from '@/components/continentList.vue';
-import { state } from '@/modules/states/state';
+import { useAuthStore } from '@/stores/authStore';
+
+const authStore = useAuthStore();
 
 const { token } = useUsers();
 // fix the state not being updated reactively for some reason, after the refresh the state
 //correctly displays
-const isLoggedIn = computed(() => state.isLoggedIn);
 
 console.log(token.value)
 const showModal = ref(false);

@@ -12,7 +12,7 @@ import DashboardView from '@/views/DashboardView.vue'
 import { useUsers } from '@/modules/auth/useUsers'
 import { setLoadingState } from '@/modules/states/state'
 
-const { getUserRole } = useUsers()
+const { user } = useUsers()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -85,9 +85,7 @@ router.beforeEach(async (to, from, next) => {
   else if (isAuthenticated && to.name === 'dashboard') {
     setLoadingState(true)
 
-    const userRoleName: string | undefined = await getUserRole(localStorage.getItem('userId') as string)
-
-    if (userRoleName === 'admin' || userRoleName === 'editor') {
+    if (user.value?.role.name === 'admin' || user.role.name === 'editor') {
       next()
       setLoadingState(false)
     }
