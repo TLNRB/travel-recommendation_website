@@ -30,18 +30,19 @@ export const useUsers = () => {
       }
       const authResponse = await response.json()
       token.value = authResponse.data.token
+      await getUserById(authResponse.data.userId)
       state.isLoggedIn = true
 
       localStorage.setItem('lsToken', authResponse.data.token)
       localStorage.setItem('userId', authResponse.data.userId)
       console.log('user is logged in', authResponse)
+      console.log('user: ', user.value)
     }
     catch (err) {
       error.value = (err as Error).message || 'Failed to login';
       state.isLoggedIn = false;
     }
   }
-
 
   const registerUser = async (firstName: string, lastName: string, username: string, email: string, password: string): Promise<void> => {
     try {
@@ -73,8 +74,28 @@ export const useUsers = () => {
     }
   }
 
-  // Get the user role
-  const getUserRole = async (id: string): Promise<string | undefined> => {
+  const getUserById = async (id: string): Promise<void> => {
+    try {
+      const response = await fetch(`https://travel-recommendations-api.onrender.com/api/users/query?field=_id&value=${id}&populate=true`, {
+        method: 'GET'
+      })
+
+      if (!response.ok) {
+        const errorResponse = await response.json()
+        console.log(errorResponse.error || 'error')
+        throw new Error('No data available')
+      }
+
+      const userData = await response.json()
+      user.value = userData.data[0]
+    }
+    catch (err) {
+      error.value = (err as Error).message
+    }
+  }
+
+  // Get the user role name
+  const getUserRoleName = async (id: string): Promise<string | undefined> => {
     try {
       const response = await fetch(`https://travel-recommendations-api.onrender.com/api/users/query?field=_id&value=${id}&populate=true`, {
         method: 'GET'
@@ -101,9 +122,9 @@ export const useUsers = () => {
     localStorage.removeItem('lsToken')
     localStorage.removeItem('userId');
     console.log('user is logged out')
-    console.log(state.isLoggedIn)
-    console.log(token.value)
-    console.log(user.value)
+    console.log("state: ", state.isLoggedIn)
+    console.log("token: ", token.value)
+    console.log("user: ", user.value)
   }
 
   return {
@@ -119,6 +140,6 @@ export const useUsers = () => {
     fetchToken,
     registerUser,
     logout,
-    getUserRole
+    getUserRoleName
   }
 }
