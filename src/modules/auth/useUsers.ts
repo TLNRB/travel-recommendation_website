@@ -73,6 +73,26 @@ export const useUsers = () => {
     }
   }
 
+  // Get the user role
+  const getUserRole = async (id: string): Promise<string | undefined> => {
+    try {
+      const response = await fetch(`https://travel-recommendations-api.onrender.com/api/users/query?field=_id&value=${id}&populate=true`, {
+        method: 'GET'
+      })
+
+      if (!response.ok) {
+        const errorResponse = await response.json()
+        console.log(errorResponse.error || 'error')
+        throw new Error('No data available')
+      }
+
+      let user = await response.json()
+      return user.data[0].role.name;
+    }
+    catch (err) {
+      error.value = (err as Error).message
+    }
+  }
 
   const logout = () => {
     token.value = null
@@ -98,6 +118,7 @@ export const useUsers = () => {
     password,
     fetchToken,
     registerUser,
-    logout
+    logout,
+    getUserRole
   }
 }
