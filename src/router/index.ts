@@ -7,7 +7,12 @@ import CityView from '@/views/CityView.vue'
 import PlaceView from '@/views/PlaceView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import SettingsView from '@/views/SettingsView.vue'
-import AdminView from '@/views/AdminView.vue'
+import DashboardView from '@/views/DashboardView.vue'
+
+import { useUsers } from '@/modules/auth/useUsers'
+import { setLoadingState } from '@/modules/states/state'
+
+const { getUserRole } = useUsers()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,11 +61,42 @@ const router = createRouter({
       component: SettingsView,
     },
     {
-      path: '/admin',
-      name: 'admin',
-      component: AdminView,
+      path: '/dashboard',
+      name: 'dashboard',
+      meta: { requiresAuth: true },
+      component: DashboardView,
     },
   ],
+})
+
+router.beforeEach(async (to, from, next) => {
+  const isAuthenticated: boolean = !!localStorage.getItem('lsToken')
+  const requiresAuth: boolean = to.matched.some(record => record.meta.requiresAuth)
+
+  // Requires authentication but not authenticated
+  if (requiresAuth && !isAuthenticated) {
+    next({ name: 'auth' });
+  }
+  // Authenticated but trying to access auth page
+  else if (isAuthenticated && to.name === 'auth') {
+    next({ name: 'home' });
+  }
+  // Authenticated and trying to access dashboard
+  else if (isAuthenticated && to.name === 'dashboard') {
+    setLoadingState(true)
+
+    const userRoleName: string | undefined = await getUserRole(localStorage.getItem('userId') as string)
+
+    if (userRoleName === 'admin' || userRoleName === 'editor') {
+      next()
+      setLoadingState(false)
+    }
+    else {
+      next({ name: 'home' })
+      setLoadingState(false)
+    }
+  }
+  else next()
 })
 
 export default router
