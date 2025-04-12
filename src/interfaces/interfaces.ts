@@ -13,6 +13,19 @@ export type User = {
   registerDate: Date
 }
 
+export type RoleUnpopulated = {
+  name: string,
+  permissions: string[]
+}
+
+export type RolePopulated = {
+  name: string,
+  permissions: [{
+    name: string,
+    description: string
+  }]
+}
+
 export type Continent = {
   objectId: string
   name: string
@@ -39,8 +52,8 @@ export type City = {
   name: string
   population: number
   country: {
-        objectId: string
-        name: string
-      },
+    objectId: string
+    name: string
+  },
   adminCode: string
 }
