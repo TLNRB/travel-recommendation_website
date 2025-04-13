@@ -8,11 +8,9 @@ import PlaceView from '@/views/PlaceView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import DashboardView from '@/views/DashboardView.vue'
-
-import { useUsers } from '@/modules/auth/useUsers'
-import { setLoadingState } from '@/modules/states/state'
-
-const { user } = useUsers()
+// Stores
+import { useUserStore } from '@/stores/userStore'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,6 +68,14 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore()
+  const authStore = useAuthStore()
+
+  // Check if the user is logged in and only than check for loading and try to fetch user data
+  if (authStore.getIsLoggedIn && !userStore.getIsUserLoaded && !userStore.getIsLoading) {
+    await userStore.fetchUserData()
+  }
+
   const isAuthenticated: boolean = !!localStorage.getItem('lsToken')
   const requiresAuth: boolean = to.matched.some(record => record.meta.requiresAuth)
 
@@ -83,15 +89,12 @@ router.beforeEach(async (to, from, next) => {
   }
   // Authenticated and trying to access dashboard
   else if (isAuthenticated && to.name === 'dashboard') {
-    setLoadingState(true)
+    const user = userStore.getUser;
 
-    if (user.value?.role.name === 'admin' || user.role.name === 'editor') {
-      next()
-      setLoadingState(false)
-    }
-    else {
-      next({ name: 'home' })
-      setLoadingState(false)
+    if (user?.role?.name === 'admin' || user?.role?.name === 'editor') {
+      return next()
+    } else {
+      return next({ name: 'home' })
     }
   }
   else next()
