@@ -35,7 +35,8 @@
         <div v-if="profileDropdownOpen" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg pt-2 z-50">
           <RouterLink to="/profile" class="block px-4 py-2 text-sm hover:bg-gray-100">Profile</RouterLink>
           <RouterLink to="/settings" class="block px-4 py-2 text-sm hover:bg-gray-100">Settings</RouterLink>
-          <RouterLink to="/dashboard" class="block px-4 py-2 text-sm hover:bg-gray-100">Dashboard</RouterLink>
+          <RouterLink v-if="userStore.getUser?.role?.name !== 'user'" to="/dashboard"
+            class="block px-4 py-2 text-sm hover:bg-gray-100">Dashboard</RouterLink>
           <LogoutBtn />
         </div>
       </div>
@@ -63,12 +64,15 @@ import { useUsers } from '@/modules/auth/useUsers';
 import LogoutBtn from '@/components/logoutBtn.vue';
 import SuggestPlaceModal from '@/components/suggestionModal.vue';
 import continentList from '@/components/continentList.vue';
+// Stores
 import { useAuthStore } from '@/stores/authStore';
+import { useUserStore } from '@/stores/userStore';
 
 const authStore = useAuthStore();
+const userStore = useUserStore();
 
 const { token } = useUsers();
-// fix the state not being updated reactively for some reason, after the refresh the state
+
 //correctly displays
 
 console.log(token.value)
