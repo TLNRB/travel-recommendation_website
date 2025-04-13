@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
 import { state } from '@/modules/states/state';
 import Navbar from '@/components/nav-bar.vue'
 import footerElement from '@/components/footer-element.vue';
 
+import { useUserStore } from '@/stores/userStore';
+
+const userStore = useUserStore();
+
 
 const isLoading = computed(() => state.isLoading);
+
+onMounted(() => {
+  userStore.fetchUserData();
+});
 </script>
 
 <template>
