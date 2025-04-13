@@ -1,6 +1,6 @@
-// stores/authStore.js
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { useUserStore } from '@/stores/userStore';
 
 export const useAuthStore = defineStore('authStore', {
    state: () => ({
@@ -80,6 +80,9 @@ export const useAuthStore = defineStore('authStore', {
             localStorage.setItem('lsToken', authData.data.token);
             localStorage.setItem('userId', authData.data.userId);
 
+            const userStore = useUserStore();
+            await userStore.fetchUserData(); // Fetch user data after login
+
             console.log('User is logged in: ', authData);
 
             return true;
@@ -100,6 +103,9 @@ export const useAuthStore = defineStore('authStore', {
 
          localStorage.removeItem('lsToken');
          localStorage.removeItem('userId');
+
+         const userStore = useUserStore();
+         userStore.resetUserData(); // Reset user data in user store
 
          console.log('User logged out');
       }
