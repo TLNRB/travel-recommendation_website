@@ -1,26 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
-import { state } from '@/modules/states/state';
 import Navbar from '@/components/nav-bar.vue'
 import footerElement from '@/components/footer-element.vue';
-
+// Stores
 import { useUserStore } from '@/stores/userStore';
+import { useAuthStore } from '@/stores/authStore';
 
 const userStore = useUserStore();
-
-
-const isLoading = computed(() => state.isLoading);
-
-onMounted(() => {
-  userStore.fetchUserData();
-});
+const authStore = useAuthStore();
 </script>
 
 <template>
   <Navbar />
   <!-- Loading -->
-  <div v-if="isLoading">Loading...</div>
+  <div v-if="authStore.getIsLoggedIn && !userStore.getIsUserLoaded">Loading...</div>
   <RouterView v-else />
   <footerElement />
 </template>

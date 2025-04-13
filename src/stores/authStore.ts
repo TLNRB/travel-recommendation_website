@@ -54,7 +54,6 @@ export const useAuthStore = defineStore('authStore', {
       // Login user
       async fetchToken(email: string, password: string): Promise<boolean> {
          try {
-            console.log('email: ', email)
             const response = await fetch('https://travel-recommendations-api.onrender.com/api/user/login', {
                method: 'POST',
                headers: {
@@ -81,7 +80,7 @@ export const useAuthStore = defineStore('authStore', {
             localStorage.setItem('userId', authData.data.userId);
 
             const userStore = useUserStore();
-            await userStore.fetchUserData(); // Fetch user data after login
+            await userStore.fetchUserData(); // Fetch user data after login to the state
 
             console.log('User is logged in: ', authData);
 
