@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+// Stores
+import { usePlacesStore } from '@/stores/crud/placesStore';
 
 const activeTab = ref<'destinations' | 'atractions'>('destinations');
 const activeTabTwo = ref<'beaches' | 'museums' | 'monuments' | 'other'>('beaches');
 
+const placesStore = usePlacesStore();
+
+onMounted(() => {
+  placesStore.fetchPlaces();
+})
 </script>
 
 <template>
