@@ -28,7 +28,7 @@ export const useUserStore = defineStore('userStore', {
          }
 
          try {
-            const response = await fetch(`https://travel-recommendations-api.onrender.com/api/users/query?field=_id&value=${userId}&populate=true`, {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/query?field=_id&value=${userId}&populate=true`, {
                method: 'GET'
             })
 
@@ -41,15 +41,16 @@ export const useUserStore = defineStore('userStore', {
             this.user = userData.data[0]; // It should be an array of objects with one object inside
             this.error = null;
             this.isUserLoaded = true;
-            this.isLoading = false;
             return
          }
          catch (err) {
             this.error = (err as Error).message
             this.user = null;
             this.isUserLoaded = false;
-            this.isLoading = false;
             return
+         }
+         finally {
+            this.isLoading = false
          }
       },
 

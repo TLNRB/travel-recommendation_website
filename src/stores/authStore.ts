@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('authStore', {
    actions: {
       async registerUser(firstName: string, lastName: string, username: string, email: string, password: string): Promise<boolean> {
          try {
-            const response = await fetch('https://travel-recommendations-api.onrender.com/api/user/register', {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user/register`, {
                method: 'POST',
                headers: {
                   'Content-Type': 'application/json',
