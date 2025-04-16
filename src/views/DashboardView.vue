@@ -55,7 +55,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+// Components
 import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSection.vue';
 
 const tabs = ['Requests', 'Users', 'Reported', 'Places'];

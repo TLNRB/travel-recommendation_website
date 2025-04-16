@@ -8,7 +8,8 @@
 
       <!-- Image -->
       <div v-if="place.images?.length">
-         <img :src="place.images[0]" alt="Place image" class="w-full h-48 object-cover rounded-lg border" />
+         <img :src="place.images[0]" :alt="`Image of ${place.name}`"
+            class="w-full h-48 object-cover rounded-lg border" />
       </div>
 
       <!-- Location -->
@@ -49,12 +50,12 @@
 
          <!-- Dropdown Actions -->
          <div class="relative">
-            <button @click="toggleMenu(index)"
+            <button @click="toggleMenu(place._id)"
                class="w-[28px] h-[28px] rounded-full border-[1px] border-gray-200 text-gray-800 hover:bg-gray-200 duration-[.15s] ease-in cursor-pointer"
-               :class="activeMenuId === index ? 'bg-gray-200' : 'bg-gray-100'">
+               :class="activeMenuId === place._id ? 'bg-gray-200' : 'bg-gray-100'">
                ⋮
             </button>
-            <div v-if="activeMenuId === index"
+            <div v-if="activeMenuId === place._id"
                class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                <button @click=""
                   class="block w-full text-left px-4 py-2 text-sm text-green-600  hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
@@ -77,7 +78,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const { place, index } = defineProps(['place', 'index']);
+const { place } = defineProps(['place']);
 
 // State for dropdown menu visibility
 const activeMenuId = ref<string | null>(null)
