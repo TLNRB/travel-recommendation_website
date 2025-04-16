@@ -13,17 +13,26 @@ export type User = {
   registerDate: Date
 }
 
-export type RoleUnpopulated = {
+export type Role = {
   name: string,
   permissions: string[]
 }
 
-export type RolePopulated = {
+export type Place = {
   name: string,
-  permissions: [{
-    name: string,
-    description: string
-  }]
+  description: string,
+  images: string[],
+  location: {
+    continent: string,
+    country: string,
+    city: string,
+    street: string,
+    streetNumber: string
+  },
+  upvotes: number,
+  tags: string[],
+  approved: boolean,
+  _createdBy: string
 }
 
 export type Continent = {
