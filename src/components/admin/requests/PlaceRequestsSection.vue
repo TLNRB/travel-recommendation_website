@@ -20,7 +20,7 @@ import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 const placesStore = usePlacesStore();
 const recommendationsStore = useRecommendationsStore();
 
-const placeRequests = computed(() => placesStore.filterPlacesByApproved(true));
+const placeRequests = computed(() => placesStore.filterPlacesByApproved(false));
 
 onMounted(async () => {
    await placesStore.fetchPlaces();

@@ -6,13 +6,14 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
    state: () => ({
       recommendationsMap: {} as Record<string, Recommendation[]>,
       error: null as string | null,
+      isLoaded: false,
       isLoading: false,
    }),
 
    actions: {
       async fetchRecommendations(): Promise<void> {
          // Prevents multiple calls to the API
-         if (this.isLoading) {
+         if (this.isLoaded || this.isLoading) {
             console.log('Recommendations already loaded or loading, skipping fetch')
             return;
          }
@@ -40,6 +41,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
                      this.recommendationsMap[placeId] = []; // Initialize if not present
                   }
                   this.recommendationsMap[placeId].push(recommendation); // Push the recommendation to the array
+                  this.isLoaded = true;
                   this.error = null;
                })
             } else {
@@ -50,6 +52,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          }
          catch (err) {
             this.error = (err as Error).message
+            this.isLoaded = false;
          }
          finally {
             this.isLoading = false;
@@ -58,7 +61,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
 
       async fetchRecommendationsByPlace(placeId: string): Promise<void> {
          if (this.recommendationsMap[placeId] || this.isLoading) {
-            return; // Already loaded the recommendations or loading currently
+            return;
          }
 
          this.isLoading = true;
@@ -78,7 +81,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             // If the data is valid and not an empty array, store it
             if (recommendationsData && Array.isArray(recommendationsData.data) && recommendationsData.data.length > 0) {
                this.recommendationsMap[placeId] = recommendationsData.data;
-               this.error = null; // Clear any previous error
+               this.error = null;
             } else {
                // Do not store anything if the array is empty
                console.log(`No recommendations found for place with Id: ${placeId}`);
