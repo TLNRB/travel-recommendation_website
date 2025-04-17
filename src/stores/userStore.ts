@@ -51,15 +51,6 @@ export const useUserStore = defineStore('userStore', {
          finally {
             this.isLoading = false
          }
-      },
-
-      resetUserData(): void {
-         this.user = null;
-         this.isUserLoaded = false;
-         this.isLoading = false;
-         this.error = null;
-
-         localStorage.removeItem('userStore');
       }
    },
 
