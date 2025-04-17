@@ -1,13 +1,12 @@
 import { defineStore } from "pinia";
-import { ref } from 'vue';
 import type { Place } from "@/interfaces/interfaces";
 
 export const usePlacesStore = defineStore('placesStore', {
    state: () => ({
-      places: ref<Place[]>([]),
-      error: ref<string | null>(null),
-      isPlacesLoaded: ref<boolean>(false),
-      isLoading: ref<boolean>(false),
+      places: [] as Place[],
+      error: null as string | null,
+      isPlacesLoaded: false,
+      isLoading: false,
    }),
 
    actions: {
@@ -46,12 +45,18 @@ export const usePlacesStore = defineStore('placesStore', {
          }
       },
 
+
       filterPlacesByApproved(approved: boolean): Place[] {
          if (this.places.length === 0) {
             return []
          }
          return this.places.filter((place) => place.approved === approved)
       }
+   },
+
+   persist: {
+      storage: localStorage,
+      paths: ['places', 'isPlacesLoaded'],
    },
 
    getters: {
