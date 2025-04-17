@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { ref } from 'vue';
 import { useAuthStore } from "@/stores/authStore";
 import type { User } from "@/interfaces/interfaces";
 
@@ -60,14 +59,13 @@ export const useUserStore = defineStore('userStore', {
          this.isLoading = false;
          this.error = null;
 
-         localStorage.removeItem('user');
-         localStorage.removeItem('isUserLoaded');
+         localStorage.removeItem('userStore');
       }
    },
 
    persist: {
       storage: localStorage,
-      paths: ['user', 'isUserLoaded'],
+      pick: ['user', 'isUserLoaded'],
    },
 
    getters: {

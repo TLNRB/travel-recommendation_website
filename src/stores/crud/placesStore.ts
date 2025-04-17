@@ -56,10 +56,9 @@ export const usePlacesStore = defineStore('placesStore', {
 
    persist: {
       storage: localStorage,
-      paths: ['places', 'isPlacesLoaded'],
+      pick: ['places', 'isPlacesLoaded'],
    },
 
    getters: {
-
    }
 })
