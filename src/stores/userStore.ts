@@ -5,10 +5,10 @@ import type { User } from "@/interfaces/interfaces";
 
 export const useUserStore = defineStore('userStore', {
    state: () => ({
-      user: ref<User | null>(null),
-      error: ref<string | null>(null),
-      isUserLoaded: ref<boolean>(false),
-      isLoading: ref<boolean>(false),
+      user: null as User | null,
+      error: null as string | null,
+      isUserLoaded: false,
+      isLoading: false,
    }),
 
    actions: {
@@ -59,7 +59,15 @@ export const useUserStore = defineStore('userStore', {
          this.isUserLoaded = false;
          this.isLoading = false;
          this.error = null;
+
+         localStorage.removeItem('user');
+         localStorage.removeItem('isUserLoaded');
       }
+   },
+
+   persist: {
+      storage: localStorage,
+      paths: ['user', 'isUserLoaded'],
    },
 
    getters: {

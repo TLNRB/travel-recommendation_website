@@ -104,7 +104,8 @@ export const useAuthStore = defineStore('authStore', {
          localStorage.removeItem('userId');
 
          const userStore = useUserStore();
-         userStore.resetUserData(); // Reset user data in user store
+         userStore.$reset();
+         console.log('User data reset in user store');
 
          console.log('User logged out');
       }
