@@ -36,11 +36,41 @@
       </div>
 
       <!-- Recommendation -->
-      <div v-if="place.recommendation" class="bg-gray-50 p-3 rounded-md text-sm text-gray-700">
-         <p class="line-clamp-3">
-            {{ place.recommendation }}
+      <!--< div v-if="recommendations.length > 0" class="bg-gray-50 p-3 rounded-md text-sm text-gray-700">
+         <p v-for="recommendation in recommendations" :key="recommendation._id" class="line-clamp-3">
+            {{ recommendation.content }}
          </p>
+      </div> -->
+
+      <div v-if="recommendations.length > 0 && !recommendations.loading"
+         class="space-y-4 bg-gray-50 p-4 rounded-md text-sm text-gray-800">
+         <div v-for="recommendation in recommendations" :key="recommendation._id"
+            class="p-3 bg-white rounded-md shadow-sm border border-gray-200">
+            <!-- Title -->
+            <h3 class="text-base font-semibold text-gray-900 mb-1">
+               {{ recommendation.title }}
+            </h3>
+
+            <!-- Author and Dates -->
+            <div class="text-xs text-gray-500 mb-2 flex flex-wrap justify-between gap-2">
+               <span>By {{ recommendation._createdBy.username }}</span>
+               <span class="text-[12px] font-medium text-yellow-600">
+                  ⭐ {{ recommendation.rating }} / 5
+               </span>
+            </div>
+
+            <!-- Content -->
+            <p class="text-sm text-gray-700 mb-2 whitespace-pre-wrap">
+               {{ recommendation.content }}
+            </p>
+         </div>
       </div>
+      <!-- Loading -->
+      <div v-else-if="recommendationsStore.getIsloading"
+         class="space-y-4 bg-gray-50 p-4 rounded-md text-sm text-gray-600 italic">
+         Loading recommendations...
+      </div>
+
 
       <!-- Actions & Status -->
       <div class="flex justify-between items-center pt-3 border-t text-sm">
@@ -76,9 +106,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
-const { place } = defineProps(['place']);
+const { place, recommendationsStore } = defineProps(['place', 'recommendationsStore']);
+
+// Recommendation
+const recommendations = computed(() => recommendationsStore.getRecommendationsByPlaceId(place._id));
 
 // State for dropdown menu visibility
 const activeMenuId = ref<string | null>(null)
