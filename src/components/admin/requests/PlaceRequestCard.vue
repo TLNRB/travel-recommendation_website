@@ -120,7 +120,6 @@ const activeMenuId = ref<string | null>(null)
 const toggleMenu = (id: string): void => {
    // If the same menu is clicked, it closes, otherwise it opens
    activeMenuId.value = activeMenuId.value === id ? null : id
-   console.log(activeMenuId.value)
 }
 
 </script>
