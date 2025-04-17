@@ -68,7 +68,7 @@
       <!-- Loading -->
       <div v-else-if="recommendationsStore.getIsloading"
          class="space-y-4 bg-gray-50 p-4 rounded-md text-sm text-gray-600 italic">
-         Loading recommendations...
+         <span class="loader"></span>
       </div>
 
 
@@ -123,3 +123,26 @@ const toggleMenu = (id: string): void => {
 }
 
 </script>
+
+<style scoped>
+.loader {
+   border: 3px solid #afafaf;
+   border-top: 3px solid #404040;
+   border-radius: 50%;
+   width: 16px;
+   height: 16px;
+   animation: spin 1s linear infinite;
+   display: flex;
+   margin-inline: auto;
+}
+
+@keyframes spin {
+   0% {
+      transform: rotate(0deg);
+   }
+
+   100% {
+      transform: rotate(360deg);
+   }
+}
+</style>
