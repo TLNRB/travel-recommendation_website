@@ -15,4 +15,4 @@ export type Place = {
    _createdBy: string
 }
 
-export type EditPlaceRequest = Omit<Place, 'upvotes' | '_createdBy'>
+export type EditPlace = Omit<Place, 'upvotes' | '_createdBy'>
