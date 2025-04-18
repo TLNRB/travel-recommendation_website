@@ -9,8 +9,8 @@
 
          <!-- Edit Card -->
          <PlaceRequestEditModal v-if="showEditModal" :place="placesStore.getPlaceById(editPlaceRequestId!)"
-            :recommendations="recommendations" :error="placesStore.getUpdateError" :loading="placesStore.getIsLoading" @submit="handleUpdatePlaceRequest"
-            @close="handleClose" />
+            :recommendations="recommendations" :error="placesStore.getUpdateError" :loading="placesStore.getIsLoading"
+            @submit="handleUpdatePlaceRequest" @close="handleClose" />
       </div>
    </section>
 </template>
@@ -25,7 +25,7 @@ import { usePlacesStore } from '@/stores/crud/placesStore';
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 import { useAuthStore } from '@/stores/authStore';
 // Interfaces
-import type { Place, EditPlaceRequest } from '@/interfaces/placeTypes'
+import type { Place, EditPlace } from '@/interfaces/placeTypes'
 
 const placesStore = usePlacesStore();
 const recommendationsStore = useRecommendationsStore();
@@ -33,7 +33,7 @@ const authStore = useAuthStore();
 
 const placeRequests = computed(() => placesStore.filterPlacesByApproved(false));
 
-//===== Edit ===== //
+//-- Edit
 // Get recommendations for editing
 const recommendations = computed(() => {
    if (editPlaceRequestId.value !== null) {
@@ -54,10 +54,11 @@ const handleEdit = (placeId: string) => {
 const handleClose = () => {
    showEditModal.value = false;
    editPlaceRequestId.value = null;
+   placesStore.clearErrors();
 
 };
 
-const handleUpdatePlaceRequest = async (updatedPlace: EditPlaceRequest, placeId: string): Promise<void> => {
+const handleUpdatePlaceRequest = async (updatedPlace: EditPlace, placeId: string): Promise<void> => {
    const placeData: Partial<Place> = {
       ...updatedPlace,
       upvotes: placesStore.getPlaceById(editPlaceRequestId.value!).upvotes,
