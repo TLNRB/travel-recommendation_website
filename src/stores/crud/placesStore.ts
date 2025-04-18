@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Place } from "@/interfaces/interfaces";
+import type { Place } from "@/interfaces/placeTypes";
 
 export const usePlacesStore = defineStore('placesStore', {
    state: () => ({
@@ -13,7 +13,6 @@ export const usePlacesStore = defineStore('placesStore', {
 
    actions: {
       async fetchPlaces(force = false): Promise<void> {
-         console.log(force)
          // Check if places are already loaded or loading to avoid multiple API calls
          if (!force && (this.isPlacesLoaded || this.isLoading)) {
             console.log('Places already loaded or loading, skipping fetch')
@@ -92,6 +91,12 @@ export const usePlacesStore = defineStore('placesStore', {
          finally {
             this.isLoading = false
          }
+      },
+
+      clearErrors() {
+         this.error = null
+         this.addError = null
+         this.updateError = null
       }
    },
 
