@@ -33,10 +33,13 @@
 
         <!-- Dropdown -->
         <div v-if="profileDropdownOpen" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg pt-2 z-50">
-          <RouterLink to="/profile" class="block px-4 py-2 text-sm hover:bg-gray-100">Profile</RouterLink>
-          <RouterLink to="/settings" class="block px-4 py-2 text-sm hover:bg-gray-100">Settings</RouterLink>
+          <RouterLink to="/profile" @click="profileDropdownOpen = false"
+            class="block px-4 py-2 text-sm hover:bg-gray-100">Profile</RouterLink>
+          <RouterLink to="/settings" @click="profileDropdownOpen = false"
+            class="block px-4 py-2 text-sm hover:bg-gray-100">Settings</RouterLink>
           <RouterLink v-if="userStore.getUser?.role?.name !== 'user'" to="/dashboard"
-            class="block px-4 py-2 text-sm hover:bg-gray-100">Dashboard</RouterLink>
+            @click="profileDropdownOpen = false" class="block px-4 py-2 text-sm hover:bg-gray-100">Dashboard
+          </RouterLink>
           <LogoutBtn />
         </div>
       </div>
