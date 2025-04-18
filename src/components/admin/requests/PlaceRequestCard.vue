@@ -67,7 +67,7 @@
 
 
       <!-- Actions & Status -->
-      <div class="flex justify-between items-center pt-3 border-t text-sm">
+      <div class="mt-auto flex justify-between items-center pt-3 border-t text-sm">
          <span :class="props.place.approved ? 'text-green-600' : 'text-yellow-500'" class="font-medium text-xs">
             {{ props.place.approved ? 'Approved' : 'Pending Approval' }}
          </span>
@@ -81,15 +81,15 @@
             </button>
             <div v-if="activeMenuId === props.place._id"
                class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-               <button @click="approveRequest"
+               <button @click="approveEvent"
                   class="block w-full text-left px-4 py-2 text-sm text-green-600  hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
                   Approve
                </button>
-               <button @click="rejectRequest"
+               <button @click="rejectEvent"
                   class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
                   Reject
                </button>
-               <button @click="editRequets"
+               <button @click="editEvent"
                   class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
                   Edit
                </button>
@@ -110,28 +110,28 @@ const props = defineProps({
    place: { type: Object, required: true }
 });
 
-// Recommendation
+//-- Recommendation
 const recommendations = computed(() => recommendationsStore.getRecommendationsByPlaceId(props.place._id));
 
-// Emits
+//-- Emits
 const emit = defineEmits(['approve', 'reject', 'edit']);
 
-const approveRequest = () => {
+const approveEvent = () => {
    emit('approve', props.place._id);
    activeMenuId.value = null;
 }
 
-const rejectRequest = () => {
+const rejectEvent = () => {
    emit('reject', props.place._id);
    activeMenuId.value = null;
 }
 
-const editRequets = () => {
+const editEvent = () => {
    emit('edit', props.place._id, recommendations.value);
    activeMenuId.value = null;
 }
 
-// Dropdown
+//-- Dropdown
 const activeMenuId = ref<string | null>(null)
 
 const toggleMenu = (id: string): void => {

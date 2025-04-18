@@ -115,9 +115,14 @@
             <ul v-if="recommendations?.length" class="space-y-2">
                <li v-for="recommendation in recommendations" :key="recommendation._id"
                   class="bg-gray-50 p-3 rounded-md flex justify-between items-center text-sm">
-                  <span class="line-clamp-2">{{ recommendation.content }}</span>
+                  <!-- title -->
+                  <div class="flex flex-col gap-1">
+                     <span class="text-gray-500 text-xs">@{{ recommendation._createdBy.username }}</span>
+                     <span class="mt-1 font-semibold text-gray-700">{{ recommendation.title }}</span>
+                     <span class="line-clamp-2">{{ recommendation.content }}</span>
+                  </div>
                   <button type="button" @click="emit('delete-recommendation', recommendation._id)"
-                     class="text-red-500 hover:text-red-700 flex justify-center items-center text-[20px] w-[20px] h-[20px] duration-200 ease-in-out cursor-pointer"
+                     class="text-red-500 hover:text-red-700 flex justify-center items-center mb-auto text-[20px] w-[20px] h-[20px] duration-200 ease-in-out cursor-pointer"
                      title="Remove tag">
                      &times;
                   </button>
@@ -126,15 +131,13 @@
             <div v-else class="p-3 mt-4 bg-gray-50 rounded-md text-gray-500 text-sm italic">No recommendations
                available.</div>
          </div>
-
       </div>
    </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { EditPlaceRequest } from '@/interfaces/placeTypes'
-import type { Recommendation } from '@/interfaces/interfaces'
+import type { EditPlace } from '@/interfaces/placeTypes'
 
 const props = defineProps({
    place: { type: Object, required: true },
@@ -143,7 +146,7 @@ const props = defineProps({
    loading: { type: Boolean, default: false },
 })
 
-//===== Edit ===== //
+//-- Edit
 const continents = [
    'Africa',
    'Asia',
@@ -154,7 +157,7 @@ const continents = [
    'Antarctica',
 ]
 
-const editPlaceRequest = ref<EditPlaceRequest>({
+const editPlaceRequest = ref<EditPlace>({
    name: props.place.name,
    images: [...props.place.images],
    description: props.place.description,
@@ -177,7 +180,7 @@ const removeTag = (index: number) => {
    editPlaceRequest.value.tags.splice(index, 1)
 }
 
-// Emits
+//-- Emits
 const emit = defineEmits(['close', 'submit'])
 
 const emitClose = () => {
