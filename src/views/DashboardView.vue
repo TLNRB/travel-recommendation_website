@@ -40,24 +40,15 @@
     </div>
 
     <!-- Approved Places Tab -->
-    <div v-else-if="activeTab === 'Places'" class="space-y-4">
-      <h2 class="text-xl font-semibold">Approved Places & Recommendations</h2>
-      <div v-if="places.length">
-        <div v-for="place in places" :key="place.id" class="bg-white shadow p-4 rounded-lg">
-          <p><strong>Place:</strong> {{ place.name }}</p>
-          <p><strong>Location:</strong> {{ place.city }}, {{ place.country }}</p>
-          <p><strong>Recommended by:</strong> {{ place.recommendedBy }}</p>
-        </div>
-      </div>
-      <div v-else class="text-gray-500">No data yet.</div>
-    </div>
+    <PlacesSections v-else-if="activeTab === 'Places'" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-// Components
+//-- Components
 import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSection.vue';
+import PlacesSections from '@/components/admin/places/PlacesSection.vue';
 
 const tabs = ['Requests', 'Users', 'Reported', 'Places'];
 const activeTab = ref('Requests');
