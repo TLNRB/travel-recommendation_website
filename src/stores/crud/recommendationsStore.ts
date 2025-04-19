@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { ref } from 'vue';
 import type { Recommendation } from "@/interfaces/interfaces";
 
 export const useRecommendationsStore = defineStore('recommendationsStore', {
@@ -101,6 +100,8 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
       getRecommendationsByPlaceId: (state) => {
          return (placeId: string) => state.recommendationsMap[placeId] || [];
       },
+      getError: (state) => state.error,
+      getIsLoaded: (state) => state.isLoaded,
       getIsloading: (state) => state.isLoading,
    }
 })

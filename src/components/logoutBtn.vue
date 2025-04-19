@@ -1,11 +1,10 @@
 <template>
-<button
- @click="logoutAndRedirect()"
- class="w-full py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-700 transition"
- :disabled="loading">
- <span v-if="loading" class="loader"></span>
- <span v-else>Logout</span>
-</button>
+  <button @click="logoutAndRedirect()"
+    class="w-full py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-700 transition cursor-pointer"
+    :disabled="loading">
+    <span v-if="loading" class="loader"></span>
+    <span v-else>Logout</span>
+  </button>
 
 </template>
 <script setup lang="ts">
@@ -50,8 +49,12 @@ const logoutAndRedirect = async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
-

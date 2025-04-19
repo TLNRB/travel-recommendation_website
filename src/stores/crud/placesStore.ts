@@ -93,7 +93,7 @@ export const usePlacesStore = defineStore('placesStore', {
          }
       },
 
-      clearErrors() {
+      clearErrors(): void {
          this.error = null
          this.addError = null
          this.updateError = null
@@ -109,17 +109,9 @@ export const usePlacesStore = defineStore('placesStore', {
       getPlaceById: (state) => {
          return (placeId: string) => state.places.find((place) => place._id === placeId) || null
       },
-      getError: (state) => {
-         return state.error
-      },
-      getAddError: (state) => {
-         return state.addError
-      },
-      getUpdateError: (state) => {
-         return state.updateError
-      },
-      getIsLoading: (state) => {
-         return state.isLoading
-      },
+      getError: (state) => state.error,
+      getAddError: (state) => state.addError,
+      getUpdateError: (state) => state.updateError,
+      getIsLoading: (state) => state.isLoading,
    }
 })
