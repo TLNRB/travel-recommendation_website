@@ -1,7 +1,13 @@
 <template>
    <section>
       <h2 class="text-xl font-semibold">Place Requests</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      <div v-if="placesStore.getIsLoading" class="flex justify-center items-center h-32">
+         <span class="loader"></span>
+      </div>
+      <div v-else-if="placesStore.getError" class="text-red-500 text-center h-32">
+         {{ placesStore.getError }}
+      </div>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
          <!-- Display Cards -->
          <PlaceRequestCard v-if="placeRequests" v-for="(place, index) in placeRequests" :key="index" :place="place"
             @edit="handleEdit" />
@@ -59,10 +65,10 @@ const handleClose = () => {
 };
 
 const handleUpdatePlaceRequest = async (updatedPlace: EditPlace, placeId: string): Promise<void> => {
-   const placeData: Partial<Place> = {
+   const placeData: Place = {
       ...updatedPlace,
-      upvotes: placesStore.getPlaceById(editPlaceRequestId.value!).upvotes,
-      _createdBy: placesStore.getPlaceById(editPlaceRequestId.value!)._createdBy
+      upvotes: placesStore.getPlaceById(editPlaceRequestId.value!)!.upvotes,
+      _createdBy: placesStore.getPlaceById(editPlaceRequestId.value!)!._createdBy
    }
 
    try {
@@ -93,3 +99,26 @@ onMounted(async () => {
    }; */
 });
 </script>
+
+<style scoped>
+.loader {
+   border: 3px solid #afafaf;
+   border-top: 3px solid #404040;
+   border-radius: 50%;
+   width: 18px;
+   height: 18px;
+   animation: spin 1s linear infinite;
+   display: flex;
+   margin-inline: auto;
+}
+
+@keyframes spin {
+   0% {
+      transform: rotate(0deg);
+   }
+
+   100% {
+      transform: rotate(360deg);
+   }
+}
+</style>

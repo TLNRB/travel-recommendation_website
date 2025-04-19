@@ -50,18 +50,15 @@
             </button>
             <div v-if="activeMenuId === props.place._id"
                class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-               <button @click="saveEvent"
-                  class="block w-full text-left px-4 py-2 text-sm text-green-600  hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
-                  Save
+               <button @click="editEvent"
+                  class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
+                  Edit
                </button>
                <button @click="deleteEvent"
                   class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
                   Delete
                </button>
-               <button @click="editEvent"
-                  class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
-                  Edit
-               </button>
+
             </div>
          </div>
       </div>
@@ -77,12 +74,7 @@ const props = defineProps({
 });
 
 //-- Emits
-const emit = defineEmits(['save', 'delete', 'edit']);
-
-const saveEvent = () => {
-   emit('save', props.place._id);
-   activeMenuId.value = null;
-}
+const emit = defineEmits(['delete', 'edit']);
 
 const deleteEvent = () => {
    emit('delete', props.place._id);
