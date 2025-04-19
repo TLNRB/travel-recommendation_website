@@ -17,27 +17,7 @@
     <PlaceRequestsSection v-if="activeTab === 'Requests'" />
 
     <!-- Users Tab -->
-    <div v-else-if="activeTab === 'Users'" class="space-y-4">
-      <h2 class="text-xl font-semibold">Registered Users</h2>
-      <div v-if="users.length">
-        <div v-for="user in users" :key="user.id"
-          class="bg-white shadow p-4 rounded-lg flex justify-between items-center">
-          <div>
-            <p><strong>Name:</strong> {{ user.name }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Username:</strong> {{ user.username }}</p>
-          </div>
-          <button class="text-red-600 hover:underline">Delete</button>
-        </div>
-      </div>
-      <div v-else class="text-gray-500">No users found.</div>
-    </div>
-
-    <!-- Reported Content Tab -->
-    <div v-else-if="activeTab === 'Reported'" class="space-y-4">
-      <h2 class="text-xl font-semibold">Reported Content</h2>
-      <div class="text-gray-500 italic">Feature coming soon…</div>
-    </div>
+    <UsersSection v-else-if="activeTab === 'Users'" />
 
     <!-- Approved Places Tab -->
     <PlacesSections v-else-if="activeTab === 'Places'" />
@@ -49,8 +29,9 @@ import { ref, onMounted } from 'vue';
 //-- Components
 import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSection.vue';
 import PlacesSections from '@/components/admin/places/PlacesSection.vue';
+import UsersSection from '@/components/admin/users/UsersSection.vue';
 
-const tabs = ['Requests', 'Users', 'Reported', 'Places'];
+const tabs = ['Requests', 'Places', 'Users'];
 const activeTab = ref('Requests');
 
 // Sample Data (replace with API later)
