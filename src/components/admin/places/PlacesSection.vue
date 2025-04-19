@@ -1,9 +1,11 @@
 <template>
    <section>
       <h2 class="text-xl font-semibold">Approved Places</h2>
+      <!-- Loader -->
       <div v-if="placesStore.getIsLoading" class="flex justify-center items-center h-32">
          <span class="loader"></span>
       </div>
+      <!-- Error Message -->
       <div v-else-if="placesStore.getError" class="text-red-500 text-center h-32">
          {{ placesStore.getError }}
       </div>

@@ -31,19 +31,7 @@ import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSecti
 import PlacesSections from '@/components/admin/places/PlacesSection.vue';
 import UsersSection from '@/components/admin/users/UsersSection.vue';
 
+//-- Tabs
 const tabs = ['Requests', 'Places', 'Users'];
 const activeTab = ref('Requests');
-
-// Sample Data (replace with API later)
-
-
-const users = ref([
-  { id: 1, name: 'John Doe', email: 'john@example.com', username: 'johnd' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', username: 'janes' }
-]);
-
-const places = ref([
-  { id: 1, name: 'Eiffel Tower', city: 'Paris', country: 'France', recommendedBy: 'Alice' },
-  { id: 2, name: 'Mount Fuji', city: 'Fujinomiya', country: 'Japan', recommendedBy: 'Bob' }
-]);
 </script>

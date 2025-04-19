@@ -1,15 +1,15 @@
 <template>
    <section>
       <h2 class="text-xl font-semibold">Users</h2>
+      <!-- Loader -->
       <div v-if="usersStore.getIsLoading" class="flex justify-center items-center h-32">
          <span class="loader"></span>
       </div>
+      <!-- Error Message -->
       <div v-else-if="usersStore.getError" class="text-red-500 text-center h-32">
          {{ usersStore.getError }}
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-         <!-- Loader -->
-
          <!-- Display Cards -->
          <UserCard v-if="users" v-for="(user, index) in users" :key="index" :user="user" :roles="roles"
             @edit="handleEdit" />
@@ -18,7 +18,7 @@
          <div v-else class="text-gray-500">No users to display.</div>
 
          <!-- Edit Card -->
-         <!-- <UserEditModal v-if="showEditModal" @submit="handleUpdateUserRole" @close="handleClose" /> -->
+         <UserEditModal v-if="showEditModal" @submit="handleUpdateUserRole" @close="handleClose" />
       </div>
    </section>
 </template>
@@ -27,7 +27,7 @@
 import { ref, computed, onMounted } from 'vue';
 // Components
 import UserCard from '@/components/admin/users/UserCard.vue';
-/* import UserEditModal from '@/components/admin/users/UserEditModal.vue'; */
+import UserEditModal from '@/components/admin/users/UserEditModal.vue';
 // Stores
 import { useUsersStore } from '@/stores/crud/usersStore';
 import { useRolesStore } from '@/stores/rolesStore';
