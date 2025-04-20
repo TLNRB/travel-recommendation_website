@@ -12,15 +12,16 @@
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
          <!-- Display Cards -->
          <PlaceRequestCard v-if="placeRequests.length > 0" v-for="(place, index) in placeRequests" :key="index"
-            :place="place" @edit="handleEdit" @approve="handleUpdatePlaceRequest" />
+            :place="place" @edit="handleEdit" @approve="handleUpdatePlaceRequest" @reject="handleDeletePlaceRequest"
+            :deleteError="placesStore.getDeleteError" />
          <div v-else class="text-gray-500">No place requests to display.</div>
 
          <!-- Edit Card -->
          <PlaceRequestEditModal v-if="showEditModal" :place="placesStore.getPlaceById(editPlaceRequestId!)"
             :recommendations="recommendations" :updateError="placesStore.getUpdateError"
-            :deleteError="recommendationsStore.getDeleteError" :placeLoading="placesStore.getIsLoading"
-            :recommendationLoading="recommendationsStore.getIsLoading" @submit="handleUpdatePlaceRequest"
-            @close="handleClose" @delete-recommendation="handleDeleteRecommendation" />
+            :placeLoading="placesStore.getIsLoading" :recommendationLoading="recommendationsStore.getIsLoading"
+            @submit="handleUpdatePlaceRequest" @close="handleClose"
+            @delete-recommendation="handleDeleteRecommendation" />
       </div>
    </section>
 </template>
@@ -86,6 +87,21 @@ const handleUpdatePlaceRequest = async (updatedPlace: EditPlace, placeId: string
       console.error('Error updating place request:', err);
    }
 };
+
+//-- Delete 
+// Delete Place Request
+const handleDeletePlaceRequest = async (placeId: string): Promise<void> => {
+   try {
+      await placesStore.deletePlace(placeId, authStore.getToken!);
+
+      if (!placesStore.getDeleteError) {
+         handleClose();
+      }
+   } catch (err) {
+      console.error('Error deleting place request:', err);
+   }
+}
+
 
 // Delete Recommendation
 const handleDeleteRecommendation = async (recommendationId: string, placeId: string): Promise<void> => {

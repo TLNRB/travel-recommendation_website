@@ -7,6 +7,7 @@ export const usePlacesStore = defineStore('placesStore', {
       error: null as string | null,
       addError: null as string | null,
       updateError: null as string | null,
+      deleteError: null as string | null,
       isPlacesLoaded: false,
       isLoading: false,
    }),
@@ -90,10 +91,43 @@ export const usePlacesStore = defineStore('placesStore', {
          }
       },
 
+      async deletePlace(placeId: string, token: string): Promise<void> {
+         this.isLoading = true;
+         this.deleteError = null;
+
+         try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places/${placeId}`, {
+               method: 'DELETE',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'auth-token': token
+               }
+            })
+
+            if (!response.ok) {
+               const errorResponse = await response.json()
+               throw new Error(errorResponse.error || 'Failed to delete place')
+            }
+            else {
+               const responseText = await response.text()
+               console.log('Delete response:', responseText)
+            }
+
+            await this.fetchPlaces(true) // Force refresh the places after deletion
+         }
+         catch (err) {
+            this.deleteError = (err as Error).message
+         }
+         finally {
+            this.isLoading = false
+         }
+      },
+
       clearErrors(): void {
-         this.error = null
-         this.addError = null
-         this.updateError = null
+         this.error = null;
+         this.addError = null;
+         this.updateError = null;
+         this.deleteError = null;
       }
    },
 
@@ -109,6 +143,7 @@ export const usePlacesStore = defineStore('placesStore', {
       getError: (state) => state.error,
       getAddError: (state) => state.addError,
       getUpdateError: (state) => state.updateError,
+      getDeleteError: (state) => state.deleteError,
       getIsLoading: (state) => state.isLoading,
    }
 })
