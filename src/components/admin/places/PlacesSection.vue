@@ -11,7 +11,8 @@
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
          <!-- Display Cards -->
-         <PlaceCard v-if="places" v-for="(place, index) in places" :key="index" :place="place" @edit="handleEdit" />
+         <PlaceCard v-if="places.length > 0" v-for="(place, index) in places" :key="index" :place="place"
+            @edit="handleEdit" />
          <div v-else class="text-gray-500">No places to display.</div>
 
          <!-- Edit Card -->
