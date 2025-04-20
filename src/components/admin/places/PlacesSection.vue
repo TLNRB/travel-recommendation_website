@@ -69,8 +69,8 @@ const handleUpdatePlace = async (updatedPlace: EditPlace, placeId: string): Prom
          handleClose();
       }
 
-   } catch (error) {
-      console.error('Error updating place request:', error);
+   } catch (err) {
+      console.error('Error updating place request:', err);
    }
 };
 

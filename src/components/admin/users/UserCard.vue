@@ -19,7 +19,7 @@
             <span class="font-medium text-gray-800">Role:</span>
 
             <div class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs ml-1">
-               <span v-if="rolesStore.isLoading">Loading...</span>
+               <span v-if="props.loading">Loading...</span>
                <span v-else>{{ userRole?.name }}</span>
             </div>
          </div>
@@ -32,7 +32,7 @@
 
       <!-- Permissions -->
       <div class="mt-4 text-sm">
-         <div v-if="rolesStore.isLoading">Loading...</div>
+         <div v-if="props.loading">Loading...</div>
          <button v-else-if="userRole?.permissions.length > 0" @click="showPermissions = !showPermissions"
             class="text-blue-500 hover:text-blue-700 transition cursor-pointer">
             {{ showPermissions ? 'Hide' : 'Show' }} Permissions
@@ -61,16 +61,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-// Stores
-import { useRolesStore } from '@/stores/rolesStore';
 // Interfaces
 import type { Role } from '@/interfaces/interfaces'
-
-const rolesStore = useRolesStore();
 
 const props = defineProps({
    user: { type: Object, required: true },
    roles: { type: Array, required: true },
+   loading: { type: Boolean, default: false },
 });
 
 const userRole = computed(() => props.roles.find((role) => role._id === props.user.role) as Role)
