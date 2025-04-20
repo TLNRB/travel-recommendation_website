@@ -62,16 +62,13 @@ export const usePlacesStore = defineStore('placesStore', {
          this.updateError = null
 
          try {
-            console.log('Updating place with ID:', placeId)
-            console.log('Updated data:', updatedData)
-            console.log('Token:', token)
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places/${placeId}`, {
                method: 'PUT',
                headers: {
                   'Content-Type': 'application/json',
                   'auth-token': token
                },
-               body: JSON.stringify(updatedData),
+               body: JSON.stringify(updatedData)
             })
 
             if (!response.ok) {
