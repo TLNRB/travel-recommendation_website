@@ -67,7 +67,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-// Stores
 
 const props = defineProps({
    place: { type: Object, required: true }

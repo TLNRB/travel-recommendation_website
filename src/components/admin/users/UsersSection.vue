@@ -12,7 +12,7 @@
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
          <!-- Display Cards -->
          <UserCard v-if="users" v-for="(user, index) in users" :key="index" :user="user" :roles="roles"
-            @edit="handleEdit" />
+            :loading="rolesStore.isLoading" @edit="handleEdit" />
          <div v-else class="text-gray-500">No users to display.</div>
 
          <!-- Edit Card -->
@@ -83,8 +83,8 @@ const handleUpdateUserRole = async (userRole: string, userId: string): Promise<v
          handleClose();
       }
 
-   } catch (error) {
-      console.error('Error updating place request:', error);
+   } catch (err) {
+      console.error('Error updating place request:', err);
    }
 };
 
