@@ -11,9 +11,9 @@
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
          <!-- Display Cards -->
-         <PlaceRequestCard v-if="placeRequests" v-for="(place, index) in placeRequests" :key="index" :place="place"
-            @edit="handleEdit" />
-         <div v-else class="text-gray-500">No place requests yet.</div>
+         <PlaceRequestCard v-if="placeRequests.length > 0" v-for="(place, index) in placeRequests" :key="index"
+            :place="place" @edit="handleEdit" @approve="handleUpdatePlaceRequest" />
+         <div v-else class="text-gray-500">No place requests to display.</div>
 
          <!-- Edit Card -->
          <PlaceRequestEditModal v-if="showEditModal" :place="placesStore.getPlaceById(editPlaceRequestId!)"
@@ -69,7 +69,7 @@ const handleClose = () => {
 const handleUpdatePlaceRequest = async (updatedPlace: EditPlace, placeId: string): Promise<void> => {
    const placeData: Place = {
       ...updatedPlace,
-      _createdBy: placesStore.getPlaceById(editPlaceRequestId.value!)!._createdBy
+      _createdBy: placesStore.getPlaceById(placeId)!._createdBy
    }
 
    try {

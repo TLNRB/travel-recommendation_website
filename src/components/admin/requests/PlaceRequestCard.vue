@@ -65,6 +65,9 @@
          <span class="loader"></span>
       </div>
 
+      <!-- Display error -->
+      <div v-if="props.error" class="mt-4 text-red-500 text-sm italic">{{ props.error }}</div>
+
 
       <!-- Actions & Status -->
       <div class="mt-auto flex justify-between items-center pt-3 border-t text-sm">
@@ -101,13 +104,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+// Interfaces
+import type { EditPlace } from '@/interfaces/placeTypes'
 // Stores
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore'
 
 const recommendationsStore = useRecommendationsStore()
 
 const props = defineProps({
-   place: { type: Object, required: true }
+   place: { type: Object, required: true },
 });
 
 //-- Recommendation
@@ -117,7 +122,23 @@ const recommendations = computed(() => recommendationsStore.getRecommendationsBy
 const emit = defineEmits(['approve', 'reject', 'edit']);
 
 const approveEvent = () => {
-   emit('approve', props.place._id);
+   const approvedPlace = ref<EditPlace>({
+      name: props.place.name,
+      images: [...props.place.images],
+      description: props.place.description,
+      location: {
+         continent: props.place.location.continent,
+         country: props.place.location.country,
+         city: props.place.location.city,
+         street: props.place.location.street,
+         streetNumber: props.place.location.streetNumber
+      },
+      upvotes: props.place.upvotes,
+      tags: [...props.place.tags],
+      approved: true,
+   })
+
+   emit('approve', approvedPlace.value, props.place._id);
    activeMenuId.value = null;
 }
 
