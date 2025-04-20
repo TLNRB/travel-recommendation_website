@@ -156,7 +156,6 @@ const props = defineProps({
    place: { type: Object, required: true },
    recommendations: { type: Array, default: () => [] }, // Fresh empty array in default to prevent shared state 
    updateError: { type: String, default: null },
-   deleteError: { type: String, default: null },
    placeLoading: { type: Boolean, default: false },
    recommendationLoading: { type: Boolean, default: false },
 })
