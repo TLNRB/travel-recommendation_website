@@ -1,6 +1,13 @@
 <template>
    <section>
-      <h2 class="text-xl font-semibold">Approved Places</h2>
+      <div class="flex justify-between items-center gap-4">
+         <h2 class="text-xl font-semibold">Approved Places</h2>
+         <!--  Add Place Button -->
+         <button @click="handleAdd"
+            class="bg-blue-600 text-sm text-white px-4 py-2 rounded mt-4 hover:bg-blue-700 transition duration-200 ease-in-out cursor-pointer">
+            Add Place
+         </button>
+      </div>
       <!-- Loader -->
       <div v-if="placesStore.getIsLoading" class="flex justify-center items-center h-32">
          <span class="loader"></span>
@@ -15,10 +22,14 @@
             :deleteError="placesStore.getDeleteError" @edit="handleEdit" @delete="handleDeletePlace" />
          <div v-else class="text-gray-500">No places to display.</div>
 
+         <!-- Add Card -->
+         <PlaceAddModal v-if="showAddModal" :addError="placesStore.getAddError" :loading="placesStore.getIsLoading"
+            @submit="handleAddPlace" @close="handleCloseAdd" />
+
          <!-- Edit Card -->
          <PlaceEditModal v-if="showEditModal" :place="placesStore.getPlaceById(editPlaceId!)"
             :updateError="placesStore.getUpdateError" :loading="placesStore.getIsLoading" @submit="handleUpdatePlace"
-            @close="handleClose" />
+            @close="handleCloseEdit" />
       </div>
    </section>
 </template>
@@ -27,6 +38,7 @@
 import { ref, computed, onMounted } from 'vue';
 // Components
 import PlaceCard from '@/components/admin/places/PlaceCard.vue';
+import PlaceAddModal from '@/components/admin/places/PlaceAddModal.vue';
 import PlaceEditModal from '@/components/admin/places/PlaceEditModal.vue';
 // Stores
 import { usePlacesStore } from '@/stores/crud/placesStore';
@@ -39,6 +51,37 @@ const authStore = useAuthStore();
 
 const places = computed(() => placesStore.filterPlacesByApproved(true));
 
+//-- Add Place
+const showAddModal = ref<boolean>(false);
+
+const handleAdd = () => {
+   showAddModal.value = true;
+};
+
+const handleCloseAdd = () => {
+   showAddModal.value = false;
+   placesStore.clearErrors();
+};
+
+const handleAddPlace = async (newPlace: EditPlace): Promise<void> => {
+   const placeData: Place = {
+      ...newPlace,
+      _createdBy: authStore.getUserId!,
+   };
+
+   console.log('New Place:', placeData);
+   try {
+      await placesStore.addPlace(placeData, authStore.getToken!);
+
+      if (!placesStore.getAddError) {
+         handleCloseAdd();
+      }
+
+   } catch (err) {
+      console.error('Error adding place request:', err);
+   }
+};
+
 //-- Edit 
 // Edit Modal
 const showEditModal = ref<boolean>(false);
@@ -49,7 +92,7 @@ const handleEdit = (placeId: string) => {
    showEditModal.value = true;
 };
 
-const handleClose = () => {
+const handleCloseEdit = () => {
    showEditModal.value = false;
    editPlaceId.value = null;
    placesStore.clearErrors();
@@ -66,7 +109,7 @@ const handleUpdatePlace = async (updatedPlace: EditPlace, placeId: string): Prom
       await placesStore.updatePlace(placeId, placeData, authStore.getToken!);
 
       if (!placesStore.getUpdateError) {
-         handleClose();
+         handleCloseEdit();
       }
 
    } catch (err) {
@@ -80,7 +123,7 @@ const handleDeletePlace = async (placeId: string): Promise<void> => {
       await placesStore.deletePlace(placeId, authStore.getToken!);
 
       if (!placesStore.getDeleteError) {
-         handleClose();
+         handleCloseEdit();
       }
    } catch (err) {
       console.error('Error deleting place request:', err);
