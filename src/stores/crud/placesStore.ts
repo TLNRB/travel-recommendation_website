@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Place } from "@/interfaces/placeTypes";
+import type { EditPlace, Place } from "@/interfaces/placeTypes";
 
 export const usePlacesStore = defineStore('placesStore', {
    state: () => ({
@@ -56,6 +56,39 @@ export const usePlacesStore = defineStore('placesStore', {
             return []
          }
          return this.places.filter((place) => place.approved === approved)
+      },
+
+      async addPlace(newPlace: Place, token: string): Promise<void> {
+         this.isLoading = true;
+         this.addError = null
+
+         try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places`, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'auth-token': token
+               },
+               body: JSON.stringify(newPlace)
+            })
+
+            if (!response.ok) {
+               const errorResponse = await response.json()
+               throw new Error(errorResponse.error || 'Failed to add place')
+            }
+            else {
+               const responseData = await response.json()
+               this.places.push(responseData.data) // Add the new place to the local state
+               console.log('Add response:', responseData)
+            }
+
+         }
+         catch (err) {
+            this.addError = (err as Error).message
+         }
+         finally {
+            this.isLoading = false
+         }
       },
 
       async updatePlace(placeId: string, updatedData: Place, token: string): Promise<void> {
