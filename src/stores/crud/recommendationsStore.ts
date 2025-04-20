@@ -5,6 +5,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
    state: () => ({
       recommendationsMap: {} as Record<string, Recommendation[]>,
       error: null as string | null,
+      deleteError: null as string | null,
       isLoaded: false,
       isLoading: false,
    }),
@@ -93,6 +94,46 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          finally {
             this.isLoading = false;
          }
+      },
+
+      async deleteRecommendation(recommendationId: string, token: string, placeId: string): Promise<void> {
+         this.isLoading = true;
+         this.deleteError = null;
+
+         try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/${recommendationId}`, {
+               method: 'DELETE',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'auth-token': token
+               }
+            })
+
+            if (!response.ok) {
+               const errorResponse = await response.json()
+               throw new Error(errorResponse.error || 'No data available');
+            }
+            else {
+               const responseText = await response.text()
+               console.log('Delete recommendation response:', responseText)
+            }
+
+            // Remove the recommendation from the recommendationsMap, so updating the state
+            for (const placeId in this.recommendationsMap) {
+               this.recommendationsMap[placeId] = this.recommendationsMap[placeId].filter((recommendation) => recommendation._id !== recommendationId);
+            }
+         }
+         catch (err) {
+            this.deleteError = (err as Error).message;
+         }
+         finally {
+            this.isLoading = false;
+         }
+      },
+
+      clearErrors(): void {
+         this.error = null;
+         this.deleteError = null;
       }
    },
 
@@ -101,7 +142,8 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          return (placeId: string) => state.recommendationsMap[placeId] || [];
       },
       getError: (state) => state.error,
+      getDeleteError: (state) => state.deleteError,
       getIsLoaded: (state) => state.isLoaded,
-      getIsloading: (state) => state.isLoading,
+      getIsLoading: (state) => state.isLoading,
    }
 })

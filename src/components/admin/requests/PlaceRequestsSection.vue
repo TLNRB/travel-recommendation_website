@@ -17,8 +17,10 @@
 
          <!-- Edit Card -->
          <PlaceRequestEditModal v-if="showEditModal" :place="placesStore.getPlaceById(editPlaceRequestId!)"
-            :recommendations="recommendations" :error="placesStore.getUpdateError" :loading="placesStore.getIsLoading"
-            @submit="handleUpdatePlaceRequest" @close="handleClose" />
+            :recommendations="recommendations" :updateError="placesStore.getUpdateError"
+            :deleteError="recommendationsStore.getDeleteError" :placeLoading="placesStore.getIsLoading"
+            :recommendationLoading="recommendationsStore.getIsLoading" @submit="handleUpdatePlaceRequest"
+            @close="handleClose" @delete-recommendation="handleDeleteRecommendation" />
       </div>
    </section>
 </template>
@@ -63,6 +65,7 @@ const handleClose = () => {
    showEditModal.value = false;
    editPlaceRequestId.value = null;
    placesStore.clearErrors();
+   recommendationsStore.clearErrors();
 
 };
 
@@ -79,10 +82,20 @@ const handleUpdatePlaceRequest = async (updatedPlace: EditPlace, placeId: string
          handleClose();
       }
 
-   } catch (error) {
-      console.error('Error updating place request:', error);
+   } catch (err) {
+      console.error('Error updating place request:', err);
    }
 };
+
+// Delete Recommendation
+const handleDeleteRecommendation = async (recommendationId: string, placeId: string): Promise<void> => {
+   try {
+      await recommendationsStore.deleteRecommendation(recommendationId, authStore.getToken!, placeId);
+   }
+   catch (err) {
+      console.error('Error deleting recommendation:', err);
+   }
+}
 
 
 onMounted(async () => {

@@ -103,14 +103,14 @@
             </div>
 
             <!-- Display error -->
-            <div v-if="props.error" class="mt-4 text-red-500 text-sm italic">{{ props.error }}</div>
+            <div v-if="props.updateError" class="mt-4 text-red-500 text-sm italic">{{ props.updateError }}</div>
 
             <div class="mt-6 flex justify-end gap-3">
                <button type="button" @click="close"
                   class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm duration-200 ease-in-out cursor-pointer">Cancel</button>
                <button type="submit"
                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm duration-200 ease-in-out cursor-pointer">
-                  <span v-if="props.loading" class="loader">
+                  <span v-if="props.placeLoading" class="loader">
                   </span>
                   <span v-else>Save</span>
                </button>
@@ -120,7 +120,7 @@
          <div class="mt-8">
             <h3 class="text-lg font-medium mb-2">Recommendations</h3>
             <ul v-if="recommendations?.length > 0" class="space-y-2">
-               <li v-for="recommendation in recommendations" :key="recommendation?._id"
+               <li v-if="!recommendationLoading" v-for="recommendation in recommendations" :key="recommendation?._id"
                   class="bg-gray-50 p-3 rounded-md flex justify-between items-center text-sm">
                   <!-- title -->
                   <div class="flex flex-col gap-1">
@@ -134,6 +134,12 @@
                      &times;
                   </button>
                </li>
+               <!-- Loading -->
+               <div v-else-if="recommendationLoading" class="space-y-4 bg-gray-50 p-3 rounded-md text-sm text-gray-600">
+                  <span class="recommendationLoader"></span>
+               </div>
+               <!-- Error -->
+               <div v-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div>
             </ul>
             <div v-else class="p-3 mt-4 bg-gray-50 rounded-md text-gray-500 text-sm italic">No recommendations
                available.</div>
@@ -148,9 +154,11 @@ import type { EditPlace } from '@/interfaces/placeTypes'
 
 const props = defineProps({
    place: { type: Object, required: true },
-   recommendations: { type: Array, default: [] },
-   error: { type: String, default: null },
-   loading: { type: Boolean, default: false },
+   recommendations: { type: Array, default: () => [] }, // Fresh empty array in default to prevent shared state 
+   updateError: { type: String, default: null },
+   deleteError: { type: String, default: null },
+   placeLoading: { type: Boolean, default: false },
+   recommendationLoading: { type: Boolean, default: false },
 })
 
 //-- Edit
@@ -200,7 +208,7 @@ const submit = () => {
 }
 
 const deleteRecommendation = (recommendationId: string) => {
-   emit('delete-recommendation', recommendationId)
+   emit('delete-recommendation', recommendationId, props.place._id)
 }
 </script>
 
@@ -215,6 +223,17 @@ const deleteRecommendation = (recommendationId: string) => {
    display: flex;
    justify-content: center;
    align-items: center;
+}
+
+.recommendationLoader {
+   border: 3px solid #afafaf;
+   border-top: 3px solid #404040;
+   border-radius: 50%;
+   width: 16px;
+   height: 16px;
+   animation: spin 1s linear infinite;
+   display: flex;
+   margin-inline: auto;
 }
 
 @keyframes spin {
