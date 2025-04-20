@@ -3,7 +3,7 @@
       <!-- Modal box -->
       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
          <!-- Close button -->
-         <button @click="emitClose"
+         <button @click="close"
             class="absolute top-3 right-3 text-gray-400 hover:text-red-700 text-xl duration-200 ease-in-out cursor-pointer">
             &times;
          </button>
@@ -106,7 +106,7 @@
             <div v-if="props.error" class="mt-4 text-red-500 text-sm italic">{{ props.error }}</div>
 
             <div class="mt-6 flex justify-end gap-3">
-               <button type="button" @click="emit('close')"
+               <button type="button" @click="close"
                   class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm duration-200 ease-in-out cursor-pointer">Cancel</button>
                <button type="submit"
                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm duration-200 ease-in-out cursor-pointer">
@@ -119,7 +119,7 @@
 
          <div class="mt-8">
             <h3 class="text-lg font-medium mb-2">Recommendations</h3>
-            <ul v-if="recommendations?.length" class="space-y-2">
+            <ul v-if="recommendations?.length > 0" class="space-y-2">
                <li v-for="recommendation in recommendations" :key="recommendation?._id"
                   class="bg-gray-50 p-3 rounded-md flex justify-between items-center text-sm">
                   <!-- title -->
@@ -128,7 +128,7 @@
                      <span class="mt-1 font-semibold text-gray-700">{{ recommendation?.title }}</span>
                      <span class="line-clamp-2">{{ recommendation.content }}</span>
                   </div>
-                  <button type="button" @click="emit('delete-recommendation', recommendation?._id)"
+                  <button type="button" @click="deleteRecommendation(recommendation?._id)"
                      class="text-red-500 hover:text-red-700 flex justify-center items-center mb-auto text-[20px] w-[20px] h-[20px] duration-200 ease-in-out cursor-pointer"
                      title="Remove tag">
                      &times;
@@ -148,7 +148,7 @@ import type { EditPlace } from '@/interfaces/placeTypes'
 
 const props = defineProps({
    place: { type: Object, required: true },
-   recommendations: { type: Array, default: () => [] },
+   recommendations: { type: Array, default: [] },
    error: { type: String, default: null },
    loading: { type: Boolean, default: false },
 })
@@ -191,7 +191,7 @@ const removeTag = (index: number) => {
 //-- Emits
 const emit = defineEmits(['close', 'submit', 'delete-recommendation'])
 
-const emitClose = () => {
+const close = () => {
    emit('close')
 }
 
