@@ -58,11 +58,18 @@
                      <input v-model="editPlaceRequest.location.street" type="text" required
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
-                  <div class="col-span-2">
+                  <div>
                      <label class="block text-sm font-medium mb-1">Street Number</label>
                      <input v-model="editPlaceRequest.location.streetNumber" type="text" required
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
+               </div>
+
+               <!-- Upvotes -->
+               <div>
+                  <label class="block text-sm font-medium mb-1">Upvotes</label>
+                  <input v-model="editPlaceRequest.upvotes" type="number" required min="0"
+                     class="w-full px-3 py-2 border rounded-lg" />
                </div>
 
                <!-- Tags -->
@@ -96,7 +103,7 @@
             </div>
 
             <!-- Display error -->
-            <div v-if="props.error " class="mt-4 text-red-500 text-sm italic">{{ props.error }}</div>
+            <div v-if="props.error" class="mt-4 text-red-500 text-sm italic">{{ props.error }}</div>
 
             <div class="mt-6 flex justify-end gap-3">
                <button type="button" @click="emit('close')"
@@ -113,15 +120,15 @@
          <div class="mt-8">
             <h3 class="text-lg font-medium mb-2">Recommendations</h3>
             <ul v-if="recommendations?.length" class="space-y-2">
-               <li v-for="recommendation in recommendations" :key="recommendation._id"
+               <li v-for="recommendation in recommendations" :key="recommendation?._id"
                   class="bg-gray-50 p-3 rounded-md flex justify-between items-center text-sm">
                   <!-- title -->
                   <div class="flex flex-col gap-1">
-                     <span class="text-gray-500 text-xs">@{{ recommendation._createdBy.username }}</span>
-                     <span class="mt-1 font-semibold text-gray-700">{{ recommendation.title }}</span>
+                     <span class="text-gray-500 text-xs">@{{ recommendation?._createdBy.username }}</span>
+                     <span class="mt-1 font-semibold text-gray-700">{{ recommendation?.title }}</span>
                      <span class="line-clamp-2">{{ recommendation.content }}</span>
                   </div>
-                  <button type="button" @click="emit('delete-recommendation', recommendation._id)"
+                  <button type="button" @click="emit('delete-recommendation', recommendation?._id)"
                      class="text-red-500 hover:text-red-700 flex justify-center items-center mb-auto text-[20px] w-[20px] h-[20px] duration-200 ease-in-out cursor-pointer"
                      title="Remove tag">
                      &times;
@@ -168,6 +175,7 @@ const editPlaceRequest = ref<EditPlace>({
       street: props.place.location.street,
       streetNumber: props.place.location.streetNumber
    },
+   upvotes: props.place.upvotes,
    tags: [...props.place.tags],
    approved: props.place.approved,
 })
@@ -181,7 +189,7 @@ const removeTag = (index: number) => {
 }
 
 //-- Emits
-const emit = defineEmits(['close', 'submit'])
+const emit = defineEmits(['close', 'submit', 'delete-recommendation'])
 
 const emitClose = () => {
    emit('close')
@@ -189,6 +197,10 @@ const emitClose = () => {
 
 const submit = () => {
    emit('submit', editPlaceRequest.value, props.place._id)
+}
+
+const deleteRecommendation = (recommendationId: string) => {
+   emit('delete-recommendation', recommendationId)
 }
 </script>
 
