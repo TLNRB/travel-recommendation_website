@@ -5,15 +5,10 @@
  * - Image handling
  * - Approve, Reject from card
  * - Recommendation delete from edit modal
- * - add upvotes to edit modal
  * 
  * Places 
  * - Country and City select from API dropdown (or user input but validating with API if it is a real country/city)
  * - Image handling
  * - Delete from edit modal
  * - Add place modal and functionality
- * - add upvotes to edit modal
- * 
- * Users
- * - Edit role of the user, add edit modal
  */

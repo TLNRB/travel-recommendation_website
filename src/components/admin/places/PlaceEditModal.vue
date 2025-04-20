@@ -57,11 +57,18 @@
                      <input v-model="editPlace.location.street" type="text" required
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
-                  <div class="col-span-2">
+                  <div>
                      <label class="block text-sm font-medium mb-1">Street Number</label>
                      <input v-model="editPlace.location.streetNumber" type="text" required
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
+               </div>
+
+               <!-- Upvotes -->
+               <div>
+                  <label class="block text-sm font-medium mb-1">Upvotes</label>
+                  <input v-model="editPlace.upvotes" type="number" required min="0"
+                     class="w-full px-3 py-2 border rounded-lg" />
                </div>
 
                <!-- Tags -->
@@ -145,6 +152,7 @@ const editPlace = ref<EditPlace>({
       street: props.place.location.street,
       streetNumber: props.place.location.streetNumber
    },
+   upvotes: props.place.upvotes,
    tags: [...props.place.tags],
    approved: props.place.approved,
 })

@@ -69,7 +69,6 @@ const handleClose = () => {
 const handleUpdatePlaceRequest = async (updatedPlace: EditPlace, placeId: string): Promise<void> => {
    const placeData: Place = {
       ...updatedPlace,
-      upvotes: placesStore.getPlaceById(editPlaceRequestId.value!)!.upvotes,
       _createdBy: placesStore.getPlaceById(editPlaceRequestId.value!)!._createdBy
    }
 
