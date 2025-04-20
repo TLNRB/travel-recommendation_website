@@ -1,5 +1,5 @@
 <template>
-   <div class="bg-white shadow-md rounded-2xl p-6 space-y-4">
+   <div class="bg-white shadow-md rounded-2xl p-6 space-y-4 flex flex-col">
       <!-- Title -->
       <div>
          <h3 class="text-xl font-bold text-gray-800">{{ props.place.name }}</h3>
@@ -35,6 +35,9 @@
          </div>
       </div>
 
+      <!-- Display error -->
+      <div v-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div>
+
       <!-- Actions & Status -->
       <div class="mt-auto flex justify-between items-center pt-3 border-t text-sm">
          <span class="text-green-600 font-medium text-xs">
@@ -69,7 +72,8 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
-   place: { type: Object, required: true }
+   place: { type: Object, required: true },
+   deleteError: { type: String, default: null },
 });
 
 //-- Emits

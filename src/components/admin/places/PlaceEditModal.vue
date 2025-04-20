@@ -102,7 +102,7 @@
             </div>
 
             <!-- Display error -->
-            <div v-if="props.error" class="mt-4 text-red-500 text-sm italic">{{ props.error }}</div>
+            <div v-if="props.updateError" class="mt-4 text-red-500 text-sm italic">{{ props.updateError }}</div>
 
             <div class="mt-6 flex justify-end gap-3">
                <button type="button" @click="close"
@@ -126,7 +126,7 @@ import type { EditPlace } from '@/interfaces/placeTypes'
 const props = defineProps({
    place: { type: Object, required: true },
    recommendations: { type: Array, default: () => [] },
-   error: { type: String, default: null },
+   updateError: { type: String, default: null },
    loading: { type: Boolean, default: false },
 })
 

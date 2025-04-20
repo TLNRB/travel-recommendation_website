@@ -1,5 +1,5 @@
 <template>
-   <div class="bg-white shadow-md rounded-2xl p-6 space-y-4">
+   <div class="bg-white shadow-md rounded-2xl p-6 space-y-4 flex flex-col">
       <!-- Title -->
       <div>
          <h3 class="text-xl font-bold text-gray-800">{{ props.place.name }}</h3>
@@ -66,7 +66,7 @@
       </div>
 
       <!-- Display error -->
-      <div v-if="props.error" class="mt-4 text-red-500 text-sm italic">{{ props.error }}</div>
+      <div v-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div>
 
 
       <!-- Actions & Status -->
@@ -113,6 +113,7 @@ const recommendationsStore = useRecommendationsStore()
 
 const props = defineProps({
    place: { type: Object, required: true },
+   deleteError: { type: String, default: null },
 });
 
 //-- Recommendation
