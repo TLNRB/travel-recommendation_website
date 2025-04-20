@@ -8,7 +8,7 @@
             &times;
          </button>
 
-         <h2 class="text-xl font-semibold mb-4">Edit Item</h2>
+         <h2 class="text-xl font-semibold mb-4">Edit Place</h2>
 
          <form @submit.prevent="submit">
             <div class="space-y-4">
@@ -30,14 +30,15 @@
                   <div class="col-span-2">
                      <label class="block text-sm font-medium mb-1">Continent</label>
                      <select v-model="editPlace.location.continent"
-                        class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none">
+                        class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none cursor-pointer">
                         <option value="" disabled>Select Continent</option>
-                        <option v-for="continent in continents" :key="continent" :value="continent" :class="[
-                           'py-2',
-                           editPlace.location.continent === continent
-                              ? 'bg-gray-200 font-semibold'
-                              : 'bg-white'
-                        ]">
+                        <option v-for="continent in continents" :key="continent" :value="continent"
+                           class="cursor-pointer" :class="[
+                              'py-2',
+                              editPlace.location.continent === continent
+                                 ? 'bg-gray-200 font-semibold'
+                                 : 'bg-white'
+                           ]">
                            {{ continent }}
                         </option>
                      </select>
@@ -130,7 +131,7 @@ const props = defineProps({
    loading: { type: Boolean, default: false },
 })
 
-//--Edit
+//-- Edit
 const continents = [
    'Africa',
    'Asia',
