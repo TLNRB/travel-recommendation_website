@@ -4,7 +4,7 @@
          <!-- Modal Header -->
          <div class="flex justify-between items-center mb-4">
             <h2 class="text-lg font-semibold">Edit User Role</h2>
-            <button @click="$emit('close')"
+            <button @click="close"
                class="text-gray-500 hover:text-red-700 text-xl duration-200 ease-in-out cursor-pointer">&times;</button>
          </div>
 
@@ -37,7 +37,7 @@
 
          <!-- Modal Actions -->
          <div class="flex justify-end gap-3">
-            <button @click="$emit('close')"
+            <button @click="close"
                class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 cursor-pointer">Cancel</button>
             <button @click="submit"
                class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer">
@@ -64,7 +64,11 @@ const selectedRole = ref<string>(props.user.role)
 const noChangesError = ref<string>('')
 
 //-- Emit
-const emit = defineEmits(['submit'])
+const emit = defineEmits(['submit', 'close'])
+
+const close = () => {
+   emit('close')
+}
 
 const submit = () => {
    if (selectedRole.value === props.user.role) {

@@ -3,7 +3,7 @@
       <!-- Modal box -->
       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
          <!-- Close button -->
-         <button @click="emitClose"
+         <button @click="close"
             class="absolute top-3 right-3 text-gray-400 hover:text-red-700 text-xl duration-200 ease-in-out cursor-pointer">
             &times;
          </button>
@@ -105,7 +105,7 @@
             <div v-if="props.error" class="mt-4 text-red-500 text-sm italic">{{ props.error }}</div>
 
             <div class="mt-6 flex justify-end gap-3">
-               <button type="button" @click="emit('close')"
+               <button type="button" @click="close"
                   class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm duration-200 ease-in-out cursor-pointer">Cancel</button>
                <button type="submit"
                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm duration-200 ease-in-out cursor-pointer">
@@ -168,7 +168,7 @@ const removeTag = (index: number) => {
 //-- Emits
 const emit = defineEmits(['close', 'submit'])
 
-const emitClose = () => {
+const close = () => {
    emit('close')
 }
 

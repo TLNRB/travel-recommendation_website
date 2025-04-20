@@ -84,15 +84,15 @@
             </button>
             <div v-if="activeMenuId === props.place._id"
                class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-               <button @click="approveEvent"
+               <button @click="approve"
                   class="block w-full text-left px-4 py-2 text-sm text-green-600  hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
                   Approve
                </button>
-               <button @click="rejectEvent"
+               <button @click="reject"
                   class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
                   Reject
                </button>
-               <button @click="editEvent"
+               <button @click="edit"
                   class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
                   Edit
                </button>
@@ -121,7 +121,7 @@ const recommendations = computed(() => recommendationsStore.getRecommendationsBy
 //-- Emits
 const emit = defineEmits(['approve', 'reject', 'edit']);
 
-const approveEvent = () => {
+const approve = () => {
    const approvedPlace = ref<EditPlace>({
       name: props.place.name,
       images: [...props.place.images],
@@ -142,13 +142,13 @@ const approveEvent = () => {
    activeMenuId.value = null;
 }
 
-const rejectEvent = () => {
+const reject = () => {
    emit('reject', props.place._id);
    activeMenuId.value = null;
 }
 
-const editEvent = () => {
-   emit('edit', props.place._id, recommendations.value);
+const edit = () => {
+   emit('edit', props.place._id);
    activeMenuId.value = null;
 }
 
