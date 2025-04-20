@@ -81,6 +81,10 @@ export const useRolesStore = defineStore('rolesStore', {
    getters: {
       getRoles: (state) => state.roles,
       getRoleById: (state) => (id: string) => state.roles.find(role => role._id === id),
+      getPermissionIdByPermissionName: (state) => (name: string) => {
+         const role = state.roles.find(role => role.permissions.some(permission => permission.name === name));
+         return role ? role.permissions.find(permission => permission.name === name)?._id : null;
+      },
       getError: (state) => state.error,
       getIsRolesLoaded: (state) => state.isRolesLoaded,
       getIsLoading: (state) => state.isLoading,

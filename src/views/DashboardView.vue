@@ -7,7 +7,8 @@
       <button v-for="tab in tabs" :key="tab" @click="activeTab = tab" class="px-4 py-2 text-sm font-medium border-b-2"
         :class="{
           'border-blue-600 text-blue-600': activeTab === tab,
-          'border-transparent text-gray-500 hover:text-gray-700 cursor-pointer': activeTab !== tab
+          'border-transparent text-gray-500 hover:text-gray-700 cursor-pointer': activeTab !== tab,
+          'hidden': tab === 'Users' && !canEditUsers,
         }">
         {{ tab }}
       </button>
@@ -17,7 +18,7 @@
     <PlaceRequestsSection v-if="activeTab === 'Requests'" />
 
     <!-- Users Tab -->
-    <UsersSection v-else-if="activeTab === 'Users'" />
+    <UsersSection v-else-if="activeTab === 'Users' && canEditUsers" />
 
     <!-- Approved Places Tab -->
     <PlacesSections v-else-if="activeTab === 'Places'" />
@@ -25,7 +26,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+// Stores
+import { useUserStore } from '@/stores/userStore';
+import { useRolesStore } from '@/stores/rolesStore';
+
+const userStore = useUserStore();
+const rolesStore = useRolesStore();
+
+//-- Permission Check
+// Get the permission Id for the ability to assign roles
+const permissionId = computed((): string | null => rolesStore.getPermissionIdByPermissionName('user:assignRoles'));
+
+// Check if the user has the permission to edit users
+const canEditUsers = computed((): boolean => {
+  const userRole = userStore.getUser!.role;
+  if (!permissionId.value) return false; // No permission Id found
+
+  return userRole.permissions.includes(permissionId.value);
+})
+
 //-- Components
 import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSection.vue';
 import PlacesSections from '@/components/admin/places/PlacesSection.vue';
@@ -34,4 +54,8 @@ import UsersSection from '@/components/admin/users/UsersSection.vue';
 //-- Tabs
 const tabs = ['Requests', 'Places', 'Users'];
 const activeTab = ref('Requests');
+
+onMounted(async () => {
+  await rolesStore.fetchRoles();
+}); 
 </script>
