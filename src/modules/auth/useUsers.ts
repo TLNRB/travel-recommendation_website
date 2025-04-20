@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { User } from "@/interfaces/interfaces"
+import type { User } from "@/interfaces/userTypes"
 
 export const useUsers = () => {
   const token = ref<string | null>(localStorage.getItem('lsToken'))
