@@ -8,12 +8,8 @@
             Add Place
          </button>
       </div>
-      <!-- Loader -->
-      <div v-if="placesStore.getIsLoading" class="flex justify-center items-center h-32">
-         <span class="loader"></span>
-      </div>
       <!-- Error Message -->
-      <div v-else-if="placesStore.getError" class="text-red-500 text-center h-32">
+      <div v-if="placesStore.getError" class="text-red-500 text-center h-32">
          {{ placesStore.getError }}
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -69,14 +65,12 @@ const handleAddPlace = async (newPlace: EditPlace): Promise<void> => {
       _createdBy: authStore.getUserId!,
    };
 
-   console.log('New Place:', placeData);
    try {
       await placesStore.addPlace(placeData, authStore.getToken!);
 
       if (!placesStore.getAddError) {
          handleCloseAdd();
       }
-
    } catch (err) {
       console.error('Error adding place request:', err);
    }

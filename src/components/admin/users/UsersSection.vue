@@ -1,12 +1,8 @@
 <template>
    <section>
       <h2 class="text-xl font-semibold">Users</h2>
-      <!-- Loader -->
-      <div v-if="usersStore.getIsLoading" class="flex justify-center items-center h-32">
-         <span class="loader"></span>
-      </div>
       <!-- Error Message -->
-      <div v-else-if="usersStore.getError" class="text-red-500 text-center h-32">
+      <div v-if="usersStore.getError" class="text-red-500 text-center h-32">
          {{ usersStore.getError }}
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
