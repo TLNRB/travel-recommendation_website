@@ -1,6 +1,7 @@
 # travel-recommendation_website
 
 API: https://travel-recommendations-api.onrender.com/api/docs/
+
 Live Site: 
 
 ## Recommended IDE Setup
@@ -19,6 +20,8 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 
 ```sh
 npm install
+```
+```sh
 .env file in root of the project
 ```
 
