@@ -63,19 +63,11 @@ export const usePlacesStore = defineStore('placesStore', {
       async addPlace(newPlace: Place, token: string): Promise<void> {
          this.isLoading = true;
          this.addError = null
-         const { uploadImages } = useImages()
+
+         const imagesData = [...newPlace.images] as File[]; // Get the images from the newPlace object
+         newPlace.images = []; // Clear the images array in the newPlace object to send an empty array to the server (if there is an error in place creation, the images will not be uploaded)
 
          try {
-            // Upload images to Cloudinary and get the URLs
-            const { urls, error } = await uploadImages(newPlace.images as File[], 'places')
-
-            if (error) {
-               throw new Error(error)
-            }
-
-            // Replace the images in the newPlace object with the uploaded URLs
-            newPlace.images = urls
-
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places`, {
                method: 'POST',
                headers: {
@@ -91,16 +83,56 @@ export const usePlacesStore = defineStore('placesStore', {
             }
             else {
                const responseData = await response.json()
-               this.places.push(responseData.data) // Add the new place to the local state
                console.log('Add response:', responseData)
-            }
 
+               // Upload images to Cloudinary and update the place with the URLs
+               await this.updateImages(responseData.data._id, imagesData, token)
+
+               await this.fetchPlaces(true) // Force refresh the places after adding a new one
+            }
          }
          catch (err) {
             this.addError = (err as Error).message
          }
          finally {
             this.isLoading = false
+         }
+      },
+
+      async updateImages(placeId: string, images: File[], token: string): Promise<void> {
+         const { uploadImages } = useImages()
+
+         try {
+            // Upload images to Cloudinary and get the URLs
+            const { urls, error } = await uploadImages(images, 'places')
+
+            if (error) {
+               console.log('error')
+               throw new Error(error)
+            }
+
+            // Update the place with the new image URLs
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places/images/${placeId}`, {
+               method: 'PUT',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'auth-token': token
+               },
+               body: JSON.stringify({ images: urls })
+            })
+
+            if (!response.ok) {
+               const errorResponse = await response.json()
+               throw new Error(errorResponse.error || 'Failed to update images')
+            }
+            else {
+               const responseText = await response.text()
+               console.log('Update response:', responseText)
+            }
+         }
+         catch (err) {
+            console.error('Error uploading images:', err)
+            this.addError = (err as Error).message
          }
       },
 
