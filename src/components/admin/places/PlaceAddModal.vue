@@ -26,6 +26,33 @@
                      class="w-full px-3 py-2 border rounded-lg"></textarea>
                </div>
 
+               <!-- Images -->
+               <div>
+                  <label class="block text-sm font-medium mb-1">
+                     Images
+                     <span class="text-xs text-gray-500 font-normal mt-1 italic">(You must upload at least one
+                        image.)</span>
+                  </label>
+                  <input type="file" multiple @change="handleImageUpload"
+                     class="w-full px-3 py-2 border rounded-lg cursor-pointer" />
+                  <div v-if="newPlace.images.length > 0" class="flex flex-wrap gap-2 mt-2">
+                     <div v-for="(image, index) in newPlace.images" :key="index"
+                        class="text-xs px-2 py-1 bg-gray-100 rounded">
+                        {{ typeof image === 'string' ? image : image.name }}
+                        <span type="button" @click="removeImage(index)"
+                           class="text-red-500 hover:text-red-700 pl-1 duration-200 ease-in-out cursor-pointer"
+                           title="Remove image">
+                           &times;
+                        </span>
+                     </div>
+
+                  </div>
+                  <!-- Image Error -->
+                  <div v-if="imageError || newPlace.images.length === 0" class="mt-2 text-red-500 text-sm italic">{{
+                     imageError }}</div>
+               </div>
+
+
                <!-- Location fields -->
                <div class="grid grid-cols-2 gap-4">
                   <div class="col-span-2">
@@ -132,6 +159,8 @@ const continents = [
 ]
 
 //-- Add
+const imageError = ref<string | null>(null)
+
 const newPlace = ref<EditPlace>({
    name: '',
    images: [],
@@ -148,6 +177,46 @@ const newPlace = ref<EditPlace>({
    approved: false
 })
 
+// Image Upload
+const handleImageUpload = (event: Event) => {
+   const target = event.target as HTMLInputElement
+
+   const files = target.files
+
+   if (!files || files.length === 0) return
+
+   // Check and create an array of the selected image names to avoid duplicates
+   const existingNames = new Set(newPlace.value.images.map((image: File | string) => typeof image === 'string' ? image : image.name))
+
+   const duplicateFiles: string[] = [] // Array to store duplicate file names
+   const newFiles: File[] = [] // Array to store new files
+
+   // Check for duplicates and add new files to the newFiles array
+   Array.from(files).forEach((file: File) => {
+      if (existingNames.has(file.name)) {
+         duplicateFiles.push(file.name)
+      } else {
+         newFiles.push(file)
+      }
+   })
+
+   if (duplicateFiles.length > 0) {
+      imageError.value = `Duplicate file: ${duplicateFiles.join(', ')}`
+      return
+   } else {
+      imageError.value = null // Clear error if no duplicates
+   }
+
+   newPlace.value.images = [...newPlace.value.images, ...newFiles]
+}
+
+// Remove Image
+const removeImage = (index: number) => {
+   newPlace.value.images.splice(index, 1);
+   imageError.value = null;
+}
+
+// Tags
 const addTag = () => {
    newPlace.value.tags.push('')
 }
@@ -160,7 +229,14 @@ const removeTag = (index: number) => {
 const emit = defineEmits(['submit', 'close'])
 
 const close = () => emit('close')
-const submit = () => emit('submit', newPlace.value)
+const submit = () => {
+   if (!newPlace.value.images || newPlace.value.images.length === 0) {
+      imageError.value = 'You must upload at least one image.'
+      return
+   }
+
+   emit('submit', newPlace.value)
+}
 </script>
 
 <style scoped>

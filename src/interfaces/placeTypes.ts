@@ -1,7 +1,7 @@
 export type Place = {
    name: string,
    description: string,
-   images: string[],
+   images: (File | string)[],
    location: {
       continent: string,
       country: string,
