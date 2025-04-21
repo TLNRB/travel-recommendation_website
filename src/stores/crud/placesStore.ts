@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
-import type { EditPlace, Place } from "@/interfaces/placeTypes";
+import type { Place } from "@/interfaces/placeTypes";
+// Composables
+import { useImages } from "@/composables/useImages";
 
 export const usePlacesStore = defineStore('placesStore', {
    state: () => ({
@@ -61,8 +63,19 @@ export const usePlacesStore = defineStore('placesStore', {
       async addPlace(newPlace: Place, token: string): Promise<void> {
          this.isLoading = true;
          this.addError = null
+         const { uploadImages } = useImages()
 
          try {
+            // Upload images to Cloudinary and get the URLs
+            const { urls, error } = await uploadImages(newPlace.images as File[], 'places')
+
+            if (error) {
+               throw new Error(error)
+            }
+
+            // Replace the images in the newPlace object with the uploaded URLs
+            newPlace.images = urls
+
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places`, {
                method: 'POST',
                headers: {
