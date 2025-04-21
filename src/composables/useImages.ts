@@ -5,15 +5,6 @@ export const useImages = () => {
 
       // Loop through each image and upload it to Cloudinary
       for (const image of images) {
-         const imageName = image.name
-         const imageExists = await checkIfImageExists(imageName, folder)
-
-         if (imageExists) {
-            console.log(`Image ${imageName} already exists in Cloudinary.`)
-            error = `Image ${imageName} already exists in Cloudinary.`
-            continue // Skip uploading if the image already exists
-         }
-
          let formData = new FormData()
 
          // Construct the form data for the Cloudinary upload
@@ -47,40 +38,6 @@ export const useImages = () => {
          }
       }
       return { urls: uploadedUrls, error }
-   }
-
-   const checkIfImageExists = async (fileName: string, folder: string): Promise<boolean | null> => {
-      try {
-         const url = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/resources/image/upload?folder=${folder}&public_id=${fileName}`;
-
-         // Request to search for the image in Cloudinary
-         const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-               'Authorization': `Bearer ${import.meta.env.VITE_CLOUDINARY_API_KEY}`
-            }
-         })
-
-         if (!response.ok) {
-            throw new Error(`Failed to check image existence: ${response.statusText}`)
-         }
-
-         const searchResult = await response.json()
-
-         console.log('Search result:', searchResult)
-
-         // Check if the image exists in the response
-         if (searchResult.resources && searchResult.resources.length > 0) {
-            return true // Image exists
-         }
-         else {
-            return false // Image does not exist
-         }
-      }
-      catch (err) {
-         console.error('Error checking image existence:', err)
-         return null
-      }
    }
 
    return { uploadImages }
