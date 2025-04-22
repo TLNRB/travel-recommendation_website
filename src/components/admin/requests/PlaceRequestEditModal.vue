@@ -26,6 +26,42 @@
                      class="w-full px-3 py-2 border rounded-lg"></textarea>
                </div>
 
+               <!-- Images -->
+               <div>
+                  <label class="block text-sm font-medium mb-1">Images</label>
+                  <div class="flex flex-wrap gap-3 mb-2">
+                     <div v-for="(img, index) in editPlaceRequest.images" :key="index"
+                        class="relative w-24 h-24 rounded overflow-hidden border">
+                        <img :src="(img as string)" alt="Place Image" class="w-full h-full object-cover" />
+                        <button type="button" @click="removeImage(index)"
+                           class="absolute top-0 right-0 bg-red-500/90 rounded-bl  text-white text-xs px-1 cursor-pointer"
+                           title="Remove image">
+                           &times;
+                        </button>
+                     </div>
+                  </div>
+
+                  <input type="file" multiple @change="handleImageUpload"
+                     class="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+
+                  <div v-if="editPlaceRequest.newImages!.length > 0" class="flex flex-wrap gap-2 mt-2">
+                     <div v-for="(image, index) in editPlaceRequest.newImages" :key="index"
+                        class="text-xs px-2 py-1 bg-gray-100 rounded">
+                        {{ typeof image === 'string' ? image : image.name }}
+                        <span type="button" @click="removeNewImage(index)"
+                           class="text-red-500 hover:text-red-700 pl-1 duration-200 ease-in-out cursor-pointer"
+                           title="Remove image">
+                           &times;
+                        </span>
+                     </div>
+                  </div>
+                  <!-- Image Error -->
+                  <div v-if="imageError || editPlaceRequest.newImages!.length === 0"
+                     class="mt-2 text-red-500 text-sm italic">
+                     {{ imageError }}
+                  </div>
+               </div>
+
                <!-- Location fields -->
                <div class="grid grid-cols-2 gap-4">
                   <div class="col-span-2">
@@ -175,6 +211,7 @@ const continents = [
 const editPlaceRequest = ref<EditPlace>({
    name: props.place.name,
    images: [...props.place.images],
+   newImages: [],
    description: props.place.description,
    location: {
       continent: props.place.location.continent,
@@ -188,6 +225,51 @@ const editPlaceRequest = ref<EditPlace>({
    approved: props.place.approved,
 })
 
+// Image Upload
+const imageError = ref<string | null>(null)
+
+const handleImageUpload = (event: Event) => {
+   const target = event.target as HTMLInputElement
+
+   const files = target.files
+
+   if (!files || files.length === 0) return
+
+   // Check and create an array of the selected image names to avoid duplicates
+   const existingNames = new Set(editPlaceRequest.value.newImages?.map((image: File) => image.name))
+
+   const duplicateFiles: string[] = [] // Array to store duplicate file names
+   const newFiles: File[] = [] // Array to store new files
+
+   // Check for duplicates and add new files to the newFiles array
+   Array.from(files).forEach((file: File) => {
+      if (existingNames.has(file.name)) {
+         duplicateFiles.push(file.name)
+      } else {
+         newFiles.push(file)
+      }
+   })
+
+   if (duplicateFiles.length > 0) {
+      imageError.value = `Duplicate file: ${duplicateFiles.join(', ')}`
+      return
+   } else {
+      imageError.value = null // Clear error if no duplicates
+   }
+
+   editPlaceRequest.value.newImages = [...editPlaceRequest.value.newImages!, ...newFiles]
+}
+
+
+const removeImage = (index: number) => {
+   editPlaceRequest.value.images.splice(index, 1)
+}
+
+const removeNewImage = (index: number) => {
+   editPlaceRequest.value.newImages!.splice(index, 1)
+}
+
+// Tags
 const addTag = () => {
    editPlaceRequest.value.tags.push('')
 }

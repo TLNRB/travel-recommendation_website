@@ -56,8 +56,8 @@
                   </div>
                   <!-- Image Error -->
                   <div v-if="imageError || editPlace.newImages!.length === 0" class="mt-2 text-red-500 text-sm italic">
-                     {{
-                        imageError }}</div>
+                     {{ imageError }}
+                  </div>
                </div>
 
                <!-- Location fields -->
@@ -196,7 +196,6 @@ const editPlace = ref<EditPlace>({
 
 // Image Upload
 const imageError = ref<string | null>(null)
-
 
 const handleImageUpload = (event: Event) => {
    const target = event.target as HTMLInputElement

@@ -32,7 +32,7 @@ import { usePlacesStore } from '@/stores/crud/placesStore';
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 import { useAuthStore } from '@/stores/authStore';
 // Interfaces
-import type { Place, EditPlace } from '@/interfaces/placeTypes'
+import type { EditPlace } from '@/interfaces/placeTypes'
 
 const placesStore = usePlacesStore();
 const recommendationsStore = useRecommendationsStore();
@@ -67,13 +67,10 @@ const handleClose = () => {
 };
 
 const handleUpdatePlaceRequest = async (updatedPlace: EditPlace, placeId: string): Promise<void> => {
-   const placeData: Place = {
-      ...updatedPlace,
-      _createdBy: placesStore.getPlaceById(placeId)!._createdBy
-   }
+   const createdBy: string = placesStore.getPlaceById(placeId)!._createdBy
 
    try {
-      await placesStore.updatePlace(placeId, placeData, authStore.getToken!);
+      await placesStore.updatePlace(placeId, updatedPlace, authStore.getToken!, createdBy);
 
       if (!placesStore.getUpdateError) {
          handleClose();
