@@ -40,7 +40,7 @@ import PlaceEditModal from '@/components/admin/places/PlaceEditModal.vue';
 import { usePlacesStore } from '@/stores/crud/placesStore';
 import { useAuthStore } from '@/stores/authStore';
 // Interfaces
-import type { Place, EditPlace } from '@/interfaces/placeTypes'
+import type { Place, AddPlace, EditPlace } from '@/interfaces/placeTypes'
 
 const placesStore = usePlacesStore();
 const authStore = useAuthStore();
@@ -59,7 +59,7 @@ const handleCloseAdd = () => {
    placesStore.clearErrors();
 };
 
-const handleAddPlace = async (newPlace: EditPlace): Promise<void> => {
+const handleAddPlace = async (newPlace: AddPlace): Promise<void> => {
    const placeData: Place = {
       ...newPlace,
       _createdBy: authStore.getUserId!,
@@ -94,13 +94,15 @@ const handleCloseEdit = () => {
 };
 
 const handleUpdatePlace = async (updatedPlace: EditPlace, placeId: string): Promise<void> => {
-   const placeData: Place = {
+   /* const placeData: Place = {
       ...updatedPlace,
       _createdBy: placesStore.getPlaceById(editPlaceId.value!)!._createdBy
    }
+ */
+   const createdBy: string = placesStore.getPlaceById(editPlaceId.value!)!._createdBy
 
    try {
-      await placesStore.updatePlace(placeId, placeData, authStore.getToken!);
+      await placesStore.updatePlace(placeId, updatedPlace, authStore.getToken!, createdBy);
 
       if (!placesStore.getUpdateError) {
          handleCloseEdit();

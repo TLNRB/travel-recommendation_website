@@ -15,4 +15,7 @@ export type Place = {
    _createdBy: string
 }
 
-export type EditPlace = Omit<Place, '_createdBy'>
+export type AddPlace = Omit<Place, '_createdBy'>
+
+export type EditPlace = Omit<Place, '_createdBy'> & { newImages?: File[] }
+
