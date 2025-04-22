@@ -1,16 +1,17 @@
-export type User = {
-  firstName: string,
-  lastName: string,
-  username: string,
-  email: string,
-  passwordHash: string,
-  profilePicture?: string,
-  bio?: string,
-  country?: string,
-  city?: string,
-  socials?: string,
-  role: string,
-  registerDate: Date
+export type Role = {
+  name: string,
+  permissions: string[]
+}
+
+export type Recommendation = {
+  _createdBy: string,
+  place: string,
+  title: string,
+  content: string,
+  dateOfVisit: string,
+  dateOfWriting: string,
+  rating: number,
+  upvotes: number
 }
 
 export type Continent = {
@@ -39,9 +40,9 @@ export type City = {
   name: string
   population: number
   country: {
-        objectId: string
-        name: string
-      },
+    objectId: string
+    name: string
+  },
   adminCode: string
 }
 

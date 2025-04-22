@@ -1,6 +1,8 @@
 # travel-recommendation_website
 
-This template should help get you started developing with Vue 3 in Vite.
+API: https://travel-recommendations-api.onrender.com/api/docs/
+
+Live Site: 
 
 ## Recommended IDE Setup
 
@@ -18,6 +20,9 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 
 ```sh
 npm install
+```
+```sh
+.env file in root of the project
 ```
 
 ### Compile and Hot-Reload for Development

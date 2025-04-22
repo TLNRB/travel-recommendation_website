@@ -7,7 +7,10 @@ import CityView from '@/views/CityView.vue'
 import PlaceView from '@/views/PlaceView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import SettingsView from '@/views/SettingsView.vue'
-import AdminView from '@/views/AdminView.vue'
+import DashboardView from '@/views/DashboardView.vue'
+// Stores
+import { useUserStore } from '@/stores/userStore'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,11 +59,45 @@ const router = createRouter({
       component: SettingsView,
     },
     {
-      path: '/admin',
-      name: 'admin',
-      component: AdminView,
+      path: '/dashboard',
+      name: 'dashboard',
+      meta: { requiresAuth: true },
+      component: DashboardView,
     },
   ],
+})
+
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore()
+  const authStore = useAuthStore()
+
+  // Check if the user is logged in and only than check for loading and try to fetch user data
+  if (authStore.getIsLoggedIn && !userStore.getIsUserLoaded && !userStore.getIsLoading) {
+    await userStore.fetchUserData()
+  }
+
+  const isAuthenticated: boolean = !!localStorage.getItem('lsToken')
+  const requiresAuth: boolean = to.matched.some(record => record.meta.requiresAuth)
+
+  // Requires authentication but not authenticated
+  if (requiresAuth && !isAuthenticated) {
+    next({ name: 'auth' });
+  }
+  // Authenticated but trying to access auth page
+  else if (isAuthenticated && to.name === 'auth') {
+    next({ name: 'home' });
+  }
+  // Authenticated and trying to access dashboard
+  else if (isAuthenticated && to.name === 'dashboard') {
+    const user = userStore.getUser;
+
+    if (user?.role?.name === 'admin' || user?.role?.name === 'editor') {
+      return next()
+    } else {
+      return next({ name: 'home' })
+    }
+  }
+  else next()
 })
 
 export default router
