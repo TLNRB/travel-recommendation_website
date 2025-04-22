@@ -15,7 +15,9 @@
         </button>
 
         <div v-if="isOpen" class="absolute left-0 mt-2 w-auto bg-white rounded-lg shadow-lg">
-          <continentList />
+
+          <continentList @continentSelected="isOpen = false" />
+
         </div>
       </div>
     </div>

@@ -44,8 +44,8 @@ const router = createRouter({
       props: true
     },
     {
-      path: '/place',
-      name: 'place',
+      path: '/place/:id',
+      name: 'PlaceView',
       component: PlaceView,
     },
     {
