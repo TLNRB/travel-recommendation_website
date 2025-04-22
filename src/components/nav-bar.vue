@@ -13,7 +13,7 @@
         </button>
 
         <div v-if="isOpen" class="absolute left-0 mt-2 w-auto bg-white rounded-lg shadow-lg">
-          <continentList/>
+          <continentList @continentSelected="isOpen = false" />
         </div>
       </div>
     </div>
@@ -37,9 +37,9 @@
 
       <!-- Dropdown -->
       <div v-if="profileDropdownOpen" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg pt-2 z-50">
-        <RouterLink to="/profile" class="block px-4 py-2 text-sm hover:bg-gray-100">Profile</RouterLink>
-        <RouterLink to="/settings" class="block px-4 py-2 text-sm hover:bg-gray-100">Settings</RouterLink>
-        <RouterLink to="/admin" class="block px-4 py-2 text-sm hover:bg-gray-100">Admin</RouterLink>
+        <RouterLink @click="profileDropdownOpen = false" to="/profile" class="block px-4 py-2 text-sm hover:bg-gray-100">Profile</RouterLink>
+        <RouterLink @click="profileDropdownOpen = false" to="/settings" class="block px-4 py-2 text-sm hover:bg-gray-100">Settings</RouterLink>
+        <RouterLink @click="profileDropdownOpen = false" to="/admin" class="block px-4 py-2 text-sm hover:bg-gray-100">Admin</RouterLink>
         <LogoutBtn />
       </div>
     </div>
