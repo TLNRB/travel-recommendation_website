@@ -15,13 +15,13 @@
     </div>
 
     <!-- Requests Tab -->
-    <PlaceRequestsSection v-if="activeTab === 'Requests'" />
+    <PlaceRequestsSection v-if="activeTab === 'Requests' && canEditPlaces" />
+
+    <!-- Approved Places Tab -->
+    <PlacesSections v-else-if="activeTab === 'Places' && canEditPlaces" />
 
     <!-- Users Tab -->
     <UsersSection v-else-if="activeTab === 'Users' && canEditUsers" />
-
-    <!-- Approved Places Tab -->
-    <PlacesSections v-else-if="activeTab === 'Places'" />
   </div>
 </template>
 
@@ -36,14 +36,27 @@ const rolesStore = useRolesStore();
 
 //-- Permission Check
 // Get the permission Id for the ability to assign roles
-const permissionId = computed((): string | null => rolesStore.getPermissionIdByPermissionName('user:assignRoles'));
+const permissionIdRoles = computed((): string | null => rolesStore.getPermissionIdByPermissionName('user:assignRoles'));
 
 // Check if the user has the permission to edit users
-const canEditUsers = computed((): boolean => {
+const canEditUsers = computed(() => {
   const userRole = userStore.getUser!.role;
-  if (!permissionId.value) return false; // No permission Id found
+  if (!permissionIdRoles.value) return false; // No permission Id found
 
-  return userRole.permissions.includes(permissionId.value);
+  return userRole.permissions.includes(permissionIdRoles.value);
+})
+
+// Get the permission Id for the ability to edit places / requests
+const permissionIdPlaces = computed((): string | null => rolesStore.getPermissionIdByPermissionName('content:managePlaces'));
+
+// Check if the user has the permission to manage plcaes
+const canEditPlaces = computed(() => {
+  const userRole = userStore.getUser!.role;
+  console.log('User Role:', userRole);
+  console.log('Permission Id:', permissionIdPlaces.value);
+  if (!permissionIdPlaces.value) return false; // No permission Id found
+
+  return userRole.permissions.includes(permissionIdPlaces.value);
 })
 
 //-- Components
