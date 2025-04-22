@@ -106,7 +106,7 @@ export const useUsers = () => {
         throw new Error('No data available')
       }
 
-      let user = await response.json()
+      const user = await response.json()
       return user.data[0].role.name;
     }
     catch (err) {

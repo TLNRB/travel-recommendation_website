@@ -8,7 +8,7 @@ export type User = {
    bio?: string,
    country?: string,
    city?: string,
-   socials?: Array<Object>,
+   socials?: Array<object>,
    role: string,
    registerDate: Date
 }
@@ -21,6 +21,6 @@ export type UpdateProfile = {
    bio?: string,
    country?: string,
    city?: string,
-   socials?: Array<Object>,
+   socials?: Array<object>,
    role: string
 }
