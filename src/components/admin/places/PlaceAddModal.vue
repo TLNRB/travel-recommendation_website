@@ -34,7 +34,7 @@
                         image.)</span>
                   </label>
                   <input type="file" multiple @change="handleImageUpload"
-                     class="w-full px-3 py-2 border rounded-lg cursor-pointer" />
+                     class="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
                   <div v-if="newPlace.images.length > 0" class="flex flex-wrap gap-2 mt-2">
                      <div v-for="(image, index) in newPlace.images" :key="index"
                         class="text-xs px-2 py-1 bg-gray-100 rounded">
@@ -45,7 +45,6 @@
                            &times;
                         </span>
                      </div>
-
                   </div>
                   <!-- Image Error -->
                   <div v-if="imageError || newPlace.images.length === 0" class="mt-2 text-red-500 text-sm italic">{{
@@ -146,7 +145,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { EditPlace } from '@/interfaces/placeTypes'
+import type { AddPlace } from '@/interfaces/placeTypes'
 
 const props = defineProps({
    loading: { type: Boolean, default: false },
@@ -161,7 +160,7 @@ const continents = [
 //-- Add
 const imageError = ref<string | null>(null)
 
-const newPlace = ref<EditPlace>({
+const newPlace = ref<AddPlace>({
    name: '',
    images: [],
    description: '',
