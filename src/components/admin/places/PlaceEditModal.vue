@@ -27,7 +27,11 @@
 
                <!-- Images -->
                <div>
-                  <label class="block text-sm font-medium mb-1">Images</label>
+                  <label class="block text-sm font-medium mb-1">
+                     Images
+                     <span class="text-xs text-gray-500 font-normal mt-1 italic">(You must upload at least one
+                        image.)</span>
+                  </label>
                   <div class="flex flex-wrap gap-3 mb-2">
                      <div v-for="(img, index) in editPlace.images" :key="index"
                         class="relative w-24 h-24 rounded overflow-hidden border">
@@ -83,19 +87,26 @@
                      <input v-model="editPlace.location.country" type="text" required
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
-                  <div>
-                     <label class="block text-sm font-medium mb-1">City</label>
-                     <input v-model="editPlace.location.city" type="text" required
+                  <div><label class="block text-sm font-medium mb-1">
+                        City
+                        <span class="text-xs text-gray-500 font-normal mt-1 italic">(Optional)</span>
+                     </label>
+                     <input v-model="editPlace.location.city" type="text" placeholder="City"
+                        class="w-full px-3 py-2 border rounded-lg" />
+                  </div>
+                  <div><label class="block text-sm font-medium mb-1">
+                        Street
+                        <span class="text-xs text-gray-500 font-normal mt-1 italic">(Optional)</span>
+                     </label>
+                     <input v-model="editPlace.location.street" type="text" placeholder="Street Name"
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                   <div>
-                     <label class="block text-sm font-medium mb-1">Street</label>
-                     <input v-model="editPlace.location.street" type="text" required
-                        class="w-full px-3 py-2 border rounded-lg" />
-                  </div>
-                  <div>
-                     <label class="block text-sm font-medium mb-1">Street Number</label>
-                     <input v-model="editPlace.location.streetNumber" type="text" required
+                     <label class="block text-sm font-medium mb-1">
+                        Street Number
+                        <span class="text-xs text-gray-500 font-normal mt-1 italic">(Optional)</span>
+                     </label>
+                     <input v-model="editPlace.location.streetNumber" type="text" placeholder="Street Number"
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                </div>
@@ -255,6 +266,16 @@ const close = () => {
 }
 
 const submit = () => {
+   if (editPlace.value.location.city === '') {
+      delete editPlace.value.location.city
+   }
+   if (editPlace.value.location.street === '') {
+      delete editPlace.value.location.street
+   }
+   if (editPlace.value.location.streetNumber === '') {
+      delete editPlace.value.location.streetNumber
+   }
+
    emit('submit', editPlace.value, props.place._id)
 }
 </script>
