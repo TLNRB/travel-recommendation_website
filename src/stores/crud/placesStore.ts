@@ -191,7 +191,7 @@ export const usePlacesStore = defineStore('placesStore', {
 
          try {
             // Check if images and newImages are empty arrays
-            if (updatedData.images.length === 0 && updatedData.newImages!.length === 0) {
+            if (updatedData.images.length === 0 && (updatedData.newImages && updatedData.newImages.length === 0)) {
                throw new Error('Upload at least one image')
             }
 
@@ -213,10 +213,10 @@ export const usePlacesStore = defineStore('placesStore', {
                console.log('Update response:', responseText)
 
                console.log('New images:', newImages)
-               console.log('Updated images:', updatedPlace.images)
+               console.log('Updated place:', updatedPlace)
 
                // Upload images to Cloudinary and update the place with the URLs
-               if (newImages!.length > 0) {
+               if (newImages && newImages.length > 0) {
                   await this.editUpdateImages(placeId, newImages as File[], updatedPlace.images as string[], token)
                }
 
