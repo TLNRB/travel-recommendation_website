@@ -139,6 +139,16 @@ const approve = () => {
       approved: true,
    })
 
+   if (approvedPlace.value.location.city === '') {
+      delete approvedPlace.value.location.city
+   }
+   if (approvedPlace.value.location.street === '') {
+      delete approvedPlace.value.location.street
+   }
+   if (approvedPlace.value.location.streetNumber === '') {
+      delete approvedPlace.value.location.streetNumber
+   }
+
    emit('approve', approvedPlace.value, props.place._id);
    activeMenuId.value = null;
 }

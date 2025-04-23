@@ -76,18 +76,27 @@
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                   <div>
-                     <label class="block text-sm font-medium mb-1">City</label>
-                     <input v-model="newPlace.location.city" type="text" placeholder="City" required
+                     <label class="block text-sm font-medium mb-1">
+                        City
+                        <span class="text-xs text-gray-500 font-normal mt-1 italic">(Optional)</span>
+                     </label>
+                     <input v-model="newPlace.location.city" type="text" placeholder="City"
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                   <div>
-                     <label class="block text-sm font-medium mb-1">Street</label>
-                     <input v-model="newPlace.location.street" type="text" placeholder="Street Name" required
+                     <label class="block text-sm font-medium mb-1">
+                        Street
+                        <span class="text-xs text-gray-500 font-normal mt-1 italic">(Optional)</span>
+                     </label>
+                     <input v-model="newPlace.location.street" type="text" placeholder="Street Name"
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                   <div>
-                     <label class="block text-sm font-medium mb-1">Street Number</label>
-                     <input v-model="newPlace.location.streetNumber" type="text" placeholder="Street Number" required
+                     <label class="block text-sm font-medium mb-1">
+                        Street Number
+                        <span class="text-xs text-gray-500 font-normal mt-1 italic">(Optional)</span>
+                     </label>
+                     <input v-model="newPlace.location.streetNumber" type="text" placeholder="Street Number"
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                </div>
@@ -232,6 +241,16 @@ const submit = () => {
    if (!newPlace.value.images || newPlace.value.images.length === 0) {
       imageError.value = 'You must upload at least one image.'
       return
+   }
+
+   if (newPlace.value.location.city === '') {
+      delete newPlace.value.location.city
+   }
+   if (newPlace.value.location.street === '') {
+      delete newPlace.value.location.street
+   }
+   if (newPlace.value.location.streetNumber === '') {
+      delete newPlace.value.location.streetNumber
    }
 
    emit('submit', newPlace.value)
