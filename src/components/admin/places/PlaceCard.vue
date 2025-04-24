@@ -73,7 +73,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
    place: { type: Object, required: true },
-   deleteError: { type: String, default: null },
+   deleteError: { type: [String, null], default: null },
 });
 
 //-- Emits

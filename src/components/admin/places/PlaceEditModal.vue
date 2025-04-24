@@ -176,7 +176,7 @@ import { continents } from '@/data/continents.json'
 const props = defineProps({
    place: { type: Object, required: true },
    recommendations: { type: Array, default: () => [] },
-   updateError: { type: String, default: null },
+   updateError: { type: [String, null], default: null },
    loading: { type: Boolean, default: false },
 })
 

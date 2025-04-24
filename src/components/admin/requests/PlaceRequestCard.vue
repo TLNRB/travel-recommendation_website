@@ -66,7 +66,8 @@
       </div>
 
       <!-- Display error -->
-      <div v-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div>
+      <div v-if="props.updateError" class="mt-4 text-red-500 text-sm italic">{{ props.updateError }}</div>
+      <div v-else-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div>
 
 
       <!-- Actions & Status -->
@@ -113,6 +114,7 @@ const recommendationsStore = useRecommendationsStore()
 
 const props = defineProps({
    place: { type: Object, required: true },
+   updateError: { type: String, default: null },
    deleteError: { type: String, default: null },
 });
 
