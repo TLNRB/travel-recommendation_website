@@ -102,7 +102,7 @@
                </div>
 
                <!-- Upvotes -->
-               <div>
+               <div v-if="canManagePlaces">
                   <label class="block text-sm font-medium mb-1">Upvotes</label>
                   <input v-model="newPlace.upvotes" type="number" min="0" class="w-full px-3 py-2 border rounded-lg" />
                </div>
@@ -129,10 +129,44 @@
                </div>
 
                <!-- Approved -->
-               <div class="flex items-center mt-4">
+               <div v-if="canManagePlaces" class="flex items-center mt-4">
                   <input v-model="newPlace.approved" type="checkbox" id="approved"
                      class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer" />
                   <label for="approved" class="pl-2 text-sm font-medium cursor-pointer">Approved</label>
+               </div>
+
+               <!-- Recommendation -->
+               <div class="mt-6 border-t pt-4">
+                  <h3 class="text-lg font-medium mb-2">Recommendation</h3>
+                  <div v-if="showRecommendation" class="space-y-4">
+                     <div>
+                        <label class="block text-sm font-medium mb-1">Title</label>
+                        <input v-model="recommendation.title" :required="showRecommendation" type="text"
+                           placeholder="Recommendation Title" class="w-full px-3 py-2 border rounded-lg" />
+                     </div>
+                     <div>
+                        <label class="block text-sm font-medium mb-1">Content</label>
+                        <textarea v-model="recommendation.content" :required="showRecommendation" rows="3"
+                           placeholder="What do you recommend?" class="w-full px-3 py-2 border rounded-lg"></textarea>
+                     </div>
+                     <div>
+                        <label class="block text-sm font-medium mb-1">Date of Visit</label>
+                        <input v-model="recommendation.dateOfVisit" :required="showRecommendation" type="date"
+                           class="w-full px-3 py-2 border rounded-lg" />
+                     </div>
+                     <div>
+                        <label class="block text-sm font-medium mb-1">Rating (1-5)</label>
+                        <input v-model="recommendation.rating" :required="showRecommendation" type="number" min="1"
+                           max="5" class="w-full px-3 py-2 border rounded-lg" />
+                     </div>
+                  </div>
+                  <button type="button" @click="toggleRecommendation"
+                     class="mt-2  text-sm hover:underline duration-200 ease-in-out cursor-pointer" :class="{
+                        'text-red-600': showRecommendation,
+                        'text-blue-600': !showRecommendation
+                     }">
+                     {{ showRecommendation ? '- Remove Recommendation' : '+ Add Recommendation' }}
+                  </button>
                </div>
             </div>
 
@@ -153,18 +187,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { AddPlace } from '@/interfaces/placeTypes'
+import type { AddRecommendation } from '@/interfaces/interfaces'
+// Store
+import { useUserStore } from '@/stores/userStore'
+import { useRolesStore } from '@/stores/rolesStore'
+// Data
+import { continents } from '@/data/continents.json'
+
+const userStore = useUserStore()
+const rolesStore = useRolesStore()
+
+// Get the permission Id for the ability to edit places / requests
+const permissionIdPlaces = computed((): string | null => rolesStore.getPermissionIdByPermissionName('content:managePlaces'));
+
+// Check if the user has the permission to manage plcaes
+const canManagePlaces = computed(() => {
+   const userRole = userStore.getUser!.role;
+   if (!permissionIdPlaces.value) return false; // No permission Id found
+
+   return userRole.permissions.includes(permissionIdPlaces.value);
+})
 
 const props = defineProps({
    loading: { type: Boolean, default: false },
-   addError: { type: String, default: null }
+   addError: { type: [String, null], default: null }
 })
-
-const continents = [
-   'Africa', 'Asia', 'Europe', 'North America',
-   'South America', 'Oceania', 'Antarctica',
-]
 
 //-- Add
 const imageError = ref<string | null>(null)
@@ -183,6 +232,19 @@ const newPlace = ref<AddPlace>({
    upvotes: 0,
    tags: [],
    approved: false
+})
+
+// Recommendation
+const showRecommendation = ref<boolean>(false)
+const toggleRecommendation = () => {
+   showRecommendation.value = !showRecommendation.value
+}
+const recommendation = ref<AddRecommendation>({
+   title: '',
+   content: '',
+   dateOfVisit: '',
+   rating: 0,
+   upvotes: 0,
 })
 
 // Image Upload
@@ -253,7 +315,7 @@ const submit = () => {
       delete newPlace.value.location.streetNumber
    }
 
-   emit('submit', newPlace.value)
+   emit('submit', newPlace.value, showRecommendation.value ? recommendation.value : null)
 }
 </script>
 
