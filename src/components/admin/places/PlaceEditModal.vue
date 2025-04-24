@@ -168,7 +168,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+// Components
 import type { EditPlace } from '@/interfaces/placeTypes'
+// Data
+import { continents } from '@/data/continents.json'
 
 const props = defineProps({
    place: { type: Object, required: true },
@@ -178,16 +181,6 @@ const props = defineProps({
 })
 
 //-- Edit
-const continents = [
-   'Africa',
-   'Asia',
-   'Europe',
-   'North America',
-   'South America',
-   'Oceania',
-   'Antarctica',
-]
-
 const editPlace = ref<EditPlace>({
    name: props.place.name,
    images: [...props.place.images],
