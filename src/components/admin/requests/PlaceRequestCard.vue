@@ -15,10 +15,12 @@
       <!-- Location -->
       <div class="text-sm text-gray-600 space-y-1">
          <p>
-            <strong>Location:</strong>
-            {{ props.place.location.street }} {{ props.place.location.streetNumber }},
-            {{ props.place.location.city }}, {{ props.place.location.country }}
-            ({{ props.place.location.continent }})
+            <strong>Location: </strong>
+            <span v-if="props.place.location.street">{{ props.place.location.street }}&nbsp;</span>
+            <span v-if="props.place.location.streetNumber">{{ props.place.location.streetNumber }}, </span>
+            <span v-if="props.place.location.city">{{ props.place.location.city }}, </span>
+            <span>{{ props.place.location.country }}&nbsp;</span>
+            <span>({{ props.place.location.continent }})</span>
          </p>
       </div>
 
