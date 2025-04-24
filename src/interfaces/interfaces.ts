@@ -14,6 +14,8 @@ export type Recommendation = {
   upvotes: number
 }
 
+export type AddRecommendation = Omit<Recommendation, '_createdBy' | 'place' | 'dateOfWriting'>
+
 export type Continent = {
   objectId: string
   name: string

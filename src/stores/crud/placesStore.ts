@@ -62,7 +62,7 @@ export const usePlacesStore = defineStore('placesStore', {
          return this.places.filter((place) => place.approved === approved)
       },
 
-      async addPlace(newPlace: Place, token: string): Promise<void> {
+      async addPlace(newPlace: Place, token: string): Promise<string | null> {
          this.isLoading = true;
          this.addError = null
 
@@ -91,10 +91,13 @@ export const usePlacesStore = defineStore('placesStore', {
                await this.addUpdateImages(responseData.data._id, imagesData, token)
 
                await this.fetchPlaces(true) // Force refresh the places after adding a new one
+
+               return responseData.data._id // Return the ID of the newly created place
             }
          }
          catch (err) {
             this.addError = (err as Error).message
+            return null
          }
          finally {
             this.isLoading = false
