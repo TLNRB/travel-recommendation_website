@@ -1,9 +1,13 @@
 import { defineStore } from "pinia";
-import type { Place, EditPlace } from "@/interfaces/placeTypes";
+import type { Place, EditPlace, AddPlace } from "@/interfaces/placeTypes";
 // Composables
 import { useImages } from "@/composables/useImages";
+import { normalize } from "@/composables/normalizeString";
+// External API
+import { externalAPI } from "@/modules/api/externalFetch";
 
 const { uploadImages } = useImages()
+const { validateCountry, validateCity } = externalAPI()
 
 export const usePlacesStore = defineStore('placesStore', {
    state: () => ({
@@ -69,7 +73,23 @@ export const usePlacesStore = defineStore('placesStore', {
          const imagesData = [...newPlace.images] as File[]; // Get the images from the newPlace object
          newPlace.images = []; // Clear the images array in the newPlace object to send an empty array to the server (if there is an error in place creation, the images will not be uploaded)
 
+         // Normalize newPlace strings
+         newPlace = this.normalizePlace(newPlace)
+
          try {
+            // Validate country and city
+            const country = await validateCountry(newPlace.location.country)
+            if (!country) {
+               throw new Error('Invalid country')
+            }
+            else if (country && newPlace.location.city) {
+               const city = await validateCity(newPlace.location.city, country.objectId)
+               if (!city) {
+                  throw new Error('Invalid city')
+               }
+            }
+
+
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places`, {
                method: 'POST',
                headers: {
@@ -187,15 +207,30 @@ export const usePlacesStore = defineStore('placesStore', {
          const { newImages, ...placeData } = updatedData;
 
          // Add the createdBy field to the updated place data
-         const updatedPlace: Place = {
+         let updatedPlace: Place = {
             ...placeData,
             _createdBy: createdBy
          }
+
+         // Normalize updatedPlace strings
+         updatedPlace = this.normalizePlace(updatedPlace)
 
          try {
             // Check if images and newImages are empty arrays
             if (updatedData.images.length === 0 && (updatedData.newImages && updatedData.newImages.length === 0)) {
                throw new Error('Upload at least one image')
+            }
+
+            // Validate country and city
+            const country = await validateCountry(updatedData.location.country)
+            if (!country) {
+               throw new Error('Invalid country')
+            }
+            else if (country && updatedData.location.city) {
+               const city = await validateCity(updatedData.location.city, country.objectId)
+               if (!city) {
+                  throw new Error('Invalid city')
+               }
             }
 
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places/${placeId}`, {
@@ -264,6 +299,18 @@ export const usePlacesStore = defineStore('placesStore', {
          finally {
             this.isLoading = false
          }
+      },
+
+      normalizePlace(place: Place): Place {
+         place.name = normalize(place.name);
+         place.location.country = normalize(place.location.country);
+
+         if (place.location.city) place.location.city = normalize(place.location.city);
+         if (place.location.street) place.location.street = normalize(place.location.street);
+         if (place.location.streetNumber) place.location.streetNumber = place.location.streetNumber.trim();
+         if (place.tags) place.tags = place.tags.map(tag => normalize(tag));
+
+         return place
       },
 
       clearErrors(): void {
