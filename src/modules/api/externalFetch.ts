@@ -1,19 +1,19 @@
 import { ref } from "vue";
 import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfaces";
 
-  export const externalAPI = () => {
+export const externalAPI = () => {
 
-    const loading = ref(true)
+  const loading = ref(true)
 
-    const continent = ref<Continent | null>(null)
-    const country = ref<Country | null>(null)
-    const city = ref<City | null>(null)
+  const continent = ref<Continent | null>(null)
+  const country = ref<Country | null>(null)
+  const city = ref<City | null>(null)
 
-    const continents = ref<Continent[]>([])
-    const popularCountries = ref<Country[]>([])
-    const allCountries = ref<Country[]>([])
-    const popularCities = ref<City[]>([])
-    const allCities = ref<City[]>([])
+  const continents = ref<Continent[]>([])
+  const popularCountries = ref<Country[]>([])
+  const allCountries = ref<Country[]>([])
+  const popularCities = ref<City[]>([])
+  const allCities = ref<City[]>([])
 
   const fetchContinents = async () => {
     try {
@@ -83,50 +83,50 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
   }
 
   const fetchCountryAndCities = async (id: string) => {
-    try{
+    try {
       loading.value = true
       const countryResponse = await fetch(
-          `https://parseapi.back4app.com/classes/Country/${id}`,
-          {
-            headers: {
-              'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-              'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH',
-            }
+        `https://parseapi.back4app.com/classes/Country/${id}`,
+        {
+          headers: {
+            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
+            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH',
           }
-        );
-        const countryData = await countryResponse.json()
-        country.value = countryData
-
-    const where = encodeURIComponent(JSON.stringify({
-      country: {
-        "__type": "Pointer",
-        "className": "Country",
-        "objectId": id
-      }
-    }))
-    const cityResponse = await fetch(
-      `https://parseapi.back4app.com/classes/City?limit=8&order=-population&where=${where}`,
-      {
-        headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
         }
-      }
-    )
-    const cityData = await cityResponse.json()
-    popularCities.value = cityData.results
+      );
+      const countryData = await countryResponse.json()
+      country.value = countryData
 
-    const allCitiesRes = await fetch(
-      `https://parseapi.back4app.com/classes/City?order=-population&where=${where}`,
-      {
-        headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+      const where = encodeURIComponent(JSON.stringify({
+        country: {
+          "__type": "Pointer",
+          "className": "Country",
+          "objectId": id
         }
-      }
-    )
-    const allCitiesData = await allCitiesRes.json()
-    allCities.value = allCitiesData.results
+      }))
+      const cityResponse = await fetch(
+        `https://parseapi.back4app.com/classes/City?limit=8&order=-population&where=${where}`,
+        {
+          headers: {
+            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
+            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          }
+        }
+      )
+      const cityData = await cityResponse.json()
+      popularCities.value = cityData.results
+
+      const allCitiesRes = await fetch(
+        `https://parseapi.back4app.com/classes/City?order=-population&where=${where}`,
+        {
+          headers: {
+            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
+            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          }
+        }
+      )
+      const allCitiesData = await allCitiesRes.json()
+      allCities.value = allCitiesData.results
     }
     catch (error) {
       console.error('Error loading a country or cities:', error)
@@ -155,6 +155,78 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     }
   }
 
+  const validateCountry = async (countryName: string) => {
+    try {
+      loading.value = true;
+
+      const where = encodeURIComponent(JSON.stringify({
+        name: {
+          "$regex": `^${countryName}$`,
+          "$options": "i"
+        }
+      }))
+
+      const response = await fetch(`https://parseapi.back4app.com/classes/Country?where=${where}`, {
+        headers: {
+          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
+          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+        }
+      })
+
+      const data = await response.json()
+      if (data.results.length > 0) {
+        return data.results[0]
+      } else {
+        return null
+      }
+    }
+    catch (error) {
+      console.error('Error validating a country:', error)
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
+  const validateCity = async (cityName: string, countryId: string) => {
+    try {
+      loading.value = true;
+
+      const where = encodeURIComponent(JSON.stringify({
+        name: {
+          "$regex": `^${cityName}$`,
+          "$options": "i"
+        },
+        country: {
+          "__type": "Pointer",
+          "className": "Country",
+          "objectId": countryId
+        }
+      }))
+
+      const response = await fetch(`https://parseapi.back4app.com/classes/City?where=${where}`, {
+        headers: {
+          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
+          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+        }
+      })
+
+      const data = await response.json()
+      if (data.results.length > 0) {
+        return data.results[0]
+      }
+      else {
+        return null
+      }
+    }
+    catch (error) {
+      console.error('Error validating a city:', error)
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
   return {
     loading,
     continent,
@@ -168,7 +240,8 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     fetchContinents,
     fetchContinentAndCountries,
     fetchCountryAndCities,
-    fetchSingleCity
-
+    fetchSingleCity,
+    validateCountry,
+    validateCity
   }
 }
