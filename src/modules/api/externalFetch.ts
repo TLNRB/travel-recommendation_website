@@ -10,17 +10,15 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     const city = ref<City | null>(null)
 
     const continents = ref<Continent[]>([])
-    const popularCountries = ref<Country[]>([])
     const allCountries = ref<Country[]>([])
-    const popularCities = ref<City[]>([])
     const allCities = ref<City[]>([])
 
   const fetchContinents = async () => {
     try {
-      const response = await fetch('https://parseapi.back4app.com/classes/Continent?limit=10', {
+      const response = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Continent?limit=10`, {
         headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
         }
       })
 
@@ -36,15 +34,17 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     try {
       loading.value = true
 
-      const continentRes = await fetch(`https://parseapi.back4app.com/classes/Continent/${id}`, {
+      // Fetch continent
+      const continentRes = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Continent/${id}`, {
         headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
         }
       })
       const continentData = await continentRes.json()
       continent.value = continentData
 
+      // Query filter for countries inside this continent
       const where = encodeURIComponent(JSON.stringify({
         continent: {
           "__type": "Pointer",
@@ -52,45 +52,65 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
           "objectId": id
         }
       }))
-      const countryRes = await fetch(
-        `https://parseapi.back4app.com/classes/Country?limit=8&order=-capital&include=continent&keys=name,emoji,code,capital,continent,continent.name&where=${where}`,
-        {
-          headers: {
-            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
-          }
-        }
-      )
-      const countryData = await countryRes.json()
-      popularCountries.value = countryData.results
 
+      // Fetch all countries
       const allRes = await fetch(
-        `https://parseapi.back4app.com/classes/Country?include=continent&keys=name,emoji,code,capital,continent,continent.name&where=${where}`,
+        `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Country?include=continent&keys=name,emoji,code,capital,continent,continent.name&where=${where}`,
         {
           headers: {
-            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+            'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+            'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
           }
         }
       )
       allCountries.value = (await allRes.json()).results
 
+      // 🚀 Fetch cities in countries from this continent
+      const countryIds = allCountries.value.map(c => c.objectId)
+
+      // Use "in" operator in Parse to filter cities
+      const cityWhere = encodeURIComponent(JSON.stringify({
+        country: {
+          "$inQuery": {
+            "where": {
+              "objectId": {
+                "$in": countryIds
+              }
+            },
+            "className": "Country"
+          }
+        }
+      }))
+
+      const cityRes = await fetch(
+        `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=1000&keys=name,population,country&include=country&where=${cityWhere}`,
+        {
+          headers: {
+            'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+            'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
+          }
+        }
+      )
+      const cityData = await cityRes.json()
+      allCities.value = cityData.results
+
     } catch (error) {
-      console.error('Error loading continent or countries:', error)
+      console.error('Error loading continent or countries or cities:', error)
     } finally {
       loading.value = false
     }
   }
 
+
   const fetchCountryAndCities = async (id: string) => {
     try{
       loading.value = true
       const countryResponse = await fetch(
-          `https://parseapi.back4app.com/classes/Country/${id}`,
+          `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Country/${id}`,
           {
             headers: {
-              'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-              'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH',
+              'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+              'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
             }
           }
         );
@@ -104,24 +124,13 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
         "objectId": id
       }
     }))
-    const cityResponse = await fetch(
-      `https://parseapi.back4app.com/classes/City?limit=8&order=-population&where=${where}`,
-      {
-        headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
-        }
-      }
-    )
-    const cityData = await cityResponse.json()
-    popularCities.value = cityData.results
 
     const allCitiesRes = await fetch(
-      `https://parseapi.back4app.com/classes/City?order=-population&where=${where}`,
+      `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?order=-population&where=${where}`,
       {
         headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
         }
       }
     )
@@ -140,10 +149,10 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     try {
       loading.value = true
 
-      const cityResponse = await fetch(`https://parseapi.back4app.com/classes/City/${id}`, {
+      const cityResponse = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City/${id}`, {
         headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
         }
       })
       const continentData = await cityResponse.json()
@@ -162,8 +171,6 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     city,
     continents,
     allCountries,
-    popularCountries,
-    popularCities,
     allCities,
     fetchContinents,
     fetchContinentAndCountries,

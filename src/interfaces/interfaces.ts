@@ -32,6 +32,7 @@ export type Country = {
     objectId: string
     name: string
   }
+  cities: City[]
 }
 
 export type City = {
@@ -52,9 +53,9 @@ export type Place = {
   description: string;
   images: string[];
   location: {
-    continent: string;
-    country: string;
-    city: string;
+    continent: Continent[];
+    country: Country[];
+    city: City[];
     street: string;
     streetNumber: string;
   };

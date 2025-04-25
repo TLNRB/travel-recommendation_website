@@ -1,10 +1,12 @@
 <template>
-  <div v-if="loading" class="flex justify-center items-center h-screen">
+  <div v-if="loading || placesLoading" class="flex justify-center items-center h-screen">
     <!-- Loading Spinner -->
     <div class="text-2xl animate-pulse">Loading...</div>
   </div>
+<div v-else>
 
-  <div v-else class="container-fluid bg-green-200 h-96 flex flex-col justify-between">
+
+  <div  class="container-fluid bg-green-200 h-96 flex flex-col justify-between">
     <h1 class="text-2xl md:text-4xl lg:text-6xl mt-16 ms-16">
       {{ country?.name }}
     </h1>
@@ -37,6 +39,7 @@
     <div class="mt-2 text-center">{{ city.name }}</div>
     </RouterLink>
   </div>
+  </div>
 </div>
 </template>
 
@@ -44,14 +47,17 @@
 import { onMounted, ref, watch, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { externalAPI } from '@/modules/api/externalFetch';
+import { usePlaces } from '@/modules/places/usePlaces';
 
-const {fetchCountryAndCities, allCities, popularCities, country, loading} = externalAPI()
+const { getPlaces, places, loading: placesLoading } = usePlaces();
+const {fetchCountryAndCities, allCities, country, loading} = externalAPI()
 
 const route = useRoute()
 const countryId = ref(route.params.id as string)
 
 onMounted(() => {
   fetchCountryAndCities(countryId.value)
+  getPlaces();
 })
 
 watch(
@@ -59,19 +65,30 @@ watch(
   (newId) => {
     countryId.value = newId as string
     fetchCountryAndCities(countryId.value)
+    getPlaces();
   }
 )
+
+const citiesWithPlaces = computed(() => {
+  const citiesWithContent = new Set(
+    places.value.map(place => place.location.city.toLowerCase())
+  );
+
+  return allCities.value.filter(city =>
+    citiesWithContent.has(city.name.toLowerCase())
+  );
+});
 
 const searchTerm = ref('')
 
 const displayedCities = computed(() => {
   if (searchTerm.value.length >= 3) {
-    return allCities.value.filter(c =>
+    return citiesWithPlaces.value.filter(c =>
       c.name.toLowerCase().includes(searchTerm.value.toLowerCase())
-    )
+    );
   }
-  return popularCities.value
-})
+  return citiesWithPlaces.value;
+});
 
 const noResults = computed(() => {
   return searchTerm.value.length >= 3 && displayedCities.value.length === 0
