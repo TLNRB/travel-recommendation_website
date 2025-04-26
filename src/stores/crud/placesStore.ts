@@ -327,6 +327,7 @@ export const usePlacesStore = defineStore('placesStore', {
    },
 
    getters: {
+      getPlaces: (state) => state.places,
       getPlaceById: (state) => {
          return (placeId: string) => state.places.find((place) => place._id === placeId) || null
       },
