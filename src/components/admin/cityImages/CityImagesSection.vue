@@ -26,16 +26,23 @@
       <div v-if="citiesStore.getError" class="text-red-500 text-center h-32">
          {{ citiesStore.getError }}
       </div>
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      <div v-else>
          <!-- Display Cards Based On Active Tab -->
-         <CityImageCard v-if="activeCities && activeTab === 'Active'" v-for="(city, index) in activeCities"
-            :key="`active-${index}`" :city="city" />
-         <CityImageCard v-else-if="missingCities && activeTab === 'Missing'" v-for="(city, index) in missingCities"
-            :key="`missing-${index}`" :city="city" />
-         <CityImageCard v-else-if="unusedCities && activeTab === 'Unused'" v-for="(city, index) in unusedCities"
-            :key="`unused-${index}`" :city="city" />
-         <div v-else class="text-gray-500">No cities to display.</div>
-
+         <div v-if="activeTab === 'Active'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            <CityImageCard v-if="Object.keys(activeCities).length" v-for="(city, index) in activeCities"
+               :key="`active-${index}`" :city="city" />
+            <div v-else class="text-gray-500">No cities to display.</div>
+         </div>
+         <div v-else-if="activeTab === 'Missing'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            <CityImageCard v-if="Object.keys(missingCities).length" v-for="(city, index) in missingCities"
+               :key="`missing-${index}`" :city="city" />
+            <div v-else class="text-gray-500">No cities to display.</div>
+         </div>
+         <div v-else-if="activeTab === 'Unused'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            <CityImageCard v-if="Object.keys(unusedCities).length" v-for="(city, index) in unusedCities"
+               :key="`unused-${index}`" :city="city" />
+            <div v-else class="text-gray-500">No cities to display.</div>
+         </div>
          <!-- Edit Card -->
          <!-- <UserEditModal v-if="showEditModal" :user="usersStore.getUserById(editUserId)" :roles="roles"
             :error="usersStore.getUpdateError" :loading="usersStore.getIsLoading" @submit="handleUpdateUserRole"
@@ -57,7 +64,7 @@ const citiesStore = useCitiesStore();
 
 //-- Computed City Lists
 const activeCities = computed(() => {
-   const result: Record<string, CityImage[]> = {};
+   const result: Record<string, CityImage> = {};
 
    for (const key in citiesStore.getUniqueCities) {
       if (citiesStore.getCityImagesMap[key]) {
@@ -86,7 +93,7 @@ const missingCities = computed(() => {
 });
 
 const unusedCities = computed(() => {
-   const result: Record<string, CityImage[]> = {};
+   const result: Record<string, CityImage> = {};
 
    for (const key in citiesStore.getCityImagesMap) {
       if (!citiesStore.getUniqueCities[key]) {
