@@ -1,20 +1,46 @@
 <template>
    <section>
       <h2 class="text-xl font-semibold">City Images</h2>
+      <div class="flex space-x-4 mt-4">
+         <!-- Tabs -->
+         <button v-for="tab in tabs" :key="tab" @click="activeTab = tab" :class="[
+            'relative px-4 py-2 rounded-full border text-sm text-gray-800 font-medium duration-[.15s] ease-in cursor-pointer',
+            activeTab === tab ? 'bg-gray-100 border-gray-300 hover:bg-gray-200' : 'bg-transparent border-gray-200 hover:border-gray-300'
+         ]">
+            {{ tab }}
+            <span v-if="tab === 'Active' && activeCitiesCount > 0"
+               class="absolute -top-1.5 -right-1 bg-orange-500 text-white text-[9px] font-bold rounded-full w-[20px] h-[20px] flex items-center justify-center border-[1.5px] border-white">
+               {{ activeCitiesCount }}
+            </span>
+            <span v-else-if="tab === 'Missing'"
+               class="absolute -top-1.5 -right-1 bg-orange-500 text-white text-[9px] font-bold rounded-full w-[20px] h-[20px] flex items-center justify-center border-[1.5px] border-white">
+               {{ missingCitiesCount }}
+            </span>
+            <span v-else-if="tab === 'Unused'"
+               class="absolute -top-1.5 -right-1 bg-orange-500 text-white text-[9px] font-bold rounded-full w-[20px] h-[20px] flex items-center justify-center border-[1.5px] border-white">
+               {{ unusedCitiesCount }}
+            </span>
+         </button>
+      </div>
       <!-- Error Message -->
       <div v-if="citiesStore.getError" class="text-red-500 text-center h-32">
          {{ citiesStore.getError }}
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-         <!-- Display Cards -->
-         <CityImageCard v-if="cities" v-for="(city, index) in cities" :key="index" :city="city" />
+         <!-- Display Cards Based On Active Tab -->
+         <CityImageCard v-if="activeCities && activeTab === 'Active'" v-for="(city, index) in activeCities"
+            :key="`active-${index}`" :city="city" />
+         <CityImageCard v-else-if="missingCities && activeTab === 'Missing'" v-for="(city, index) in missingCities"
+            :key="`missing-${index}`" :city="city" />
+         <CityImageCard v-else-if="unusedCities && activeTab === 'Unused'" v-for="(city, index) in unusedCities"
+            :key="`unused-${index}`" :city="city" />
          <div v-else class="text-gray-500">No cities to display.</div>
 
          <!-- Edit Card -->
          <!-- <UserEditModal v-if="showEditModal" :user="usersStore.getUserById(editUserId)" :roles="roles"
             :error="usersStore.getUpdateError" :loading="usersStore.getIsLoading" @submit="handleUpdateUserRole"
             @close="handleClose" /> -->
-      </div> 
+      </div>
    </section>
 </template>
 
@@ -24,11 +50,108 @@ import { ref, computed, onMounted } from 'vue';
 import CityImageCard from '@/components/admin/cityImages/CityImageCard.vue';
 // Stores
 import { useCitiesStore } from '@/stores/crud/citiesStore';
+// Interfaces
+import type { CityImage, UniqueCity } from '@/interfaces/cityImageTypes';
 
 const citiesStore = useCitiesStore();
-const cities = computed(() => citiesStore.getUniqueCities);
 
-onMounted(async () => { 
+//-- Computed City Lists
+const activeCities = computed(() => {
+   const result: Record<string, CityImage[]> = {};
+
+   for (const key in citiesStore.getUniqueCities) {
+      if (citiesStore.getCityImagesMap[key]) {
+         result[key] = citiesStore.getCityImagesMap[key];
+      }
+   }
+
+   console.log('Active Cities:', result);
+   return result;
+})
+
+const missingCities = computed(() => {
+   const result: Record<string, UniqueCity> = {};
+
+   for (const key in citiesStore.getUniqueCities) {
+      if (!citiesStore.getCityImagesMap[key]) {
+         result[key] = {
+            name: citiesStore.getUniqueCities[key].name,
+            country: citiesStore.getUniqueCities[key].country,
+         };
+      }
+   }
+
+   console.log('Missing Cities:', result);
+   return result;
+});
+
+const unusedCities = computed(() => {
+   const result: Record<string, CityImage[]> = {};
+
+   for (const key in citiesStore.getCityImagesMap) {
+      if (!citiesStore.getUniqueCities[key]) {
+         result[key] = citiesStore.getCityImagesMap[key];
+      }
+   }
+
+   console.log('Unused Cities:', result);
+   return result;
+});
+
+const activeCitiesCount = computed(() => Object.keys(activeCities.value).length);
+const missingCitiesCount = computed(() => Object.keys(missingCities.value).length);
+const unusedCitiesCount = computed(() => Object.keys(unusedCities.value).length);
+
+/* const uniqueCities = computed(() => citiesStore.getUniqueCities);
+const cityImagesMap = computed(() => citiesStore.getCityImagesMap);
+
+const activeCities = computed(() => {
+   const result: Record<string, CityImage[]> = {};
+
+   for (const key in uniqueCities.value) {
+      if (cityImagesMap.value[key]) {
+         result[key] = cityImagesMap.value[key];
+      }
+   }
+
+   console.log('Active Cities:', result);
+   return result;
+})
+
+const missingCities = computed(() => {
+   const result: Record<string, UniqueCity> = {};
+
+   for (const key in uniqueCities.value) {
+      if (!cityImagesMap.value[key]) {
+         result[key] = {
+            name: uniqueCities.value[key].name,
+            country: uniqueCities.value[key].country,
+         };
+      }
+   }
+
+   console.log('Missing Cities:', result);
+   return result;
+});
+
+const unusedCities = computed(() => {
+   const result: Record<string, CityImage[]> = {};
+
+   for (const key in cityImagesMap.value) {
+      if (!uniqueCities.value[key]) {
+         result[key] = cityImagesMap.value[key];
+      }
+   }
+
+   console.log('Unused Cities:', result);
+   return result;
+}); */
+
+//-- Tabs
+const tabs = ['Active', 'Missing', 'Unused'];
+const activeTab = ref('Active');
+
+onMounted(async () => {
    await citiesStore.fetchUniqueCities();
    await citiesStore.fetchCityImages();
 }); 

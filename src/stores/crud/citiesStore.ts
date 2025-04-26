@@ -101,6 +101,7 @@ export const useCitiesStore = defineStore('citiesStore', {
 
    getters: {
       getUniqueCities: (state) => state.uniqueCities,
+      getCityImagesMap: (state) => state.cityImagesMap,
       getError: (state) => state.error,
       getAddError: (state) => state.addError,
       getUpdateError: (state) => state.updateError,
