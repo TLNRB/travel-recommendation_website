@@ -111,7 +111,6 @@ onMounted(() => {
 onUnmounted(() => {
    document.removeEventListener("click", closeDropdown);
 });
-
 </script>
 
 <style scoped>
