@@ -49,7 +49,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 // Interfaces
 import type { Place, AddPlace, EditPlace } from '@/interfaces/placeTypes'
-import type { AddRecommendation, Recommendation } from '@/interfaces/interfaces';
+import type { AddRecommendation, Recommendation } from '@/interfaces/recommendationTypes';
 
 const placesStore = usePlacesStore();
 const authStore = useAuthStore();

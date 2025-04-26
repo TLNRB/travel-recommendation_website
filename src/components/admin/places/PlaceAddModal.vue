@@ -189,7 +189,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { AddPlace } from '@/interfaces/placeTypes'
-import type { AddRecommendation } from '@/interfaces/interfaces'
+import type { AddRecommendation } from '@/interfaces/recommendationTypes'
 // Store
 import { useUserStore } from '@/stores/userStore'
 import { useRolesStore } from '@/stores/rolesStore'

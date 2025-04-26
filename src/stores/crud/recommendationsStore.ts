@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Recommendation } from "@/interfaces/interfaces";
+import type { Recommendation } from "@/interfaces/recommendationTypes";
 
 export const useRecommendationsStore = defineStore('recommendationsStore', {
    state: () => ({
