@@ -9,7 +9,7 @@ const { uploadImages } = useImages()
 
 export const useCitiesStore = defineStore('citiesStore', {
    state: () => ({
-      cityImagesMap: {} as Record<string, CityImage[]>,
+      cityImagesMap: {} as Record<string, CityImage>,
       uniqueCities: {} as Record<string, UniqueCity>,
       error: null as string | null,
       addError: null as string | null,
@@ -73,14 +73,26 @@ export const useCitiesStore = defineStore('citiesStore', {
 
             // If the data is valid and not an empty array, store it
             if (cityImagesData && Array.isArray(cityImagesData.data)) {
-               cityImagesData.data.forEach((cityImage: CityImage) => {
-                  const key = `${cityImage.name.toLowerCase()}_${cityImage.country.toLowerCase()}`; // Unique key for each city-country pair
+               // Create a map to store unique cities with city_country pairs as keys
+               const cityImagesMap: Record<string, CityImage> = {};
 
-                  if (!this.cityImagesMap[key]) {
-                     this.cityImagesMap[key] = [] // Initialize if not present
+               for (const cityImage of cityImagesData.data) {
+                  if (!cityImage.name || !cityImage.country) continue // Skip if there is no city or country
+
+                  // Create a unique key for each city-country pair
+                  const key = `${cityImage.name.toLowerCase()}_${cityImage.country.toLowerCase()}`;
+
+                  // If the key doesn't exist add it
+                  if (!cityImagesMap[key]) {
+                     cityImagesMap[key] = {
+                        name: cityImage.name,
+                        country: cityImage.country,
+                        images: cityImage.images || [] // Initialize images as an empty array if not present
+                     }
                   }
-                  this.cityImagesMap[key].push(cityImage) // Push the city image to the array
-               })
+               }
+
+               this.cityImagesMap = cityImagesMap // Assign the map to the state
                this.isCityImagesLoaded = true
                this.error = null
             } else {
