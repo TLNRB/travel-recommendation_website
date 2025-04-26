@@ -7,7 +7,7 @@
             <p class="text-sm text-gray-500">{{ props.city.country }}</p>
          </div>
          <!-- Dropdown Actions -->
-         <div class="relative dropdown-actions">
+         <div v-if="props.tab == 'Unused'" class="relative dropdown-actions">
             <button @click="toggleMenu(props.city.key)"
                class="w-[28px] h-[28px] rounded-full border-[1px] border-gray-200 text-gray-800 hover:bg-gray-200 duration-[.15s] ease-in cursor-pointer"
                :class="activeMenuId === props.city.key ? 'bg-gray-200' : 'bg-gray-100'">
@@ -25,6 +25,10 @@
                </button>
             </div>
          </div>
+         <button v-else @click="editEvent"
+            class="text-blue-600 text-sm hover:text-blue-800 font-medium duration-200 ease-in-out cursor-pointer">
+            Edit
+         </button>
       </div>
 
       <!-- Image -->
@@ -40,7 +44,7 @@
 
 
       <!-- Display error -->
-      <div v-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div>
+      <!-- <div v-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div> -->
    </div>
 </template>
 
@@ -49,19 +53,21 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
    city: { type: Object, required: true },
-   deleteError: { type: [String, null], default: null },
+   cityKey: { type: String, required: true },
+   tab: { type: String, required: true },
+   /* deleteError: { type: [String, null], default: null }, */
 });
 
 //-- Emits
 const emit = defineEmits(['delete', 'edit']);
 
 const deleteEvent = () => {
-   emit('delete', props.city.key);
+   emit('delete', props.cityKey);
    activeMenuId.value = null;
 }
 
 const editEvent = () => {
-   emit('edit', props.city.key);
+   emit('edit', props.cityKey);
    activeMenuId.value = null;
 }
 
