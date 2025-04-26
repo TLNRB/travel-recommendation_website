@@ -29,18 +29,21 @@
       <div v-else>
          <!-- Display Cards Based On Active Tab -->
          <div v-if="activeTab === 'Active'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            <CityImageCard v-if="Object.keys(activeCities).length" v-for="(city, index) in activeCities"
-               :key="`active-${index}`" :city="city" />
+            <CityImageCard v-if="Object.keys(activeCities).length"
+               v-for="([cityKey, city]) in Object.entries(activeCities)" :key="cityKey" :city="city" :cityKey="cityKey"
+               tab="Active" @edit="handleEdit" />
             <div v-else class="text-gray-500">No cities to display.</div>
          </div>
          <div v-else-if="activeTab === 'Missing'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            <CityImageCard v-if="Object.keys(missingCities).length" v-for="(city, index) in missingCities"
-               :key="`missing-${index}`" :city="city" />
+            <CityImageCard v-if="Object.keys(missingCities).length"
+               v-for="([cityKey, city]) in Object.entries(missingCities)" :key="cityKey" :city="city" :cityKey="cityKey"
+               tab="Missing" @edit="handleEdit" />
             <div v-else class="text-gray-500">No cities to display.</div>
          </div>
          <div v-else-if="activeTab === 'Unused'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            <CityImageCard v-if="Object.keys(unusedCities).length" v-for="(city, index) in unusedCities"
-               :key="`unused-${index}`" :city="city" />
+            <CityImageCard v-if="Object.keys(unusedCities).length"
+               v-for="([cityKey, city]) in Object.entries(unusedCities)" :key="cityKey" :city="city" :cityKey="cityKey"
+               tab="Unused" @edit="handleEdit" @delete="handleDelete" />
             <div v-else class="text-gray-500">No cities to display.</div>
          </div>
          <!-- Edit Card -->
@@ -109,50 +112,15 @@ const activeCitiesCount = computed(() => Object.keys(activeCities.value).length)
 const missingCitiesCount = computed(() => Object.keys(missingCities.value).length);
 const unusedCitiesCount = computed(() => Object.keys(unusedCities.value).length);
 
-/* const uniqueCities = computed(() => citiesStore.getUniqueCities);
-const cityImagesMap = computed(() => citiesStore.getCityImagesMap);
+//-- Edit
+const handleEdit = (cityKey: string) => {
+   console.log('Edit City:', cityKey);
+};
 
-const activeCities = computed(() => {
-   const result: Record<string, CityImage[]> = {};
-
-   for (const key in uniqueCities.value) {
-      if (cityImagesMap.value[key]) {
-         result[key] = cityImagesMap.value[key];
-      }
-   }
-
-   console.log('Active Cities:', result);
-   return result;
-})
-
-const missingCities = computed(() => {
-   const result: Record<string, UniqueCity> = {};
-
-   for (const key in uniqueCities.value) {
-      if (!cityImagesMap.value[key]) {
-         result[key] = {
-            name: uniqueCities.value[key].name,
-            country: uniqueCities.value[key].country,
-         };
-      }
-   }
-
-   console.log('Missing Cities:', result);
-   return result;
-});
-
-const unusedCities = computed(() => {
-   const result: Record<string, CityImage[]> = {};
-
-   for (const key in cityImagesMap.value) {
-      if (!uniqueCities.value[key]) {
-         result[key] = cityImagesMap.value[key];
-      }
-   }
-
-   console.log('Unused Cities:', result);
-   return result;
-}); */
+//-- Delete
+const handleDelete = (cityKey: string) => {
+   console.log('Delete City:', cityKey);
+};
 
 //-- Tabs
 const tabs = ['Active', 'Missing', 'Unused'];
