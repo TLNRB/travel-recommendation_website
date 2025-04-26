@@ -20,6 +20,12 @@
     <!-- Approved Places Tab -->
     <PlacesSections v-else-if="activeTab === 'Places' && canEditPlaces" />
 
+    <!-- City Images Tab -->
+    <CityImagesSection v-else-if="activeTab === 'City Images' && canEditPlaces" />
+
+    <!-- Country Images Tab -->
+    <!-- <CountryImagesSection v-else-if="activeTab === 'Country Images' && canEditPlaces" /> -->
+
     <!-- Users Tab -->
     <UsersSection v-else-if="activeTab === 'Users' && canEditUsers" />
   </div>
@@ -27,6 +33,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+// Components
+import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSection.vue';
+import PlacesSections from '@/components/admin/places/PlacesSection.vue';
+import UsersSection from '@/components/admin/users/UsersSection.vue';
+import CityImagesSection from '@/components/admin/cityImages/CityImagesSection.vue';
+// import CountryImagesSection from '@/components/admin/countryImages/CountryImagesSection.vue';
 // Stores
 import { useUserStore } from '@/stores/userStore';
 import { useRolesStore } from '@/stores/rolesStore';
@@ -59,14 +71,9 @@ const canEditPlaces = computed(() => {
   return userRole.permissions.includes(permissionIdPlaces.value);
 })
 
-//-- Components
-import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSection.vue';
-import PlacesSections from '@/components/admin/places/PlacesSection.vue';
-import UsersSection from '@/components/admin/users/UsersSection.vue';
-
 //-- Tabs
-const tabs = ['Requests', 'Places', 'Users'];
-const activeTab = ref('Requests');
+const tabs = ['Requests', 'Places', 'Users', 'City Images', 'Country Images'];
+const activeTab = ref('City Images');
 
 onMounted(async () => {
   await rolesStore.fetchRoles();
