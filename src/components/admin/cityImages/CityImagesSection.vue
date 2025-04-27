@@ -47,9 +47,10 @@
             <div v-else class="text-gray-500">No cities to display.</div>
          </div>
          <!-- Edit Card -->
-         <!-- <UserEditModal v-if="showEditModal" :user="usersStore.getUserById(editUserId)" :roles="roles"
-            :error="usersStore.getUpdateError" :loading="usersStore.getIsLoading" @submit="handleUpdateUserRole"
-            @close="handleClose" /> -->
+         <CityImageEditModal v-if="showEditModal"
+            :city="activeTab !== 'Missing' ? citiesStore.getCityImagesByKey(editCityKey!) : citiesStore.getUniqueCityByKey(editCityKey!)"
+            :cityKey="editCityKey!" :addError="citiesStore.addError" :updateError="citiesStore.getUpdateError"
+            :loading="citiesStore.getIsLoading" @submit="handleSubmit" @close="handleCloseEdit" />
       </div>
    </section>
 </template>
@@ -58,12 +59,15 @@
 import { ref, computed, onMounted } from 'vue';
 // Components
 import CityImageCard from '@/components/admin/cityImages/CityImageCard.vue';
+import CityImageEditModal from '@/components/admin/cityImages/CityImageEditModal.vue';
 // Stores
 import { useCitiesStore } from '@/stores/crud/citiesStore';
+import { useAuthStore } from '@/stores/authStore';
 // Interfaces
-import type { CityImage, UniqueCity } from '@/interfaces/cityImageTypes';
+import type { CityImage, EditCityImage, UniqueCity } from '@/interfaces/cityImageTypes';
 
 const citiesStore = useCitiesStore();
+const authStore = useAuthStore();
 
 //-- Computed City Lists
 const activeCities = computed(() => {
@@ -112,9 +116,55 @@ const activeCitiesCount = computed(() => Object.keys(activeCities.value).length)
 const missingCitiesCount = computed(() => Object.keys(missingCities.value).length);
 const unusedCitiesCount = computed(() => Object.keys(unusedCities.value).length);
 
-//-- Edit
+// Edit Modal
+const showEditModal = ref<boolean>(false);
+const editCityKey = ref<string | null>(null);
+
 const handleEdit = (cityKey: string) => {
-   console.log('Edit City:', cityKey);
+   editCityKey.value = cityKey;
+   showEditModal.value = true;
+};
+
+const handleCloseEdit = () => {
+   showEditModal.value = false;
+   editCityKey.value = null;
+   citiesStore.clearErrors();
+};
+
+// Handle Submit for Update or Add
+const handleSubmit = (cityData: EditCityImage, cityId: string) => {
+   if (activeTab.value === 'Missing') handleAddCity(cityData);
+   else handleUpdateCity(cityData, cityId);
+}
+
+//-- Edit
+const handleUpdateCity = async (updatedCity: EditCityImage, cityId: string) => {
+   console.log('Update City:', updatedCity, cityId);
+
+   try {
+      await citiesStore.updateCityImage(cityId, updatedCity, authStore.getToken!);
+
+      if (!citiesStore.getUpdateError) {
+         handleCloseEdit();
+      }
+   } catch (err) {
+      console.error('Error updating city image:', err);
+   }
+};
+
+//-- Add
+const handleAddCity = async (newCity: EditCityImage): Promise<void> => {
+   console.log('Add City:', newCity);
+   try {
+      await citiesStore.addCityImage(newCity, authStore.getToken!)
+
+      if (!citiesStore.getAddError) {
+         handleCloseEdit();
+      }
+   }
+   catch (err) {
+      console.error('Error adding city image:', err);
+   }
 };
 
 //-- Delete

@@ -130,7 +130,6 @@ export const usePlacesStore = defineStore('placesStore', {
             const { urls, error } = await uploadImages(images, 'places')
 
             if (error) {
-               console.log('error')
                throw new Error(error)
             }
 
