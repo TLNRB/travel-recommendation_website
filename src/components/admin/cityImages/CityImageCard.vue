@@ -62,7 +62,7 @@ const props = defineProps({
 const emit = defineEmits(['delete', 'edit']);
 
 const deleteEvent = () => {
-   emit('delete', props.cityKey);
+   emit('delete', props.cityKey, props.city._id);
    activeMenuId.value = null;
 }
 

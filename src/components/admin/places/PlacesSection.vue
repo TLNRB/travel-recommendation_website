@@ -204,7 +204,7 @@ const handleDeletePlace = async (placeId: string): Promise<void> => {
          handleCloseEdit();
       }
    } catch (err) {
-      console.error('Error deleting place request:', err);
+      console.error('Error deleting place:', err);
    }
 }
 
