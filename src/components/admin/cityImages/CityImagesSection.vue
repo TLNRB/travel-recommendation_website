@@ -143,7 +143,6 @@ const handleUpdateCity = async (updatedCity: EditCityImage, cityId: string) => {
 
    try {
       await citiesStore.updateCityImage(cityId, updatedCity, authStore.getToken!);
-
       if (!citiesStore.getUpdateError) {
          handleCloseEdit();
       }
@@ -168,8 +167,18 @@ const handleAddCity = async (newCity: EditCityImage): Promise<void> => {
 };
 
 //-- Delete
-const handleDelete = (cityKey: string) => {
-   console.log('Delete City:', cityKey);
+const handleDelete = async (cityKey: string, cityId: string) => {
+   console.log('Delete City:', cityKey, cityId);
+
+   try {
+      await citiesStore.deleteCityImage(cityId, authStore.getToken!);
+
+      if (!citiesStore.getDeleteError) {
+         handleCloseEdit();
+      }
+   } catch (err) {
+      console.error('Error deleting city image:', err);
+   }
 };
 
 //-- Tabs
