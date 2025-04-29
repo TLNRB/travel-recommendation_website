@@ -80,21 +80,31 @@ watch(
 
 const citiesWithPlaces = computed(() => {
   const citiesWithContent = new Set(
-    places.value.map(place => place.location.city.toLowerCase())
+    places.value
+      .filter(place => place.approved)
+      .map(place =>
+        `${place.location.city.toLowerCase()}__${place.location.country.toLowerCase()}`
+      )
   );
 
-  return allCities.value.filter(city =>
-    citiesWithContent.has(city.name.toLowerCase())
-  );
+  return allCities.value.filter(city => {
+    const cityName = city.name?.toLowerCase();
+    const countryName = city.country?.name?.toLowerCase();
+
+    if (!cityName || !countryName) return false;
+
+    const key = `${cityName}__${countryName}`;
+    return citiesWithContent.has(key);
+  });
 });
 
-  const countriesWithContent = computed(() => {
-    return allCountries.value.filter(country =>
-      citiesWithPlaces.value.some(city =>
-        city.country.objectId === country.objectId
-      )
-    );
-  });
+const countriesWithContent = computed(() => {
+  return allCountries.value.filter(country =>
+    citiesWithPlaces.value.some(city =>
+      city.country?.objectId === country.objectId
+    )
+  );
+});
 
 const searchTerm = ref('')
 
@@ -112,8 +122,8 @@ const noResults = computed(() => {
   return searchTerm.value.length >= 3 && displayedCountries.value.length === 0;
 });
 
-console.log("Place cities:", citiesWithPlaces);
-console.log("Country cities:", allCountries.value.flatMap(c => c.cities));
+console.log("Matched countries:", countriesWithContent.value.map(c => c.name));
+
 </script>
 
 

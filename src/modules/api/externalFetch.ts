@@ -32,28 +32,27 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
 
   const fetchContinentAndCountries = async (id: string) => {
     try {
-      loading.value = true
+      loading.value = true;
 
-      // Fetch continent
+      // 1. Fetch continent
       const continentRes = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Continent/${id}`, {
         headers: {
           'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
           'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
         }
-      })
-      const continentData = await continentRes.json()
-      continent.value = continentData
+      });
+      const continentData = await continentRes.json();
+      continent.value = continentData;
 
-      // Query filter for countries inside this continent
+      // 2. Fetch countries in continent
       const where = encodeURIComponent(JSON.stringify({
         continent: {
           "__type": "Pointer",
           "className": "Continent",
           "objectId": id
         }
-      }))
+      }));
 
-      // Fetch all countries
       const allRes = await fetch(
         `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Country?include=continent&keys=name,emoji,code,capital,continent,continent.name&where=${where}`,
         {
@@ -62,44 +61,43 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
             'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
           }
         }
-      )
-      allCountries.value = (await allRes.json()).results
+      );
+      allCountries.value = (await allRes.json()).results;
 
-      // 🚀 Fetch cities in countries from this continent
-      const countryIds = allCountries.value.map(c => c.objectId)
-
-      // Use "in" operator in Parse to filter cities
-      const cityWhere = encodeURIComponent(JSON.stringify({
-        country: {
-          "$inQuery": {
-            "where": {
-              "objectId": {
-                "$in": countryIds
-              }
-            },
-            "className": "Country"
+      // 3. Fetch cities per country in parallel
+      const cityFetchPromises = allCountries.value.map(async (country) => {
+        const cityWhere = encodeURIComponent(JSON.stringify({
+          country: {
+            "__type": "Pointer",
+            "className": "Country",
+            "objectId": country.objectId
           }
-        }
-      }))
+        }));
 
-      const cityRes = await fetch(
-        `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=1000&keys=name,population,country&include=country&where=${cityWhere}`,
-        {
-          headers: {
-            'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
-            'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
+        const cityRes = await fetch(
+          `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=1000&order=-population&include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location&where=${cityWhere}`,
+          {
+            headers: {
+              'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+              'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
+            }
           }
-        }
-      )
-      const cityData = await cityRes.json()
-      allCities.value = cityData.results
+        );
+        const { results } = await cityRes.json();
+        return results;
+      });
+
+      // 4. Wait for all city fetches and flatten results
+      const cityResults = await Promise.all(cityFetchPromises);
+      allCities.value = cityResults.flat();
 
     } catch (error) {
-      console.error('Error loading continent or countries or cities:', error)
+      console.error('Error loading continent, countries, or cities:', error);
     } finally {
-      loading.value = false
+      loading.value = false;
     }
-  }
+  };
+
 
 
   const fetchCountryAndCities = async (id: string) => {
@@ -126,7 +124,7 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     }))
 
     const allCitiesRes = await fetch(
-      `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?order=-population&where=${where}`,
+      `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=100&order=-population&include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location&where=${where}`,
       {
         headers: {
           'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,

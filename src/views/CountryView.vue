@@ -71,13 +71,22 @@ watch(
 
 const citiesWithPlaces = computed(() => {
   const citiesWithContent = new Set(
-    places.value.map(place => place.location.city.toLowerCase())
+    places.value
+    .filter(place => place.approved)
+    .map(place =>
+      `${place.location.city.toLowerCase()}__${place.location.country.toLowerCase()}`
+    )
   );
+  console.log(citiesWithContent)
+  console.log(allCities)
+  return allCities.value.filter(city => {
+    if (!city.country || !city.country.name) return false;
 
-  return allCities.value.filter(city =>
-    citiesWithContent.has(city.name.toLowerCase())
-  );
+    const key = `${city.name.toLowerCase()}__${city.country.name.toLowerCase()}`
+    return citiesWithContent.has(key)
+  });
 });
+console.log("cities with places" + citiesWithPlaces)
 
 const searchTerm = ref('')
 

@@ -89,6 +89,10 @@ const searchQuery = ref('')
 const selectedCategory = ref('All')
 const showSuggestions = ref(false)
 
+declare const URL: {
+  createObjectURL(file: Blob): string
+}
+
 onMounted(() => {
   getPlaces()
 })
