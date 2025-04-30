@@ -1,6 +1,6 @@
 <template>
   <nav v-if="route.path !== '/auth'"
-    class="flex justify-between gap-10 items-center py-3 px-6 space-x-4 bg-gray-100  text-black">
+    class="flex justify-between gap-10 items-center py-3 px-6 space-x-4 bg-white  text-black border-b-[1px] border-gray-300">
     <div class="flex gap-4 items-center w-64 justify-center">
       <RouterLink to="/">
         <img class="w-16 h-16" src="../assets/images/planet-2.svg" alt="logo">
@@ -21,12 +21,21 @@
         </div>
       </div>
     </div>
-    <div class="flex w-64 justify-center">
-      <button @click="showModal = true"
-        class="px-4 py-2 bg-blue-200 hover:bg-blue-400 text-black rounded transition text-sm">
+    <div v-if="userStore.getUser" class="flex w-64 justify-center">
+      <button @click="handleAdd"
+        class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg duration-[.2s] ease-in-out text-sm cursor-pointer">
         Suggest a Place
       </button>
-      <SuggestPlaceModal v-if="showModal" @close="showModal = false" @submit="handleSuggestion" />
+
+      <!-- Suggestion Modal -->
+      <PlaceAddModal v-if="showAddModal" :addError="placesStore.getAddError" :loading="placesStore.getIsLoading"
+        @submit="handleAddPlace" @close="handleCloseAdd" />
+
+      <!-- Failed Recommendation Card -->
+      <PlaceRecommendationFail v-else-if="showRecommendationModal"
+        :place="placesStore.getPlaceById(failedRecommendationPlaceId!)!" :recommendation="failedRecommendation!"
+        :addError="recommendationsStore.getAddError" :loading="recommendationsStore.getIsLoading"
+        @submit="handleAddRecommendation" @close="handleCloseAddRecommendation" />
     </div>
     <div class="flex gap-4 items-center w-64 justify-center">
       <div v-if="authStore.isLoggedIn" class="relative">
@@ -67,38 +76,34 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import { useUsers } from '@/modules/auth/useUsers';
 import LogoutBtn from '@/components/logoutBtn.vue';
-import SuggestPlaceModal from '@/components/suggestionModal.vue';
 import continentList from '@/components/continentList.vue';
+import PlaceAddModal from '@/components/admin/places/PlaceAddModal.vue';
+import PlaceRecommendationFail from '@/components/admin/places/PlaceRecommendationFail.vue';
+// Interfaces
+import type { Place, AddPlace } from '@/interfaces/placeTypes'
+import type { AddRecommendation, Recommendation } from '@/interfaces/recommendationTypes';
 // Stores
 import { useAuthStore } from '@/stores/authStore';
 import { useUserStore } from '@/stores/userStore';
+import { usePlacesStore } from '@/stores/crud/placesStore';
+import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
+const placesStore = usePlacesStore();
+const recommendationsStore = useRecommendationsStore();
 
 const { token } = useUsers();
 
 //correctly displays
 
 console.log(token.value)
-const showModal = ref(false);
 const route = useRoute();
 const isOpen = ref(false);
 const profileDropdownOpen = ref(false)
 const toggleProfileDropdown = () => {
   profileDropdownOpen.value = !profileDropdownOpen.value
 }
-const handleSuggestion = (placeData: {
-  continent: string;
-  country: string;
-  city: string;
-  place: string;
-  link: string;
-  recommendation: string;
-}) => {
-  console.log('User submitted place suggestion:', placeData);
-  alert('Thanks for your suggestion!');
-};
 
 const closeProfileDropdown = (event: Event) => {
   if (!(event.target as HTMLElement).closest(".relative")) {
@@ -113,6 +118,111 @@ const toggleDropdown = () => {
 const closeDropdown = (event: Event) => {
   if (!(event.target as HTMLElement).closest(".relative")) {
     isOpen.value = false;
+  }
+};
+
+//-- Add Place
+const showAddModal = ref<boolean>(false);
+
+const failedRecommendationPlaceId = ref<string | null>(null);
+const failedRecommendation = ref<AddRecommendation | null>(null);
+const showRecommendationModal = ref<boolean>(false);
+
+// Place
+const handleAdd = () => {
+  showAddModal.value = true;
+};
+
+const handleCloseAdd = () => {
+  showAddModal.value = false;
+  placesStore.clearErrors();
+};
+
+const handleAddPlace = async (newPlace: AddPlace, recommendation: AddRecommendation): Promise<void> => {
+  const placeData: Place = {
+    ...newPlace,
+    _createdBy: authStore.getUserId!,
+  };
+
+  try {
+    const placeId = await placesStore.addPlace(placeData, authStore.getToken!);
+
+    // Check if the place was added successfully
+    if (placeId) {
+      // If there are no recommendations, close the modal
+      if (!recommendation) {
+        handleCloseAddRecommendation();
+      }
+      // If there are recommendations, add them
+      else {
+        const recommendationData: Partial<Recommendation> = { // Leaving the dayOfWriting out
+          ...recommendation,
+          place: placeId,
+          _createdBy: authStore.getUserId!,
+        };
+
+        console.log('recommendationData', recommendationData);
+
+        await recommendationsStore.addRecommendation(recommendationData, authStore.getToken!);
+
+        if (!recommendationsStore.getAddError) {
+          console.log('Recommendation added successfully');
+          // If the recommendation is added successfully, close the modal
+          handleCloseAddRecommendation();
+        }
+        else {
+          console.log('Recommendation failed to add');
+          // If the recommendation fails, set the failed recommendation place's ID
+          handleOpenAddRecommendation(placeId, recommendation);
+        }
+      }
+    }
+
+    if (!placesStore.getAddError) {
+      handleCloseAdd();
+    }
+  } catch (err) {
+    console.error('Error adding place request:', err);
+  }
+};
+
+// Recommendation
+const handleOpenAddRecommendation = (placeId: string, recommendation: AddRecommendation) => {
+  failedRecommendationPlaceId.value = placeId;
+  failedRecommendation.value = recommendation;
+  showRecommendationModal.value = true;
+};
+
+const handleCloseAddRecommendation = () => {
+  showRecommendationModal.value = false;
+  failedRecommendationPlaceId.value = null;
+  failedRecommendation.value = null;
+  recommendationsStore.clearErrors();
+};
+
+const handleAddRecommendation = async (placeId: string, recommendation: AddRecommendation): Promise<void> => {
+  // If there are no recommendations, close the modal
+  if (!recommendation) {
+    handleCloseAddRecommendation();
+    console.log('No recommendation provided');
+  }
+  else {
+    const recommendationData: Partial<Recommendation> = {
+      ...recommendation,
+      place: failedRecommendationPlaceId.value!,
+      _createdBy: authStore.getUserId!,
+    };
+    console.log('recommendationData', recommendationData);
+
+    try {
+      await recommendationsStore.addRecommendation(recommendationData, authStore.getToken!);
+
+      if (!recommendationsStore.getAddError) {
+        handleCloseAddRecommendation();
+      }
+    } catch (err) {
+      console.error('Error adding recommendation request:', err);
+    }
   }
 };
 
