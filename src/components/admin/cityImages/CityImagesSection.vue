@@ -43,7 +43,7 @@
          <div v-else-if="activeTab === 'Unused'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             <CityImageCard v-if="Object.keys(unusedCities).length"
                v-for="([cityKey, city]) in Object.entries(unusedCities)" :key="cityKey" :city="city" :cityKey="cityKey"
-               tab="Unused" @edit="handleEdit" @delete="handleDelete" />
+               :deleteError="citiesStore.getDeleteError" tab="Unused" @edit="handleEdit" @delete="handleDelete" />
             <div v-else class="text-gray-500">No cities to display.</div>
          </div>
          <!-- Edit Card -->
@@ -73,6 +73,7 @@ const authStore = useAuthStore();
 const activeCities = computed(() => {
    const result: Record<string, CityImage> = {};
 
+   // Loop through unique cities and check if they exist in the city images map
    for (const key in citiesStore.getUniqueCities) {
       if (citiesStore.getCityImagesMap[key]) {
          result[key] = citiesStore.getCityImagesMap[key];
@@ -86,6 +87,7 @@ const activeCities = computed(() => {
 const missingCities = computed(() => {
    const result: Record<string, UniqueCity> = {};
 
+   // Loop through unique cities and check if they exist in the city images map
    for (const key in citiesStore.getUniqueCities) {
       if (!citiesStore.getCityImagesMap[key]) {
          result[key] = {
@@ -102,6 +104,7 @@ const missingCities = computed(() => {
 const unusedCities = computed(() => {
    const result: Record<string, CityImage> = {};
 
+   // Loop through city images map and check if they exist in the unique cities
    for (const key in citiesStore.getCityImagesMap) {
       if (!citiesStore.getUniqueCities[key]) {
          result[key] = citiesStore.getCityImagesMap[key];

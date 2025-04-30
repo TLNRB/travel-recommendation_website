@@ -44,7 +44,8 @@
 
 
       <!-- Display error -->
-      <!-- <div v-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div> -->
+      <div v-if="props.deleteError && tab == 'Unused'" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}
+      </div>
    </div>
 </template>
 
@@ -55,7 +56,7 @@ const props = defineProps({
    city: { type: Object, required: true },
    cityKey: { type: String, required: true },
    tab: { type: String, required: true },
-   /* deleteError: { type: [String, null], default: null }, */
+   deleteError: { type: [String, null], default: null },
 });
 
 //-- Emits
