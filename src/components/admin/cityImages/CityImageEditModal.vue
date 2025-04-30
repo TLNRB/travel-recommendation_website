@@ -2,7 +2,7 @@
    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <!-- Modal box -->
       <div
-         class="my-8 h-fit bg-white rounded-2xl shadow-xl w-full max-w-md p-6 absolute top-0 bottom-0 overflow-y-scroll">
+         class="my-auto h-fit bg-white rounded-2xl shadow-xl w-full max-w-md p-6 absolute top-0 bottom-0 overflow-y-scroll">
          <!-- Close button -->
          <button @click="close"
             class="absolute top-3 right-3 text-gray-400 hover:text-red-700 text-xl duration-200 ease-in-out cursor-pointer">
@@ -14,7 +14,7 @@
          </h2>
 
          <div class="flex items-center mb-4">
-            <h3 class="text-xl font-bold text-gray-800">{{ props.city.name }}&nbsp;</h3>
+            <h3 class="text-xl font-bold text-gray-800">{{ props.city.name }}</h3>
             <span class="text-lg text-gray-500">({{ props.city.country }})</span>
          </div>
 
