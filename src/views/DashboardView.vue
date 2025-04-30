@@ -24,7 +24,7 @@
     <CityImagesSection v-else-if="activeTab === 'City Images' && canEditPlaces" />
 
     <!-- Country Images Tab -->
-    <!-- <CountryImagesSection v-else-if="activeTab === 'Country Images' && canEditPlaces" /> -->
+    <CountryImagesSection v-else-if="activeTab === 'Country Images' && canEditPlaces" />
 
     <!-- Users Tab -->
     <UsersSection v-else-if="activeTab === 'Users' && canEditUsers" />
@@ -38,7 +38,7 @@ import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSecti
 import PlacesSections from '@/components/admin/places/PlacesSection.vue';
 import UsersSection from '@/components/admin/users/UsersSection.vue';
 import CityImagesSection from '@/components/admin/cityImages/CityImagesSection.vue';
-// import CountryImagesSection from '@/components/admin/countryImages/CountryImagesSection.vue';
+import CountryImagesSection from '@/components/admin/countryImages/CountryImagesSection.vue';
 // Stores
 import { useUserStore } from '@/stores/userStore';
 import { useRolesStore } from '@/stores/rolesStore';
@@ -73,7 +73,7 @@ const canEditPlaces = computed(() => {
 
 //-- Tabs
 const tabs = ['Requests', 'Places', 'Users', 'City Images', 'Country Images'];
-const activeTab = ref('City Images');
+const activeTab = ref('Country Images');
 
 onMounted(async () => {
   await rolesStore.fetchRoles();
