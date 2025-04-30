@@ -14,7 +14,7 @@
          </h2>
 
          <div class="flex items-center mb-4">
-            <h3 class="text-xl font-bold text-gray-800">{{ props.city.name }}</h3>
+            <h3 class="text-xl font-bold text-gray-800">{{ props.city.name }}&nbsp;</h3>
             <span class="text-lg text-gray-500">({{ props.city.country }})</span>
          </div>
 
