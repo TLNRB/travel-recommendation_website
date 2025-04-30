@@ -9,7 +9,7 @@ export type User = {
    country?: string,
    city?: string,
    socials?: Array<object>,
-   role: string,
+   role: string | Array<object>,
    registerDate: Date
 }
 
