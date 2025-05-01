@@ -1,7 +1,9 @@
 <template>
    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <!-- Modal box -->
+
       <div class="my-10 bg-white rounded-2xl shadow-xl w-full max-w-md p-6 absolute top-0 bottom-0 overflow-y-scroll">
+
          <!-- Close button -->
          <button @click="close"
             class="absolute top-3 right-3 text-gray-400 hover:text-red-700 text-xl duration-200 ease-in-out cursor-pointer">
@@ -207,7 +209,7 @@ import { continents } from '@/data/continents.json'
 
 const props = defineProps({
    place: { type: Object, required: true },
-   recommendations: { type: Array, default: () => [] }, // Fresh empty array in default to prevent shared state 
+   recommendations: { type: Array, default: () => [] }, // Fresh empty array in default to prevent shared state
    updateError: { type: String, default: null },
    placeLoading: { type: Boolean, default: false },
    recommendationLoading: { type: Boolean, default: false },

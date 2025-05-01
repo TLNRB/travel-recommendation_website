@@ -11,6 +11,10 @@ export type ApiResponse = {
   results: Continent[]
 }
 
+export type ApiResponseCountries = {
+  results: Country[]
+}
+
 export type Country = {
   objectId: string
   name: string
@@ -21,6 +25,7 @@ export type Country = {
     objectId: string
     name: string
   }
+  cities: City[]
 }
 
 export type City = {
@@ -33,22 +38,28 @@ export type City = {
     name: string
   },
   adminCode: string
+  places: Place[]
 }
 
 export type Place = {
-  _id?: string
-  name: string;
-  description: string;
-  images: string[];
+  name: string,
+  description: string,
+  images: (File | string)[],
   location: {
-    continent: string;
-    country: string;
-    city: string;
-    street: string;
-    streetNumber: string;
-  };
-  upvotes: number;
-  tags: string[];
-  approved: boolean;
-  _createdBy: string;
+     continent: string,
+     country: string,
+     city: string,
+     street: string,
+     streetNumber: string
+  },
+  upvotes: number,
+  tags: string[],
+  approved: boolean,
+  _createdBy: string
 }
+
+
+export type AddPlace = Omit<Place, '_createdBy'>
+
+export type EditPlace = Omit<Place, '_createdBy'> & { newImages?: File[] }
+

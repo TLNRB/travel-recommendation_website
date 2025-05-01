@@ -27,20 +27,22 @@
 
 
   <div class="min-h-[40vh] bg-gray-100">
-  <div v-if="noResults" class="flex justify-center items-center h-[40vh] text-2xl text-gray-600">
-    No results found
-  </div>
+    <div v-if="noResults" class="flex justify-center items-center h-[40vh] text-2xl text-gray-600">
+      No results found
+    </div>
 
-  <div v-else class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 mx-auto container-fluid">
-    <RouterLink
-      v-for="country in displayedCountries"
-      :key="country.objectId"
-      :to="`/country/${country.objectId}`"
-      class="my-10 mx-auto w-28 h-40 md:w-40 md:h-64 2xl:w-54 2xl:h-72 bg-green-600 rounded-lg flex flex-col items-center justify-center text-white"
-    >
-      <div class="text-3xl">{{ country.emoji }}</div>
-      <div class="mt-2 text-center">{{ country.name }}</div>
-    </RouterLink>
+    <div v-else class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 mx-auto container-fluid">
+      <RouterLink
+        v-for="country in displayedCountries"
+        :key="country.objectId"
+        :to="`/country/${country.objectId}`"
+        class="my-10 mx-auto w-28 h-40 md:w-40 md:h-64 2xl:w-54 2xl:h-72 bg-green-600 rounded-lg flex flex-col items-center justify-center text-white"
+      >
+        <div class="text-3xl">{{ country.emoji }}</div>
+        <div class="mt-2 text-center">{{ country.name }}</div>
+      </RouterLink>
+    </div>
+
   </div>
 </div>
 
@@ -52,38 +54,80 @@
 import { onMounted, ref, watch, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { externalAPI } from '@/modules/api/externalFetch';
+import { usePlaces } from '@/modules/places/usePlaces';
 
-const { fetchContinentAndCountries, continent, allCountries, popularCountries, loading } = externalAPI()
+const { getPlaces, places } = usePlaces();
+
+const { fetchContinentAndCountries, continent, allCountries, loading, allCities } = externalAPI()
+
 
 const route = useRoute()
 const continentId = ref(route.params.id as string)
 
 onMounted(() => {
-  fetchContinentAndCountries(continentId.value)
-})
+  fetchContinentAndCountries(continentId.value).then(() => {
+    console.log("Fetched countries:", allCountries.value);
+
+  });
+
+  getPlaces();
+});
 
 watch(
   () => route.params.id,
   (newId) => {
     continentId.value = newId as string
     fetchContinentAndCountries(continentId.value)
+    getPlaces();
   }
 )
+
+const citiesWithPlaces = computed(() => {
+  const citiesWithContent = new Set(
+    places.value
+      .filter(place => place.approved)
+      .map(place =>
+        `${place.location.city.toLowerCase()}__${place.location.country.toLowerCase()}`
+      )
+  );
+
+  return allCities.value.filter(city => {
+    const cityName = city.name?.toLowerCase();
+    const countryName = city.country?.name?.toLowerCase();
+
+    if (!cityName || !countryName) return false;
+
+    const key = `${cityName}__${countryName}`;
+    return citiesWithContent.has(key);
+  });
+});
+
+const countriesWithContent = computed(() => {
+  return allCountries.value.filter(country =>
+    citiesWithPlaces.value.some(city =>
+      city.country?.objectId === country.objectId
+    )
+  );
+});
 
 const searchTerm = ref('')
 
 const displayedCountries = computed(() => {
   if (searchTerm.value.length >= 3) {
-    return allCountries.value.filter(c =>
+
+    return countriesWithContent.value.filter(c =>
       c.name.toLowerCase().includes(searchTerm.value.toLowerCase())
-    )
+    );
   }
-  return popularCountries.value
-})
+
+  return countriesWithContent.value;
+});
 
 const noResults = computed(() => {
-  return searchTerm.value.length >= 3 && displayedCountries.value.length === 0
-})
+  return searchTerm.value.length >= 3 && displayedCountries.value.length === 0;
+});
+
+console.log("Matched countries:", countriesWithContent.value.map(c => c.name));
 
 
 </script>

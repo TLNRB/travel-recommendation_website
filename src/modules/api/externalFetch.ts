@@ -1,26 +1,27 @@
 import { ref } from "vue";
-import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfaces";
+import type { Continent, Country, City, ApiResponse, ApiResponseCountries } from "@/interfaces/interfaces";
 
-export const externalAPI = () => {
+  export const externalAPI = () => {
 
-  const loading = ref(true)
+    const loading = ref(true)
 
-  const continent = ref<Continent | null>(null)
-  const country = ref<Country | null>(null)
-  const city = ref<City | null>(null)
+    const continent = ref<Continent | null>(null)
+    const country = ref<Country | null>(null)
+    const city = ref<City | null>(null)
 
-  const continents = ref<Continent[]>([])
-  const popularCountries = ref<Country[]>([])
-  const allCountries = ref<Country[]>([])
-  const popularCities = ref<City[]>([])
-  const allCities = ref<City[]>([])
+
+    const continents = ref<Continent[]>([])
+    const allCountriesGlobal = ref<Country[]>([])
+    const allCountries = ref<Country[]>([])
+    const allCities = ref<City[]>([])
+
 
   const fetchContinents = async () => {
     try {
-      const response = await fetch('https://parseapi.back4app.com/classes/Continent?limit=10', {
+      const response = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Continent?limit=10`, {
         headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
         }
       })
 
@@ -32,101 +33,130 @@ export const externalAPI = () => {
     }
   }
 
-  const fetchContinentAndCountries = async (id: string) => {
+  const fetchAllCountries = async () => {
     try {
-      loading.value = true
-
-      const continentRes = await fetch(`https://parseapi.back4app.com/classes/Continent/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Country?limit=300&keys=name,emoji`, {
         headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
         }
       })
-      const continentData = await continentRes.json()
-      continent.value = continentData
 
+      const data: ApiResponseCountries = await response.json()
+      allCountriesGlobal.value = data.results
+      console.log('Continents:', data.results)
+    } catch (error) {
+      console.error('Error fetching all countries across the globe:', error)
+    }
+  }
+  const fetchContinentAndCountries = async (id: string) => {
+    try {
+      loading.value = true;
+
+      // 1. Fetch continent
+      const continentRes = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Continent/${id}`, {
+        headers: {
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
+        }
+      });
+      const continentData = await continentRes.json();
+      continent.value = continentData;
+
+      // 2. Fetch countries in continent
       const where = encodeURIComponent(JSON.stringify({
         continent: {
           "__type": "Pointer",
           "className": "Continent",
           "objectId": id
         }
-      }))
-      const countryRes = await fetch(
-        `https://parseapi.back4app.com/classes/Country?limit=8&order=-capital&include=continent&keys=name,emoji,code,capital,continent,continent.name&where=${where}`,
-        {
-          headers: {
-            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
-          }
-        }
-      )
-      const countryData = await countryRes.json()
-      popularCountries.value = countryData.results
+
+      }));
 
       const allRes = await fetch(
-        `https://parseapi.back4app.com/classes/Country?include=continent&keys=name,emoji,code,capital,continent,continent.name&where=${where}`,
+        `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Country?include=continent&keys=name,emoji,code,capital,continent,continent.name&where=${where}`,
+
         {
           headers: {
-            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+            'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+            'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
           }
         }
-      )
-      allCountries.value = (await allRes.json()).results
+      );
+      allCountries.value = (await allRes.json()).results;
+
+      // 3. Fetch cities per country in parallel
+      const cityFetchPromises = allCountries.value.map(async (country) => {
+        const cityWhere = encodeURIComponent(JSON.stringify({
+          country: {
+            "__type": "Pointer",
+            "className": "Country",
+            "objectId": country.objectId
+          }
+        }));
+
+        const cityRes = await fetch(
+          `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=1000&order=-population&include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location&where=${cityWhere}`,
+          {
+            headers: {
+              'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+              'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
+            }
+          }
+        );
+        const { results } = await cityRes.json();
+        return results;
+      });
+
+      // 4. Wait for all city fetches and flatten results
+      const cityResults = await Promise.all(cityFetchPromises);
+      allCities.value = cityResults.flat();
+
 
     } catch (error) {
-      console.error('Error loading continent or countries:', error)
+      console.error('Error loading continent, countries, or cities:', error);
     } finally {
-      loading.value = false
+      loading.value = false;
     }
-  }
+  };
+
+
 
   const fetchCountryAndCities = async (id: string) => {
     try {
       loading.value = true
       const countryResponse = await fetch(
-        `https://parseapi.back4app.com/classes/Country/${id}`,
-        {
-          headers: {
-            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH',
-          }
-        }
-      );
-      const countryData = await countryResponse.json()
-      country.value = countryData
 
-      const where = encodeURIComponent(JSON.stringify({
-        country: {
-          "__type": "Pointer",
-          "className": "Country",
-          "objectId": id
-        }
-      }))
-      const cityResponse = await fetch(
-        `https://parseapi.back4app.com/classes/City?limit=8&order=-population&where=${where}`,
-        {
-          headers: {
-            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Country/${id}`,
+          {
+            headers: {
+              'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+              'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
+            }
           }
-        }
-      )
-      const cityData = await cityResponse.json()
-      popularCities.value = cityData.results
+        );
+        const countryData = await countryResponse.json()
+        country.value = countryData
 
-      const allCitiesRes = await fetch(
-        `https://parseapi.back4app.com/classes/City?order=-population&where=${where}`,
-        {
-          headers: {
-            'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-            'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
-          }
+    const where = encodeURIComponent(JSON.stringify({
+      country: {
+        "__type": "Pointer",
+        "className": "Country",
+        "objectId": id
+      }
+    }))
+
+    const allCitiesRes = await fetch(
+      `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=100&order=-population&include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location&where=${where}`,
+      {
+        headers: {
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
         }
-      )
-      const allCitiesData = await allCitiesRes.json()
-      allCities.value = allCitiesData.results
+      }
+    )
+    const allCitiesData = await allCitiesRes.json()
+    allCities.value = allCitiesData.results
     }
     catch (error) {
       console.error('Error loading a country or cities:', error)
@@ -140,10 +170,10 @@ export const externalAPI = () => {
     try {
       loading.value = true
 
-      const cityResponse = await fetch(`https://parseapi.back4app.com/classes/City/${id}`, {
+      const cityResponse = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City/${id}`, {
         headers: {
-          'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
-          'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH'
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
         }
       })
       const continentData = await cityResponse.json()
@@ -234,14 +264,15 @@ export const externalAPI = () => {
     city,
     continents,
     allCountries,
-    popularCountries,
-    popularCities,
     allCities,
     fetchContinents,
     fetchContinentAndCountries,
     fetchCountryAndCities,
     fetchSingleCity,
+    fetchAllCountries,
+    allCountriesGlobal
     validateCountry,
     validateCity
+
   }
 }
