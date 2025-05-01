@@ -15,10 +15,12 @@
       <!-- Location -->
       <div class="text-sm text-gray-600 space-y-1">
          <p>
-            <strong>Location:</strong>
-            {{ props.place.location.street }} {{ props.place.location.streetNumber }},
-            {{ props.place.location.city }}, {{ props.place.location.country }}
-            ({{ props.place.location.continent }})
+            <strong>Location: </strong>
+            <span v-if="props.place.location.street">{{ props.place.location.street }}&nbsp;</span>
+            <span v-if="props.place.location.streetNumber">{{ props.place.location.streetNumber }}, </span>
+            <span v-if="props.place.location.city">{{ props.place.location.city }}, </span>
+            <span>{{ props.place.location.country }}&nbsp;</span>
+            <span>({{ props.place.location.continent }})</span>
          </p>
       </div>
 
@@ -54,14 +56,13 @@
             <div v-if="activeMenuId === props.place._id"
                class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                <button @click="editEvent"
-                  class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
+                  class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer rounded-t-md">
                   Edit
                </button>
                <button @click="deleteEvent"
-                  class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
+                  class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer rounded-b-md">
                   Delete
                </button>
-
             </div>
          </div>
       </div>
@@ -73,7 +74,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
    place: { type: Object, required: true },
-   deleteError: { type: String, default: null },
+   deleteError: { type: [String, null], default: null },
 });
 
 //-- Emits
@@ -109,7 +110,6 @@ onMounted(() => {
 onUnmounted(() => {
    document.removeEventListener("click", closeDropdown);
 });
-
 </script>
 
 <style scoped>

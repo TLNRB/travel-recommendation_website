@@ -42,15 +42,13 @@ export const usePlaces = () => {
     }
   };
 
-
   return {
     loading,
     places,
     error,
     getPlaces,
     getPlaceByName,
-    singlePlace,
-    // citiesWithPlaces
+    singlePlace
   };
 };
 

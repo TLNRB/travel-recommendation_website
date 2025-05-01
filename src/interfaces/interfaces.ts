@@ -3,17 +3,6 @@ export type Role = {
   permissions: string[]
 }
 
-export type Recommendation = {
-  _createdBy: string,
-  place: string,
-  title: string,
-  content: string,
-  dateOfVisit: string,
-  dateOfWriting: string,
-  rating: number,
-  upvotes: number
-}
-
 export type Continent = {
   objectId: string
   name: string
@@ -69,6 +58,8 @@ export type Place = {
   _createdBy: string
 }
 
+
 export type AddPlace = Omit<Place, '_createdBy'>
 
 export type EditPlace = Omit<Place, '_createdBy'> & { newImages?: File[] }
+

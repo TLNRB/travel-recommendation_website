@@ -1,7 +1,9 @@
 <template>
    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <!-- Modal box -->
-      <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 my-8 bottom-0 absolute top-0 overflow-y-scroll">
+
+      <div class="my-10 bg-white rounded-2xl shadow-xl w-full max-w-md p-6 absolute top-0 bottom-0 overflow-y-scroll">
+
          <!-- Close button -->
          <button @click="close"
             class="absolute top-3 right-3 text-gray-400 hover:text-red-700 text-xl duration-200 ease-in-out cursor-pointer">
@@ -28,7 +30,11 @@
 
                <!-- Images -->
                <div>
-                  <label class="block text-sm font-medium mb-1">Images</label>
+                  <label class="block text-sm font-medium mb-1">
+                     Images
+                     <span class="text-xs text-gray-500 font-normal mt-1 italic">(You must upload at least one
+                        image.)</span>
+                  </label>
                   <div class="flex flex-wrap gap-3 mb-2">
                      <div v-for="(img, index) in editPlaceRequest.images" :key="index"
                         class="relative w-24 h-24 rounded overflow-hidden border">
@@ -86,18 +92,27 @@
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                   <div>
-                     <label class="block text-sm font-medium mb-1">City</label>
-                     <input v-model="editPlaceRequest.location.city" type="text" required
+                     <label class="block text-sm font-medium mb-1">
+                        City
+                        <span class="text-xs text-gray-500 font-normal mt-1 italic">(Optional)</span>
+                     </label>
+                     <input v-model="editPlaceRequest.location.city" type="text" placeholder="City"
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                   <div>
-                     <label class="block text-sm font-medium mb-1">Street</label>
-                     <input v-model="editPlaceRequest.location.street" type="text" required
+                     <label class="block text-sm font-medium mb-1">
+                        Street
+                        <span class="text-xs text-gray-500 font-normal mt-1 italic">(Optional)</span>
+                     </label>
+                     <input v-model="editPlaceRequest.location.street" type="text" placeholder="Street Name"
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                   <div>
-                     <label class="block text-sm font-medium mb-1">Street Number</label>
-                     <input v-model="editPlaceRequest.location.streetNumber" type="text" required
+                     <label class="block text-sm font-medium mb-1">
+                        Street Number
+                        <span class="text-xs text-gray-500 font-normal mt-1 italic">(Optional)</span>
+                     </label>
+                     <input v-model="editPlaceRequest.location.streetNumber" type="text" placeholder="Street Number"
                         class="w-full px-3 py-2 border rounded-lg" />
                   </div>
                </div>
@@ -187,7 +202,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+// Components
 import type { EditPlace } from '@/interfaces/placeTypes'
+// Data
+import { continents } from '@/data/continents.json'
 
 const props = defineProps({
    place: { type: Object, required: true },
@@ -198,16 +216,6 @@ const props = defineProps({
 })
 
 //-- Edit
-const continents = [
-   'Africa',
-   'Asia',
-   'Europe',
-   'North America',
-   'South America',
-   'Oceania',
-   'Antarctica',
-]
-
 const editPlaceRequest = ref<EditPlace>({
    name: props.place.name,
    images: [...props.place.images],
@@ -286,6 +294,16 @@ const close = () => {
 }
 
 const submit = () => {
+   if (editPlaceRequest.value.location.city === '') {
+      delete editPlaceRequest.value.location.city
+   }
+   if (editPlaceRequest.value.location.street === '') {
+      delete editPlaceRequest.value.location.street
+   }
+   if (editPlaceRequest.value.location.streetNumber === '') {
+      delete editPlaceRequest.value.location.streetNumber
+   }
+
    emit('submit', editPlaceRequest.value, props.place._id)
 }
 

@@ -22,8 +22,14 @@
          <PlaceAddModal v-if="showAddModal" :addError="placesStore.getAddError" :loading="placesStore.getIsLoading"
             @submit="handleAddPlace" @close="handleCloseAdd" />
 
+         <!-- Failed Recommendation Card -->
+         <PlaceRecommendationFail v-else-if="showRecommendationModal"
+            :place="placesStore.getPlaceById(failedRecommendationPlaceId!)!" :recommendation="failedRecommendation!"
+            :addError="recommendationsStore.getAddError" :loading="recommendationsStore.getIsLoading"
+            @submit="handleAddRecommendation" @close="handleCloseAddRecommendation" />
+
          <!-- Edit Card -->
-         <PlaceEditModal v-if="showEditModal" :place="placesStore.getPlaceById(editPlaceId!)"
+         <PlaceEditModal v-else-if="showEditModal" :place="placesStore.getPlaceById(editPlaceId!)!"
             :updateError="placesStore.getUpdateError" :loading="placesStore.getIsLoading" @submit="handleUpdatePlace"
             @close="handleCloseEdit" />
       </div>
@@ -35,21 +41,30 @@ import { ref, computed, onMounted } from 'vue';
 // Components
 import PlaceCard from '@/components/admin/places/PlaceCard.vue';
 import PlaceAddModal from '@/components/admin/places/PlaceAddModal.vue';
+import PlaceRecommendationFail from '@/components/admin/places/PlaceRecommendationFail.vue';
 import PlaceEditModal from '@/components/admin/places/PlaceEditModal.vue';
 // Stores
 import { usePlacesStore } from '@/stores/crud/placesStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 // Interfaces
 import type { Place, AddPlace, EditPlace } from '@/interfaces/placeTypes'
+import type { AddRecommendation, Recommendation } from '@/interfaces/recommendationTypes';
 
 const placesStore = usePlacesStore();
 const authStore = useAuthStore();
+const recommendationsStore = useRecommendationsStore();
 
 const places = computed(() => placesStore.filterPlacesByApproved(true));
 
 //-- Add Place
 const showAddModal = ref<boolean>(false);
 
+const failedRecommendationPlaceId = ref<string | null>(null);
+const failedRecommendation = ref<AddRecommendation | null>(null);
+const showRecommendationModal = ref<boolean>(false);
+
+// Place
 const handleAdd = () => {
    showAddModal.value = true;
 };
@@ -59,14 +74,45 @@ const handleCloseAdd = () => {
    placesStore.clearErrors();
 };
 
-const handleAddPlace = async (newPlace: AddPlace): Promise<void> => {
+const handleAddPlace = async (newPlace: AddPlace, recommendation: AddRecommendation): Promise<void> => {
    const placeData: Place = {
       ...newPlace,
       _createdBy: authStore.getUserId!,
    };
 
    try {
-      await placesStore.addPlace(placeData, authStore.getToken!);
+      const placeId = await placesStore.addPlace(placeData, authStore.getToken!);
+
+      // Check if the place was added successfully
+      if (placeId) {
+         // If there are no recommendations, close the modal
+         if (!recommendation) {
+            handleCloseAddRecommendation();
+         }
+         // If there are recommendations, add them
+         else {
+            const recommendationData: Partial<Recommendation> = { // Leaving the dayOfWriting out
+               ...recommendation,
+               place: placeId,
+               _createdBy: authStore.getUserId!,
+            };
+
+            console.log('recommendationData', recommendationData);
+
+            await recommendationsStore.addRecommendation(recommendationData, authStore.getToken!);
+
+            if (!recommendationsStore.getAddError) {
+               console.log('Recommendation added successfully');
+               // If the recommendation is added successfully, close the modal
+               handleCloseAddRecommendation();
+            }
+            else {
+               console.log('Recommendation failed to add');
+               // If the recommendation fails, set the failed recommendation place's ID
+               handleOpenAddRecommendation(placeId, recommendation);
+            }
+         }
+      }
 
       if (!placesStore.getAddError) {
          handleCloseAdd();
@@ -75,6 +121,47 @@ const handleAddPlace = async (newPlace: AddPlace): Promise<void> => {
       console.error('Error adding place request:', err);
    }
 };
+
+// Recommendation
+const handleOpenAddRecommendation = (placeId: string, recommendation: AddRecommendation) => {
+   failedRecommendationPlaceId.value = placeId;
+   failedRecommendation.value = recommendation;
+   showRecommendationModal.value = true;
+};
+
+const handleCloseAddRecommendation = () => {
+   showRecommendationModal.value = false;
+   failedRecommendationPlaceId.value = null;
+   failedRecommendation.value = null;
+   recommendationsStore.clearErrors();
+};
+
+const handleAddRecommendation = async (placeId: string, recommendation: AddRecommendation): Promise<void> => {
+   // If there are no recommendations, close the modal
+   if (!recommendation) {
+      handleCloseAddRecommendation();
+      console.log('No recommendation provided');
+   }
+   else {
+      const recommendationData: Partial<Recommendation> = {
+         ...recommendation,
+         place: failedRecommendationPlaceId.value!,
+         _createdBy: authStore.getUserId!,
+      };
+      console.log('recommendationData', recommendationData);
+
+      try {
+         await recommendationsStore.addRecommendation(recommendationData, authStore.getToken!);
+
+         if (!recommendationsStore.getAddError) {
+            handleCloseAddRecommendation();
+         }
+      } catch (err) {
+         console.error('Error adding recommendation request:', err);
+      }
+   }
+};
+
 
 //-- Edit 
 // Edit Modal
@@ -117,7 +204,7 @@ const handleDeletePlace = async (placeId: string): Promise<void> => {
          handleCloseEdit();
       }
    } catch (err) {
-      console.error('Error deleting place request:', err);
+      console.error('Error deleting place:', err);
    }
 }
 

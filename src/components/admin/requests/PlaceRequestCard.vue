@@ -15,10 +15,12 @@
       <!-- Location -->
       <div class="text-sm text-gray-600 space-y-1">
          <p>
-            <strong>Location:</strong>
-            {{ props.place.location.street }} {{ props.place.location.streetNumber }},
-            {{ props.place.location.city }}, {{ props.place.location.country }}
-            ({{ props.place.location.continent }})
+            <strong>Location: </strong>
+            <span v-if="props.place.location.street">{{ props.place.location.street }}&nbsp;</span>
+            <span v-if="props.place.location.streetNumber">{{ props.place.location.streetNumber }}, </span>
+            <span v-if="props.place.location.city">{{ props.place.location.city }}, </span>
+            <span>{{ props.place.location.country }}&nbsp;</span>
+            <span>({{ props.place.location.continent }})</span>
          </p>
       </div>
 
@@ -66,7 +68,8 @@
       </div>
 
       <!-- Display error -->
-      <div v-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div>
+      <div v-if="props.updateError" class="mt-4 text-red-500 text-sm italic">{{ props.updateError }}</div>
+      <div v-else-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div>
 
 
       <!-- Actions & Status -->
@@ -85,7 +88,7 @@
             <div v-if="activeMenuId === props.place._id"
                class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                <button @click="approve"
-                  class="block w-full text-left px-4 py-2 text-sm text-green-600  hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
+                  class="block w-full text-left px-4 py-2 text-sm text-green-600  hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer rounded-t-md">
                   Approve
                </button>
                <button @click="reject"
@@ -93,7 +96,7 @@
                   Reject
                </button>
                <button @click="edit"
-                  class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer">
+                  class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer rounded-b-md">
                   Edit
                </button>
             </div>
@@ -113,6 +116,7 @@ const recommendationsStore = useRecommendationsStore()
 
 const props = defineProps({
    place: { type: Object, required: true },
+   updateError: { type: String, default: null },
    deleteError: { type: String, default: null },
 });
 
@@ -138,6 +142,16 @@ const approve = () => {
       tags: [...props.place.tags],
       approved: true,
    })
+
+   if (approvedPlace.value.location.city === '') {
+      delete approvedPlace.value.location.city
+   }
+   if (approvedPlace.value.location.street === '') {
+      delete approvedPlace.value.location.street
+   }
+   if (approvedPlace.value.location.streetNumber === '') {
+      delete approvedPlace.value.location.streetNumber
+   }
 
    emit('approve', approvedPlace.value, props.place._id);
    activeMenuId.value = null;

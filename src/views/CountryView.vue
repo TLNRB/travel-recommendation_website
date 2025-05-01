@@ -40,6 +40,7 @@
     </RouterLink>
   </div>
   </div>
+
 </div>
 </template>
 
@@ -51,6 +52,7 @@ import { usePlaces } from '@/modules/places/usePlaces';
 
 const { getPlaces, places, loading: placesLoading } = usePlaces();
 const {fetchCountryAndCities, allCities, country, loading} = externalAPI()
+
 
 const route = useRoute()
 const countryId = ref(route.params.id as string)
@@ -88,6 +90,7 @@ const citiesWithPlaces = computed(() => {
 });
 console.log("cities with places" + citiesWithPlaces)
 
+
 const searchTerm = ref('')
 
 const displayedCities = computed(() => {
@@ -98,6 +101,7 @@ const displayedCities = computed(() => {
   }
   return citiesWithPlaces.value;
 });
+
 
 const noResults = computed(() => {
   return searchTerm.value.length >= 3 && displayedCities.value.length === 0

@@ -8,7 +8,7 @@
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
          <!-- Display Cards -->
          <PlaceRequestCard v-if="placeRequests.length > 0" v-for="(place, index) in placeRequests" :key="index"
-            :place="place" @edit="handleEdit" @approve="handleUpdatePlaceRequest" @reject="handleDeletePlaceRequest"
+            :place="place" @edit="handleEdit" @approve="handleUpdatePlaceRequest" @reject="handleDeletePlaceRequest" :updateError="placesStore.getUpdateError"
             :deleteError="placesStore.getDeleteError" />
          <div v-else class="text-gray-500">No place requests to display.</div>
 

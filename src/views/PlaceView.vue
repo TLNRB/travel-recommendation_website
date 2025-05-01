@@ -81,6 +81,7 @@ const { getPlaceByName, singlePlace, loading, error } = usePlaces();
 const placeName = route.params.id as string;
 
 // undefined from homepage problem to fix
+
 const cityId = route.query.cityId as string;
 
 

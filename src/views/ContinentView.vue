@@ -42,8 +42,11 @@
         <div class="mt-2 text-center">{{ country.name }}</div>
       </RouterLink>
     </div>
+
   </div>
 </div>
+
+  </div>
 </template>
 
 
@@ -56,6 +59,7 @@ import { usePlaces } from '@/modules/places/usePlaces';
 const { getPlaces, places } = usePlaces();
 
 const { fetchContinentAndCountries, continent, allCountries, loading, allCities } = externalAPI()
+
 
 const route = useRoute()
 const continentId = ref(route.params.id as string)
@@ -110,6 +114,7 @@ const searchTerm = ref('')
 
 const displayedCountries = computed(() => {
   if (searchTerm.value.length >= 3) {
+
     return countriesWithContent.value.filter(c =>
       c.name.toLowerCase().includes(searchTerm.value.toLowerCase())
     );
@@ -123,6 +128,7 @@ const noResults = computed(() => {
 });
 
 console.log("Matched countries:", countriesWithContent.value.map(c => c.name));
+
 
 </script>
 
