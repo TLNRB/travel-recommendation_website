@@ -147,7 +147,7 @@ import type { Continent, Country, City, ApiResponse, ApiResponseCountries } from
     }))
 
     const allCitiesRes = await fetch(
-      `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=100&order=-population&include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location&where=${where}`,
+      `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=1000&order=-population&include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location&where=${where}`,
       {
         headers: {
           'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
@@ -270,7 +270,7 @@ import type { Continent, Country, City, ApiResponse, ApiResponseCountries } from
     fetchCountryAndCities,
     fetchSingleCity,
     fetchAllCountries,
-    allCountriesGlobal
+    allCountriesGlobal,
     validateCountry,
     validateCity
 
