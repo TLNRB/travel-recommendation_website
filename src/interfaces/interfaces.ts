@@ -3,6 +3,12 @@ export type Role = {
   permissions: string[]
 }
 
+export type Social = {
+  name: string,
+  link: string,
+  icon: string
+}
+
 export type Continent = {
   objectId: string
   name: string
@@ -46,11 +52,11 @@ export type Place = {
   description: string,
   images: (File | string)[],
   location: {
-     continent: string,
-     country: string,
-     city: string,
-     street: string,
-     streetNumber: string
+    continent: string,
+    country: string,
+    city: string,
+    street: string,
+    streetNumber: string
   },
   upvotes: number,
   tags: string[],

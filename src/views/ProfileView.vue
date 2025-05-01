@@ -1,30 +1,41 @@
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
-
+  <div class="max-w-6xl w-full mx-auto py-16 px-4 space-y-8 md:px-6">
     <!-- Header Section -->
     <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
       <!-- Avatar -->
-      <img
-        src="https://i.pravatar.cc/150"
-        alt="Profile picture"
-        class="w-32 h-32 rounded-full border-4 border-blue-500 object-cover"
-      />
+      <img v-if="user?.profilePicture" :src="user?.profilePicture" alt="Profile picture"
+        class="w-32 h-32 rounded-full border-4 border-blue-500 object-cover" />
+      <div v-else class="min-w-32 min-h-32 w-32 h-32 rounded-full bg-white border-[1px] border-gray-400">
+        <!-- Initial first letter -->
+        <span class="text-4xl text-blue-500 flex items-center justify-center h-full">
+          {{ user?.firstName.charAt(0) }}{{ user?.lastName.charAt(0) }}
+        </span>
+      </div>
 
       <!-- User Info -->
       <div class="text-center sm:text-left w-full">
         <div class="flex justify-between items-center">
           <div>
-            <h2 class="text-2xl font-bold">John Doe</h2>
-            <p class="text-gray-500 text-sm">@johndoe</p>
+            <h2 class="text-2xl font-bold">{{ user?.firstName }} {{ user?.lastName }}</h2>
+            <p class="text-gray-500 text-sm">@{{ user?.username }}</p>
           </div>
           <button class="text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
             Edit Profile
           </button>
         </div>
-        <p class="mt-2 text-gray-700">
-          Passionate traveler. Sharing tips and hidden gems from around the world. 🌍✈️
+        <p v-if="user?.bio" class="mt-2 text-gray-700">
+          {{ user?.bio }} 🌍✈️
         </p>
-        <p class="text-sm text-gray-500 mt-1">📍 Berlin, Germany · Joined Jan 2022</p>
+        <div class="flex text-sm text-gray-500 mt-1">
+          <div v-if="user?.city || user?.country" class="flex items-center">
+            📍
+            <span v-if="user?.city">{{ user?.city }},&nbsp;</span>
+            <span v-if="user?.country">{{ user?.country }}&nbsp;</span>
+          </div>
+          <span>· Joined {{ new Date(user?.registerDate).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+          }) }}</span>
+        </div>
 
         <!-- Social Links -->
         <div class="flex gap-4 mt-3 justify-center sm:justify-start">
@@ -82,6 +93,11 @@
 </template>
 
 <script setup lang="ts">
-// Later you'll inject props or pull user data from your store/API
-</script>
+import { computed } from 'vue';
+// Stores
+import { useUserStore } from '@/stores/userStore';
 
+const userStore = useUserStore();
+
+const user = computed(() => userStore.getUser);
+</script>
