@@ -1,14 +1,14 @@
 <template>
-  <div class="flex min-h-screen bg-gray-50">
+  <div class="flex flex-col sm:flex-row sm:my-auto">
     <!-- Welcome Info -->
-    <div class="w-1/2 flex flex-col justify-center p-16">
+    <div class="flex flex-col justify-center p-16 sm:w-1/2">
       <h1 class="text-4xl font-bold mb-4">Welcome to Our Platform</h1>
       <p class="text-lg text-gray-600 mb-8">Join us and explore amazing experiences around the world. Sign up now to get
         started!</p>
     </div>
 
     <!-- Auth Card -->
-    <div class="w-1/2 flex justify-center">
+    <div class="flex justify-center pb-[64px] sm:w-1/2 sm:py-[64px]">
       <div class="bg-white p-10 rounded-2xl shadow-lg w-full  max-w-md">
         <h2 v-if="activeTab === 'register'" class="text-2xl font-bold text-center mb-6">Create your account</h2>
         <h2 v-else class="text-2xl font-bold text-center mb-6">Log in to your Account</h2>
