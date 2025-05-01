@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfaces";
+import type { Continent, Country, City, ApiResponse, ApiResponseCountries } from "@/interfaces/interfaces";
 
   export const externalAPI = () => {
 
@@ -10,6 +10,7 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     const city = ref<City | null>(null)
 
     const continents = ref<Continent[]>([])
+    const allCountriesGlobal = ref<Country[]>([])
     const allCountries = ref<Country[]>([])
     const allCities = ref<City[]>([])
 
@@ -30,6 +31,22 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     }
   }
 
+  const fetchAllCountries = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/Country?limit=300&keys=name,emoji`, {
+        headers: {
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
+        }
+      })
+
+      const data: ApiResponseCountries = await response.json()
+      allCountriesGlobal.value = data.results
+      console.log('Continents:', data.results)
+    } catch (error) {
+      console.error('Error fetching all countries across the globe:', error)
+    }
+  }
   const fetchContinentAndCountries = async (id: string) => {
     try {
       loading.value = true;
@@ -173,7 +190,9 @@ import type { Continent, Country, City, ApiResponse } from "@/interfaces/interfa
     fetchContinents,
     fetchContinentAndCountries,
     fetchCountryAndCities,
-    fetchSingleCity
+    fetchSingleCity,
+    fetchAllCountries,
+    allCountriesGlobal
 
   }
 }
