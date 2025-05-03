@@ -20,6 +20,7 @@ export type UpdateProfile = {
    lastName: string,
    username: string,
    profilePicture?: string,
+   newImage?: string | File,
    bio?: string,
    country?: string,
    city?: string,
