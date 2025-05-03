@@ -1,7 +1,8 @@
 <template>
   <div class="max-w-6xl w-full mx-auto py-16 px-4 space-y-8 md:px-6">
     <!-- Header Section -->
-    <ProfileCard :user="user!" :roleName="roleName!" />
+    <div v-if="usersStore.getIsLoading" class="loader"></div>
+    <ProfileCard v-else :user="user!" :roleName="roleName!" />
 
     <!-- Recommendations Section -->
     <h2 class="text-xl font-bold mt-16 mb-4">Latest Recommendations</h2>
