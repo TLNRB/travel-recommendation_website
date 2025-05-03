@@ -59,7 +59,7 @@
 
           <div v-if="profileDropdownOpen"
             class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg pt-2 border-[1px] border-gray-300 z-50">
-            <RouterLink to="/profile" @click="profileDropdownOpen = false"
+            <RouterLink :to="`/profile/${userStore.getUser?._id}`" @click="profileDropdownOpen = false"
               class="block px-4 py-2 text-sm hover:bg-gray-100">
               Profile</RouterLink>
             <RouterLink to="/settings" @click="profileDropdownOpen = false"

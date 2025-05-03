@@ -5,14 +5,14 @@
  * - place request recommendation appears twice until refresh after adding
  * 
  * == USER PROFILE ==
- * - user profile edit
- * - user profile view (url)
+ * - user profile edit (socials creation)
+ * - collections display
+ * 
  * - collections creation
+ * - collections edit
+ * - collections delete
  * 
  * - recommendations click goes to place
- * - recommendations edit
- * 
- * - socials creation
- * 
+ * - recommendations edit&delete on place page
  */
 
