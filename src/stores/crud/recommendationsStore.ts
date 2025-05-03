@@ -12,9 +12,9 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
    }),
 
    actions: {
-      async fetchRecommendations(): Promise<void> {
+      async fetchRecommendations(force = false, populatePlace = 'false'): Promise<void> {
          // Prevents multiple calls to the API
-         if (this.isLoaded || this.isLoading) {
+         if (!force && (this.isLoaded || this.isLoading)) {
             console.log('Recommendations already loaded or loading, skipping fetch')
             return;
          }
@@ -22,7 +22,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          this.isLoading = true
 
          try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/?populateCreatedBy=true&populatePlace=false`, {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/?populateCreatedBy=true&populatePlace=${populatePlace}`, {
                method: 'GET',
             })
 
@@ -36,7 +36,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             // If the data is valid and not an empty array, store it
             if (recommendationsData && Array.isArray(recommendationsData.data)) {
                recommendationsData.data.forEach((recommendation: Recommendation) => {
-                  const placeId = recommendation.place;
+                  const placeId = populatePlace === 'true' ? recommendation.place._id : recommendation.place;
 
                   if (!this.recommendationsMap[placeId]) {
                      this.recommendationsMap[placeId] = []; // Initialize if not present
@@ -60,7 +60,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          }
       },
 
-      async fetchRecommendationsByPlace(placeId: string, force = false): Promise<void> {
+      async fetchRecommendationsByPlace(placeId: string, force = false, populatePlace = 'false'): Promise<void> {
          if (!force && (this.recommendationsMap[placeId] || this.isLoading)) {
             console.log("Recommendations already loaded or loading for this place, skipping fetch");
             return;
@@ -69,7 +69,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          this.isLoading = true;
 
          try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/query?field=place&value=${placeId}&populateCreatedBy=true&populatePlace=false`, {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/query?field=place&value=${placeId}&populateCreatedBy=true&populatePlace=${populatePlace}`, {
                method: 'GET',
             })
 
@@ -198,6 +198,18 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
    getters: {
       getRecommendationsByPlaceId: (state) => {
          return (placeId: string) => state.recommendationsMap[placeId] || [];
+      },
+      getRecommendationsByUserId: (state) => {
+         return (userId: string) => {
+            const recommendations: Recommendation[] = [];
+            for (const placeId in state.recommendationsMap) {
+               const userRecommendations = state.recommendationsMap[placeId].filter((recommendation) => recommendation._createdBy._id === userId);
+               if (userRecommendations.length > 0) {
+                  recommendations.push(...userRecommendations);
+               }
+            }
+            return recommendations;
+         }
       },
       getError: (state) => state.error,
       getAddError: (state) => state.addError,
