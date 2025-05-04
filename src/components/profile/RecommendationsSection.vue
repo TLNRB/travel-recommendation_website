@@ -1,7 +1,12 @@
 <template>
-  <section>
-    <div class="flex flex-col gap-6">
-      <div v-for="recommendation in props.recommendations" :key="recommendation._id"
+  <section class="mt-16">
+    <h2 class="text-xl font-bold mb-4">Latest Recommendations</h2>
+    <!-- Loader -->
+    <div v-if="recommendationsStore.getIsLoading" class="loader"></div>
+
+    <!-- Recommendations -->
+    <div v-else-if="!recommendationsStore.getIsLoading && recommendations.length > 0" class="flex flex-col gap-6">
+      <div v-for="recommendation in recommendations" :key="recommendation._id"
         class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex gap-4">
         <!-- Place Image -->
         <div v-if="recommendation.place.images.length" class="w-24 h-24 shrink-0 rounded-md overflow-hidden">
@@ -48,12 +53,26 @@
         </div>
       </div>
     </div>
+
+    <div v-else class="text-gray-500">No recommendations to display.</div>
   </section>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+import { onMounted } from 'vue';
+// Stores 
+import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
+
+const recommendationsStore = useRecommendationsStore();
+
+//-- Props
 const props = defineProps({
-  recommendations: { type: Array, required: true }
+  userId: { type: String, required: true }
+});
+
+const recommendations = computed(() => {
+  return recommendationsStore.getRecommendationsByUserId(props.userId);
 });
 
 //-- Date formatting function
@@ -65,4 +84,8 @@ const formatDate = (dateString: string) => {
     day: 'numeric'
   });
 };
+
+onMounted(async () => {
+  await recommendationsStore.fetchRecommendations(false, 'true');
+});
 </script>
