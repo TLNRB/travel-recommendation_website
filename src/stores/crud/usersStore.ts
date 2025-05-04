@@ -52,7 +52,7 @@ export const useUsersStore = defineStore('usersStore', {
          }
       },
 
-      /* async updateUserRole(userId: string, editingUserId: string, updatedData: UpdateProfile, token: string): Promise<void> {
+      async updateUserRole(userId: string, editingUserId: string, updatedData: UpdateProfile, token: string): Promise<void> {
          this.isLoading = true;
          this.updateError = null;
 
@@ -83,7 +83,7 @@ export const useUsersStore = defineStore('usersStore', {
          finally {
             this.isLoading = false;
          }
-      }, */
+      },
 
       async updateUser(userId: string, editingUserId: string, updatedData: UpdateProfile, token: string): Promise<void> {
          this.isLoading = true;
