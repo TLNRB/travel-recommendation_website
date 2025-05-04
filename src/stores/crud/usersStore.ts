@@ -56,6 +56,14 @@ export const useUsersStore = defineStore('usersStore', {
          this.isLoading = true;
          this.updateError = null;
 
+         // Check the soicals and remove the _ids from the objects
+         if (updatedData.socials && updatedData.socials.length > 0) {
+            updatedData.socials = updatedData.socials.map((social: any) => {
+               const { _id, ...rest } = social;
+               return rest;
+            });
+         }
+
          try {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${userId}?editingUserId=${editingUserId}`, {
                method: 'PUT',
@@ -136,7 +144,18 @@ export const useUsersStore = defineStore('usersStore', {
                userData.profilePicture = imageData;
             }
 
-            console.log('Profile icture image data before sending:', userData.profilePicture)
+            console.log('Socials before: ', userData.socials)
+
+            // Check the soicals and remove the _ids from the objects
+            if (userData.socials && userData.socials.length > 0) {
+               console.log('Socials provided:', userData.socials)
+               userData.socials = userData.socials.map((social: any) => {
+                  const { _id, ...rest } = social;
+                  return rest;
+               });
+            }
+
+            console.log('Socials after: ', userData.socials)
 
             console.log('User data before sending:', userData)
 

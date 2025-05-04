@@ -16,7 +16,8 @@
           </button>
           <button type="button" @click="handleUpdateUser"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm duration-200 ease-in-out cursor-pointer">
-            Save
+            <span v-if="usersStore.getIsLoading" class="loader"></span>
+            <span v-else>Save</span>
           </button>
         </div>
       </div>
@@ -146,7 +147,7 @@
           </label>
           <!-- Existing Socials -->
           <div v-if="editUser.socials!.length > 0" v-for="(social, index) in editUser.socials" :key="index"
-            class="flex items-center gap-2 mb-2 duration-200 ease-in-out cursor-pointer">
+            class="flex items-center gap-2 mb-2 duration-200 ease-in-out">
             <div class="w-[40%] px-3 py-2 border border-gray-300 rounded-lg text-gray-700 flex items-center gap-2">
               <i :class="`bx text-[18px] ${social.icon}`"></i>
               {{ social.name }}
@@ -171,7 +172,7 @@
 
           <!-- Add New Social -->
           <div v-if="availableSocialOptions.length > 0 && showEditUser" class="flex items-center gap-2 mt-1">
-            <select v-model="selectedSocial" class="w-[40%] px-3 py-2 border border-gray-300 rounded-lg">
+            <select v-model="selectedSocial" class="w-[40%] px-3 py-2 border border-gray-300 rounded-lg cursor-pointer">
               <option disabled value="">Select platform</option>
               <option v-for="option in availableSocialOptions" :key="option.name" :value="option">
                 {{ option.name }}
@@ -319,3 +320,27 @@ const handleUpdateUser = async (): Promise<void> => {
   }
 };
 </script>
+
+<style scoped>
+.loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
