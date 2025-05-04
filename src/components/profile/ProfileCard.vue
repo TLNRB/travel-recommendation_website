@@ -2,7 +2,8 @@
   <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
     <!-- Avatar -->
     <img v-if="props.user?.profilePicture" :src="props.user?.profilePicture" alt="Profile picture"
-      class="w-32 h-32 rounded-full border-4 border-blue-500 object-cover" />
+      class="w-32 h-32 rounded-full object-cover"
+      :class="props.user.profilePicture ? 'border-1 border-gray-300' : 'border-4 border-blue-500'" />
     <div v-else class="min-w-32 min-h-32 w-32 h-32 rounded-full bg-white border-[1px] border-gray-400">
       <!-- Initial first letter -->
       <span class="text-4xl text-blue-500 flex items-center justify-center h-full">
@@ -49,29 +50,9 @@
 
       <!-- Socials -->
       <div v-if="props.user?.socials.length >= 0" class="flex gap-[10px] mt-6 justify-center sm:justify-start">
-        <!-- <a :href="props.user?.socials.link"
-            class="w-8 h-8 flex items-center justify-center rounded-full bg-white border-[1px] border-gray-300 hover:border-blue-500 duration-[.2s] ease-in-out">
-            <i class="bx text-[18px]" :class="props.user?.icon"></i>
-          </a> -->
-        <a href=""
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-white border-[1px] border-gray-300 hover:border-blue-500 duration-[.2s] ease-in-out">
-          <i class="bx bxl-facebook text-[18px] text-blue-500"></i>
-        </a>
-        <a href=""
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-white border-[1px] border-gray-300 hover:border-pink-600 duration-[.2s] ease-in-out">
-          <i class="bx bxl-instagram text-[18px] text-pink-600"></i>
-        </a>
-        <a href=""
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-white border-[1px] border-gray-300 hover:border-blue-400 duration-[.2s] ease-in-out">
-          <i class="bx bxl-twitter text-[18px] text-blue-400"></i>
-        </a>
-        <a href=""
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-white border-[1px] border-gray-300 hover:border-blue-600 duration-[.2s] ease-in-out">
-          <i class="bx bxl-linkedin text-[18px] text-blue-500"></i>
-        </a>
-        <a href=""
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-white border-[1px] border-gray-300 hover:border-red-600 duration-[.2s] ease-in-out">
-          <i class="bx bxl-youtube text-[18px] text-red-600"></i>
+        <a v-for="(social, index) in props.user.socials" :key="index" :href="social.link"
+          class="w-8 h-8 flex items-center justify-center rounded-full bg-white border-[1px] border-gray-300 hover:border-gray-500 duration-[.2s] ease-in-out">
+          <i class="bx text-[18px]" :class="social.icon"></i>
         </a>
       </div>
     </div>

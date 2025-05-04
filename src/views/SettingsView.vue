@@ -14,7 +14,7 @@
             class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm duration-200 ease-in-out cursor-pointer">
             Cancel
           </button>
-          <button type="submit"
+          <button type="button" @click="handleUpdateUser"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm duration-200 ease-in-out cursor-pointer">
             Save
           </button>
@@ -57,14 +57,15 @@
           <div class="w-full md:w-[49%]">
             <label class="block text-sm font-medium mb-1">
               Profile Picture
+              <span v-if="showEditUser" class="text-gray-500 font-normal text-xs italic">(Optional)</span>
             </label>
             <div class="flex gap-4">
               <div>
-                <div v-if="editUser.profilePicture" class="flex flex-wrap gap-3 mb-2">
+                <div v-if="editUser.profilePicture" class="flex flex-wrap gap-3 mb-2 relative">
                   <img :src="editUser.profilePicture" :alt="`Place picture of ${user?.username}`"
                     class="w-[89px] h-[89px] rounded-lg object-cover" />
-                  <button type="button" @click="removeImage"
-                    class="absolute top-0 right-0 bg-red-500/90 rounded-bl  text-white text-xs px-1 cursor-pointer"
+                  <button v-if="showEditUser" type="button" @click="removeImage"
+                    class="absolute top-0 right-0 bg-red-500/90 rounded-bl rounded-tr text-white text-xs px-1 cursor-pointer"
                     title="Remove image">
                     &times;
                   </button>
@@ -99,7 +100,10 @@
 
           <!-- Bio -->
           <div class="w-full md:w-[49%]">
-            <label class="block text-sm font-medium mb-1">Bio</label>
+            <label class="block text-sm font-medium mb-1">
+              Bio
+              <span v-if="showEditUser" class="text-gray-500 font-normal text-xs italic">(Optional)</span>
+            </label>
             <div v-if="!showEditUser"
               class="min-h-[89px] w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-400 whitespace-pre-wrap">
               {{ user?.bio
@@ -113,14 +117,20 @@
         <!-- Location -->
         <div class="flex flex-wrap justify-between">
           <div class="w-[48%] md:w-[49%]">
-            <label class="block text-sm font-medium mb-1">Country</label>
+            <label class="block text-sm font-medium mb-1">
+              Country
+              <span v-if="showEditUser" class="text-gray-500 font-normal text-xs italic">(Optional)</span>
+            </label>
             <div v-if="!showEditUser" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-400">{{
               user?.country || '—' }}</div>
             <input v-else type="text" v-model="editUser.country" placeholder="e.g. Hungary"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-gray-500 outline-none" />
           </div>
           <div class="w-[48%] md:w-[49%]">
-            <label class="block text-sm font-medium mb-1">City</label>
+            <label class="block text-sm font-medium mb-1">
+              City
+              <span v-if="showEditUser" class="text-gray-500 font-normal text-xs italic">(Optional)</span>
+            </label>
             <div v-if="!showEditUser" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-400">{{
               user?.city || '—' }}</div>
             <input v-else type="text" v-model="editUser.city" placeholder="e.g. Budapest"
@@ -130,7 +140,10 @@
 
         <!-- Social Media Links -->
         <div>
-          <label class="block text-sm font-medium mb-1">Social Media Links</label>
+          <label class="block text-sm font-medium mb-1">
+            Social Media Links
+            <span v-if="showEditUser" class="text-gray-500 font-normal text-xs italic">(Optional)</span>
+          </label>
           <!-- Existing Socials -->
           <div v-if="editUser.socials!.length > 0" v-for="(social, index) in editUser.socials" :key="index"
             class="flex items-center gap-2 mb-2 duration-200 ease-in-out cursor-pointer">
@@ -151,9 +164,13 @@
               {{ editUser.socials![index].link }}
             </div>
           </div>
+          <div v-else-if="editUser.socials!.length === 0 && !showEditUser"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-400">
+            —
+          </div>
 
           <!-- Add New Social -->
-          <div v-if="availableSocialOptions.length && showEditUser" class="flex items-center gap-2 mt-1">
+          <div v-if="availableSocialOptions.length > 0 && showEditUser" class="flex items-center gap-2 mt-1">
             <select v-model="selectedSocial" class="w-[40%] px-3 py-2 border border-gray-300 rounded-lg">
               <option disabled value="">Select platform</option>
               <option v-for="option in availableSocialOptions" :key="option.name" :value="option">
@@ -171,10 +188,10 @@
           <div v-else-if="!availableSocialOptions.length && showEditUser" class="text-gray-500 text-sm italic mt-2">
             No more social media platforms available.
           </div>
-          <div v-else class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-400">
-            No social media links added.
-          </div>
         </div>
+
+        <!-- Error Display -->
+        <div v-if="usersStore.updateError" class="mt-4 text-red-500 text-sm italic">{{ usersStore.updateError }}</div>
       </div>
     </section>
   </div>
@@ -186,9 +203,11 @@ import type { UpdateProfile } from '@/interfaces/userTypes'
 import socialMedias from '@/data/socialMedias.json'
 // Stores
 import { useUserStore } from '@/stores/userStore'
+import { useUsersStore } from '@/stores/crud/usersStore'
 import { useAuthStore } from '@/stores/authStore';
 
 const userStore = useUserStore()
+const usersStore = useUsersStore()
 const authStore = useAuthStore()
 
 const user = computed(() => userStore.getUser)
@@ -215,7 +234,7 @@ const editUser = ref<UpdateProfile>({
   country: user.value?.country || '',
   city: user.value?.city || '',
   socials: user.value?.socials?.length! > 0 ? [...user.value?.socials!] : [],
-  role: user.value?.role,
+  role: user.value?.role._id,
 })
 
 // Populate Edit User
@@ -230,7 +249,7 @@ const populateEditUser = () => {
     country: user.value?.country || '',
     city: user.value?.city || '',
     socials: user.value?.socials?.length! > 0 ? [...user.value?.socials!] : [],
-    role: user.value?.role,
+    role: user.value?.role._id,
   })
 }
 
@@ -283,4 +302,20 @@ const addSocial = () => {
 const removeSocial = (index: number) => {
   editUser.value.socials?.splice(index, 1)
 }
+
+// Update User
+const handleUpdateUser = async (): Promise<void> => {
+  console.log('userData: ', editUser.value);
+  try {
+    await usersStore.updateUser(authStore.getUserId!, authStore.getUserId!, editUser.value, authStore.getToken!);
+
+    if (!usersStore.getUpdateError) {
+      await userStore.fetchUserData(true);
+      handleCloseEditUser();
+    }
+
+  } catch (err) {
+    console.error('Error updating place request:', err);
+  }
+};
 </script>

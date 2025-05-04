@@ -11,8 +11,8 @@ export const useUserStore = defineStore('userStore', {
    }),
 
    actions: {
-      async fetchUserData(): Promise<void> {
-         if (this.isUserLoaded || this.isLoading) return // Prevents multiple calls to the API
+      async fetchUserData(force = false): Promise<void> {
+         if (!force && (this.isUserLoaded || this.isLoading)) return // Prevents multiple calls to the API
 
          this.isLoading = true
          const authStore = useAuthStore()
@@ -27,6 +27,7 @@ export const useUserStore = defineStore('userStore', {
          }
 
          try {
+            console.log('Fetching user data...')
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/query?field=_id&value=${userId}&populate=true`, {
                method: 'GET'
             })
