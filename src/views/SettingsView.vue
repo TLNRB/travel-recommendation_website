@@ -1,6 +1,7 @@
 <template>
   <div class="max-w-6xl w-full mx-auto py-16 px-4 space-y-8 md:px-6">
     <UpdateProfileSection />
+
     <UpdateCollectionsSection />
   </div>
 </template>

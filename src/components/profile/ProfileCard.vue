@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+  <section class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
     <!-- Avatar -->
     <img v-if="props.user?.profilePicture" :src="props.user?.profilePicture" alt="Profile picture"
       class="w-32 h-32 rounded-full object-cover"
@@ -56,7 +56,7 @@
         </a>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
