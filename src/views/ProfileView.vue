@@ -7,7 +7,6 @@
     <!-- Recommendations Section -->
     <h2 class="text-xl font-bold mt-16 mb-4">Latest Recommendations</h2>
     <div v-if="recommendationsStore.getIsLoading" class="loader"></div>
-
     <RecommendationsSection v-else-if="!recommendationsStore.getIsLoading && recommendations.length > 0"
       :recommendations="recommendations" />
     <div v-else class="text-gray-500">No recommendations to display.</div>
