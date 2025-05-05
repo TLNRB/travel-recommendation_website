@@ -1,6 +1,9 @@
 export type CountryImage = {
-   name: string,
-   images: Array<object>
+  name: string
+  images: Array<{
+    url: string
+    alt?: string
+  }>
 }
 
 export type EditCountryImage = {
