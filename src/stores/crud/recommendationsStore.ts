@@ -83,6 +83,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             // If the data is valid and not an empty array, store it
             if (recommendationsData && Array.isArray(recommendationsData.data) && recommendationsData.data.length > 0) {
                this.recommendationsMap[placeId] = recommendationsData.data;
+               this.isLoaded = true;
                this.error = null;
             } else {
                // Do not store anything if the array is empty
@@ -92,6 +93,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          }
          catch (err) {
             this.error = (err as Error).message;
+            this.isLoaded = false;
          }
          finally {
             this.isLoading = false;
