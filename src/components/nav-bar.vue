@@ -54,8 +54,15 @@
 
       <div class="flex justify-end items-center flex-shrink-0">
         <div v-if="authStore.isLoggedIn" class="relative">
-          <img @click="toggleProfileDropdown" src="https://i.pravatar.cc/40" alt="avatar"
+          <img v-if="userStore.getUser?.profilePicture !== ''" @click="toggleProfileDropdown"
+            :src="userStore.getUser?.profilePicture" :alt="`Profile Picture of ${userStore.getUser?.username}`"
             class="w-10 h-10 rounded-full cursor-pointer border border-gray-300" />
+          <div v-else @click="toggleProfileDropdown"
+            class="min-w-10 min-h-10 w-10 h-10 rounded-full bg-white border-[1px] border-gray-400 cursor-pointer">
+            <span class="text-lg text-blue-500 flex items-center justify-center h-full">
+              {{ userStore.getUser?.firstName.charAt(0) }}{{ userStore.getUser?.lastName.charAt(0) }}
+            </span>
+          </div>
 
           <div v-if="profileDropdownOpen"
             class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg pt-2 border-[1px] border-gray-300 z-50">
