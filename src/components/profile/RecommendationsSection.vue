@@ -54,6 +54,10 @@
       </div>
     </div>
 
+    <!-- Error -->
+    <div v-else-if="recommendationsStore.getError" class="text-red-500 text-sm">{{ recommendationsStore.getError
+      }}</div>
+
     <div v-else class="text-gray-500">No recommendations to display.</div>
   </section>
 </template>
@@ -89,3 +93,26 @@ onMounted(async () => {
   await recommendationsStore.fetchRecommendations(false, 'true');
 });
 </script>
+
+<style scoped>
+.loader {
+  border: 3px solid #afafaf;
+  border-top: 3px solid #404040;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin 1s linear infinite;
+  display: flex;
+  margin-inline: auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

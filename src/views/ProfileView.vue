@@ -5,7 +5,7 @@
 
     <RecommendationsSection :userId="user?._id" />
 
-    <CollectionsSection />
+    <CollectionsSection :userId="user?._id" />
 
     <!-- Collections Section -->
     <!-- <h2 class="text-xl font-bold mt-16 mb-4">Collections</h2>
@@ -31,13 +31,15 @@ import { useRoute } from 'vue-router';
 // Components
 import ProfileCard from '@/components/profile/ProfileCard.vue';
 import RecommendationsSection from '@/components/profile/RecommendationsSection.vue';
-import CollectionsSection from '@/components/profile/CollectionsSection.vue';
+import CollectionsSection from '@/components/profile/collections/CollectionsSection.vue';
 // Stores
 import { useUsersStore } from '@/stores/crud/usersStore';
 import { useRolesStore } from '@/stores/rolesStore';
+import { useCollectionsStore } from '@/stores/crud/collectionsStore'
 
 const usersStore = useUsersStore();
 const rolesStore = useRolesStore();
+const collectionsStore = useCollectionsStore();
 
 // Router
 const route = useRoute();
@@ -45,11 +47,14 @@ const route = useRoute();
 
 // Fetch user data
 const user = computed(() => { return usersStore.getUserById(route.params.id as string) });
-const roleName = computed(() => { return rolesStore.getRoleById(user.value?.role as string)?.name });
+const roleName = computed(() => {
+  return rolesStore.getRoleById(user.value?.role as string)?.name
+});
 
 onMounted(async () => {
   await usersStore.fetchUsers();
   await rolesStore.fetchRoles();
+  await collectionsStore.fecthCollectionsByUserId(user.value?._id, false, 'false')
 });
 </script>
 
