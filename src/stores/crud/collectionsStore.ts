@@ -102,6 +102,38 @@ export const useCollectionsStore = defineStore('collectionsStore', {
          }
       },
 
+      async deleteCollection(collectionId: string, userId: string, token: string): Promise<void> {
+         this.isLoading = true;
+         this.deleteError = null;
+
+         try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections/${collectionId}`, {
+               method: 'DELETE',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'auth-token': token,
+               }
+            });
+
+            if (!response.ok) {
+               const errorResponse = await response.json();
+               throw new Error(errorResponse.error || 'Failed to delete collection');
+            }
+            else {
+               const responseText = await response.text();
+               console.log('Collection deleted successfully:', responseText);
+            }
+
+            await this.fecthCollectionsByUserId(userId, true, 'false'); // Refresh the collections for the user
+         }
+         catch (err) {
+            this.deleteError = (err as Error).message;
+         }
+         finally {
+            this.isLoading = false;
+         }
+      },
+
       clearErrors() {
          this.error = null;
          this.addError = null;
@@ -115,6 +147,12 @@ export const useCollectionsStore = defineStore('collectionsStore', {
          return (userId: string) => state.collectionsMap[userId] || [];
       },
       getAllCollections: (state) => state.collectionsMap,
+      getCollectionById: (state) => {
+         return (userId: string, collectionId: string) => {
+            const collections = state.collectionsMap[userId] || [];
+            return collections.find((collection) => collection._id === collectionId) || null;
+         }
+      },
       getError: (state) => state.error,
       getAddError: (state) => state.addError,
       getUpdateError: (state) => state.updateError,

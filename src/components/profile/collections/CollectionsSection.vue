@@ -1,6 +1,12 @@
 <template>
    <section class="mt-16">
-      <h2 class="text-xl font-bold mb-4">Collections</h2>
+      <div class="flex justify-between items-center mb-4">
+         <h2 class="text-xl font-bold">Collections</h2>
+         <RouterLink to="/settings" v-if="authStore.isLoggedIn && authStore.getUserId === route.params.id"
+            class="bg-blue-600 text-sm text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 ease-in-out cursor-pointer">
+            Edit Collections
+         </RouterLink>
+      </div>
 
       <div v-if="collectionsStore.getIsLoading" class="loader"></div>
 
