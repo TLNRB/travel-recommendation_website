@@ -102,6 +102,51 @@ export const useCollectionsStore = defineStore('collectionsStore', {
          }
       },
 
+      async updateCollection(collectionId: string, updatedCollection: Collection, userId: string, token: string): Promise<void> {
+         this.isLoading = true;
+         this.updateError = null;
+
+         // Check if the collection has places and get their IDs
+         if (updatedCollection.places!.length > 0) {
+            console.log('Places before:', updatedCollection.places);
+
+            const placeIds: string[] = updatedCollection.places!.map((place) => place._id);
+            updatedCollection.places = placeIds;
+
+            console.log('Places after:', updatedCollection.places);
+         }
+
+         console.log('Adding collection:', updatedCollection);
+
+         try {
+            const reponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections/${collectionId}`, {
+               method: 'PUT',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'auth-token': token,
+               },
+               body: JSON.stringify(updatedCollection)
+            });
+
+            if (!reponse.ok) {
+               const errorResponse = await reponse.json();
+               throw new Error(errorResponse.error || 'Failed to update collection');
+            }
+            else {
+               const responseData = await reponse.json();
+               console.log('Update response:', responseData);
+
+               await this.fecthCollectionsByUserId(userId, true, 'false'); // Refresh the collections for the user
+            }
+         }
+         catch (err) {
+            this.updateError = (err as Error).message;
+         }
+         finally {
+            this.isLoading = false;
+         }
+      },
+
       async deleteCollection(collectionId: string, userId: string, token: string): Promise<void> {
          this.isLoading = true;
          this.deleteError = null;
@@ -121,7 +166,7 @@ export const useCollectionsStore = defineStore('collectionsStore', {
             }
             else {
                const responseText = await response.text();
-               console.log('Collection deleted successfully:', responseText);
+               console.log('Delete response:', responseText);
             }
 
             await this.fecthCollectionsByUserId(userId, true, 'false'); // Refresh the collections for the user

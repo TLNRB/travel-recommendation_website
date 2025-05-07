@@ -23,9 +23,10 @@
             :loading="collectionsStore.getIsLoading" @submit="handleAddCollection" @close="handleCloseAdd" />
 
          <!-- Edit Modal -->
-         <!-- <CollectionEditModal v-if="showEditModal" :collection="collectionsStore.getCollectionById(editCollectionId!)!"
-            :updateError="collectionsStore.getUpdateError" :loading="collectionsStore.getIsLoading"
-            @submit="handleUpdateCollection" @close="handCloseEdit" /> -->
+         <CollectionEditModal v-if="showEditModal"
+            :collection="collectionsStore.getCollectionById(authStore.getUserId!, editCollectionId!)"
+            :userId="authStore.getUserId!" :updateError="collectionsStore.getUpdateError"
+            :loading="collectionsStore.getIsLoading" @submit="handleUpdateCollection" @close="handCloseEdit" />
       </div>
    </section>
 </template>
@@ -35,7 +36,7 @@ import { ref, computed, onMounted } from 'vue'
 // Components
 import SettingsCollectionCard from '@/components/settings/collections/SettingsCollectionCard.vue';
 import CollectionAddModal from '@/components/settings/collections/CollectionAddModal.vue';
-// import CollectionEditModal from '@/components/settings/collections/CollectionEditModal.vue';
+import CollectionEditModal from '@/components/settings/collections/CollectionEditModal.vue';
 // Stores
 import { useCollectionsStore } from '@/stores/crud/collectionsStore'
 import { useAuthStore } from '@/stores/authStore';
@@ -86,18 +87,16 @@ const handCloseEdit = () => {
    collectionsStore.clearErrors();
 };
 
-const handleUpdateCollection = async (updatedCollection: Collection, collectionId: string): Promise<void> => {
-   console.log('Edit Collection: ', collectionId)
-
-   /* try {
-      collectionsStore.updateCollection(collectionId, updatedCollection, authStore.getToken!)
+const handleUpdateCollection = async (updatedCollection: Collection, collectionId: string, userId: string): Promise<void> => {
+   try {
+      await collectionsStore.updateCollection(collectionId, updatedCollection, userId, authStore.getToken!)
 
       if (!collectionsStore.getUpdateError) {
          handCloseEdit();
       }
    } catch (error) {
       console.error('Error updating collection: ', error)
-   } */
+   }
 }
 
 //-- Delete Collection
