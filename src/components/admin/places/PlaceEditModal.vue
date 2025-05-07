@@ -153,6 +153,7 @@
             <!-- Display error -->
             <div v-if="props.updateError" class="mt-4 text-red-500 text-sm italic">{{ props.updateError }}</div>
 
+            <!-- Actions -->
             <div class="mt-6 flex justify-end gap-3">
                <button type="button" @click="close"
                   class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm duration-200 ease-in-out cursor-pointer">Cancel</button>
@@ -170,7 +171,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-// Components
+// Interfaces
 import type { EditPlace } from '@/interfaces/placeTypes'
 // Data
 import { continents } from '@/data/continents.json'

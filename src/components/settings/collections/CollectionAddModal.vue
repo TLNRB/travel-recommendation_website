@@ -87,6 +87,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+// Interfaces
 import type { Collection } from '@/interfaces/collectionTypes'
 import type { Place } from '@/interfaces/placeTypes'
 // Stores
