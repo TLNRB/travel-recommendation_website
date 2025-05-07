@@ -12,7 +12,7 @@
     </div>
 
     <!-- User Info -->
-    <div class="text-center sm:text-left w-full">
+    <div class="text-left w-full">
       <div class="flex justify-between items-center">
         <div>
           <h2 class="text-2xl font-bold">{{ props.user?.firstName }} {{ props.user?.lastName }}</h2>
@@ -49,7 +49,7 @@
       </p>
 
       <!-- Socials -->
-      <div v-if="props.user?.socials.length >= 0" class="flex gap-[10px] mt-6 justify-center sm:justify-start">
+      <div v-if="props.user?.socials.length >= 0" class="flex gap-[10px] mt-6 justify-start">
         <a v-for="(social, index) in props.user.socials" :key="index" :href="social.link" target="_blank"
           class="w-8 h-8 flex items-center justify-center rounded-full bg-white border-[1px] border-gray-300 hover:border-gray-500 duration-[.2s] ease-in-out">
           <i class="bx text-[18px]" :class="social.icon"></i>

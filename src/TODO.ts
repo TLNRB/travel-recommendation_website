@@ -6,9 +6,8 @@
  * 
  * == USER PROFILE ==
  * - Collections
- *    - display
+ *    - click on place goes to place
  * 
- *    - creation
  *    - edit
  *    - delete
  * 
