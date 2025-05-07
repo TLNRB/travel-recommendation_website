@@ -118,7 +118,7 @@ const handleAddPlace = async (newPlace: AddPlace, recommendation: AddRecommendat
          handleCloseAdd();
       }
    } catch (err) {
-      console.error('Error adding place request:', err);
+      console.error('Error adding place:', err);
    }
 };
 
