@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Collection } from "@/interfaces/collectionType";
+import type { Collection } from "@/interfaces/collectionTypes";
 
 export const useCollectionsStore = defineStore('collectionsStore', {
    state: () => ({
@@ -13,7 +13,6 @@ export const useCollectionsStore = defineStore('collectionsStore', {
    }),
 
    actions: {
-
       async fecthCollectionsByUserId(userId: string, force = false, populateUser = 'false'): Promise<void> {
          if (!force && (this.isLoaded || this.isLoading)) {
             console.log('Collections already loaded or loading, skipping fetch')
@@ -23,6 +22,7 @@ export const useCollectionsStore = defineStore('collectionsStore', {
          this.isLoading = true
 
          try {
+            console.log('Fetching collections for user:', userId);
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections/query?field=_createdBy&value=${userId}&populateCreatedBy=${populateUser}&populatePlace=true`, {
                method: 'GET',
             })
@@ -35,11 +35,9 @@ export const useCollectionsStore = defineStore('collectionsStore', {
             const collectionsData = await response.json()
             // If the data is valid and not an empty array, store it
             if (collectionsData && Array.isArray(collectionsData.data) && collectionsData.data.length > 0) {
-               if (!this.collectionsMap[userId]) {
-                  this.collectionsMap[userId] = collectionsData.data;
-                  this.isLoaded = true;
-                  this.error = null;
-               }
+               this.collectionsMap[userId] = collectionsData.data;
+               this.isLoaded = true;
+               this.error = null;
             } else {
                // Do not store anything if the array is empty
                console.log('No collections found.');
@@ -55,6 +53,53 @@ export const useCollectionsStore = defineStore('collectionsStore', {
             this.isLoading = false;
          }
 
+      },
+
+      async addCollection(newCollection: Collection, token: string): Promise<void> {
+         this.isLoading = true;
+         this.addError = null;
+
+         // Check if the collection has places and get their IDs
+         if (newCollection.places!.length > 0) {
+            console.log('Places before:', newCollection.places);
+
+            const placeIds: string[] = newCollection.places!.map((place) => place._id);
+            newCollection.places = placeIds;
+
+            console.log('Places after:', newCollection.places);
+         }
+
+         console.log('Adding collection:', newCollection);
+
+         try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/collections`, {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'auth-token': token,
+               },
+               body: JSON.stringify(newCollection)
+            });
+
+            if (!response.ok) {
+               const errorResponse = await response.json();
+               throw new Error(errorResponse.error || 'Failed to add collection');
+            }
+            else {
+               const responseData = await response.json();
+               console.log('Collection added successfully:', responseData);
+
+               await this.fecthCollectionsByUserId(newCollection._createdBy, true, 'false'); // Refresh the collections for the user
+            }
+
+
+         }
+         catch (err) {
+            this.addError = (err as Error).message;
+         }
+         finally {
+            this.isLoading = false;
+         }
       },
 
       clearErrors() {
