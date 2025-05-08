@@ -8,23 +8,21 @@
         class="container-fluid h-120 relative flex flex-col justify-between bg-cover bg-center bg-no-repeat"
         :style="cityHeaderStyle"
       >
-      <div class="flex justify-start">
-        <RouterLink class="ms-8 mt-18 lg:mt-20 text-center rounded-xl box-shadow-xl text-xl" :to="`/country/${city?.country.objectId}`">🔙</RouterLink>
-        <h1 class="text-4xl lg:text-6xl mt-16 ms-8 lg:ms-4 text-white drop-shadow-lg">
-          {{ city?.name }}
-        </h1>
-      </div>
+      <div class="relative z-10 flex flex-col mt-16 items-start h-full px-8 md:px-16">
+      <h1 class="text-white text-2xl md:text-4xl lg:text-6xl font-bold drop-shadow-lg">
+        {{ city?.name }}
+      </h1>
+      <RouterLink
+        class="md:left-16 z-20 mt-4 md:px-4 md:py-2 py-1 px-2 text-sm  bg-white text-green-600 font-semibold rounded hover:bg-green-100 transition"
+        :to="`/country/${city?.country.objectId}`"
+      >
+        🔙
+      </RouterLink>
+    </div>
 
         <div class="container-fluid flex h-14 lg:w-1/2 absolute right-0 bottom-0 justify-center md:justify-end md:pe-4">
-
-          <!-- <input
-            v-model="searchTerm"
-            type="text"
-            placeholder="Browse cities..."
-            class="mb-4 me-4 md:mt-0 md:ml-4 px-4 py-2 text-white bg-black/40  rounded-lg border border-gray-100 focus:outline-none w-full md:max-w-sm"
-          /> -->
           <div class="text-black px-16 lg:px-28 py-3 rounded-t-xl bg-gray-100">
-            Cities
+            Places
           </div>
 
         </div>

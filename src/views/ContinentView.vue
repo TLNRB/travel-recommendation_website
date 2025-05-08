@@ -9,10 +9,18 @@
         class="container-fluid h-120 relative flex flex-col justify-between bg-cover bg-center bg-no-repeat"
         :style="backgroundImage"
       >
-        <h1 class="text-2xl md:text-4xl lg:text-6xl mt-16 ms-16 text-white drop-shadow-lg">
-          {{ continent?.name }}
-        </h1>
-        <RouterLink class="ms-16 mb-6 w-8 text-center rounded-xl box-shadow-xl bg-white/50 text-xl" to="/">🔙</RouterLink>
+      <div class="relative z-10 flex flex-col mt-16 items-start h-full px-8 md:px-16">
+      <h1 class="text-white text-2xl md:text-4xl lg:text-6xl font-bold drop-shadow-lg">
+        {{ continent?.name }}
+      </h1>
+      <RouterLink
+        class="md:left-16 z-20 mt-4 md:px-4 md:py-2 py-1 px-2 text-sm  bg-white text-green-600 font-semibold rounded hover:bg-green-100 transition"
+        to="/"
+      >
+        🔙
+      </RouterLink>
+    </div>
+
         <div class="container-fluid flex h-14 lg:w-1/2 absolute right-0 bottom-0 justify-center md:justify-end md:pe-4">
 
           <input
@@ -40,20 +48,20 @@
   v-for="country in displayedCountries"
   :key="country.objectId"
   :to="`/country/${country.objectId}`"
-  class="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 w-28 h-40 md:w-40 md:h-64 2xl:w-56 2xl:h-72 mx-auto my-6 flex flex-col justify-end bg-cover bg-center text-white"
-  :style="{
-    backgroundImage: country.image ? `url('${country.image}')` : undefined,
-    backgroundColor: country.image ? undefined : '#059669'
-  }"
+  class="my-10 mx-auto w-28 h-40 md:w-40 md:h-64 2xl:w-54 2xl:h-72 relative rounded-xl overflow-hidden shadow-md transition-transform transform hover:scale-105 flex flex-col items-center justify-end text-white"
+      :style="{
+        backgroundImage: country.image ? `url('${country.image}')` : undefined,
+        backgroundColor: country.image ? undefined : '#059669',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }"
 >
 
   <!-- Country Name -->
-  <div class="w-full text-center text-black py-2 bg-white text-sm md:text-base font-medium rounded-b-2xl">
-    {{ country.name }}
+  <div class="z-10 px-2 pb-3 pt-2 text-center w-full bg-black/30 backdrop-blur-sm">
+    <h2 class="text-sm font-semibold truncate">{{ country.name }}</h2>
   </div>
 
-  <!-- Hover Overlay (optional aesthetic effect) -->
-  <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-300 rounded-2xl"></div>
 </RouterLink>
     </div>
 

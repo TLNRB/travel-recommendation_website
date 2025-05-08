@@ -49,9 +49,10 @@
 <script setup lang="ts">
 import { usePlaces } from '@/modules/places/usePlaces'
 import { externalAPI } from '@/modules/api/externalFetch'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 
+const emit = defineEmits(['loaded'])
 const { getPlaces, places } = usePlaces()
 const { fetchAllCountries, allCountriesGlobal } = externalAPI()
 const router = useRouter()
@@ -62,6 +63,7 @@ const displayedCountries = ref<any[]>([])
 onMounted(async () => {
   await Promise.all([getPlaces(), fetchAllCountries()])
   reshuffle()
+  emit('loaded')
 })
 
 const reshuffle = () => {

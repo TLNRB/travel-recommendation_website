@@ -49,7 +49,7 @@
       </div>
 
       <!-- Cards Grid -->
-      <div class="mx-32 grid grid-cols-2 xl:grid-cols-2 gap-6">
+      <div class="mx-auto w-full grid grid-cols-2 max-w-2xl  gap-6">
         <div
           v-for="place in displayedPlaces"
           :key="place.name"
@@ -74,13 +74,14 @@
 
 <script setup lang="ts">
 import { usePlaces } from '@/modules/places/usePlaces'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 
+const emit = defineEmits(['loaded'])
 const { getPlaces, places } = usePlaces()
 const router = useRouter()
 
-const categories = ['Beach', 'Museum', 'Monument', 'Other']
+const categories = ['Beach', 'Museum', 'Monument', 'Street']
 const selectedCategory = ref('Beach')
 const shuffledSet = ref<Set<string>>(new Set())
 const isShuffling = ref(false)
@@ -125,6 +126,7 @@ const goToPlace = (placeName: string) => {
 onMounted(async () => {
   await getPlaces()
   reshuffle()
+  emit('loaded')
 })
 </script>
 
