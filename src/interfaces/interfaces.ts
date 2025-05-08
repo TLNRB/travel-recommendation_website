@@ -1,3 +1,5 @@
+import type { CountryImage } from "./countryImageTypes"
+
 export type Role = {
   name: string,
   permissions: string[]
@@ -32,6 +34,7 @@ export type Country = {
     name: string
   }
   cities: City[]
+
 }
 
 export type City = {

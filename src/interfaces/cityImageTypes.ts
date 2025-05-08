@@ -1,7 +1,10 @@
 export type CityImage = {
    name: string,
    country: string,
-   images: Array<object>
+   images: Array<{
+    url: string
+    alt?: string
+  }>
 }
 
 export type EditCityImage = {

@@ -4,7 +4,8 @@
 <div class="mb-8 w-full">
   <div class="flex gap-4 justify-start mb-4 flex-wrap">
     <span
-      v-for="cat in ['All', 'Museum', 'Monument', 'Beach']"
+      v-for="cat in ['All', 'Museum', 'Monument', 'Beach', 'Street']"
+
       :key="cat"
       @click="selectCategory(cat)"
       :class="[
@@ -51,7 +52,8 @@
 </div>
 <div>
   <h2 class="text-xl font-semibold mb-4">Most Rated</h2>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+
+  <div  class="grid grid-cols-2 md:grid-cols-3 gap-4">
     <div
       v-for="place in mostRatedPlaces"
       :key="place.name"
@@ -65,8 +67,12 @@
         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
       />
 
-      <div class="absolute bottom-2 left-2 text-white font-semibold text-sm drop-shadow-lg">
+      <div class="absolute bottom-7 left-2 text-white font-semibold text-sm drop-shadow-lg">
         {{ place.name }}
+      </div>
+      <div class="absolute bottom-2 left-2 text-white font-semibold text-sm drop-shadow-lg">
+        {{ place.location.city }}, {{ place.location.country }}
+
       </div>
       <div class="absolute bottom-2 right-2 text-white font-semibold text-sm drop-shadow-lg">
         ⬆️ {{ place.upvotes }}
@@ -79,9 +85,10 @@
 </template>
 <script setup lang="ts">
 import { usePlaces } from '@/modules/places/usePlaces'
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, defineEmits } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
+const emit = defineEmits(['loaded'])
 const { getPlaces, places } = usePlaces()
 const router = useRouter()
 
@@ -95,6 +102,8 @@ declare const URL: {
 
 onMounted(() => {
   getPlaces()
+  emit('loaded')
+
 })
 
 const filteredPlaces = computed(() => {
@@ -121,10 +130,13 @@ if (selectedCategory.value !== 'All') {
   return filtered
 })
 
-const goToPlace = (placeName: string) => {
-  router.push(`/place/${encodeURIComponent(placeName)}`)
-  showSuggestions.value = false
-}
+const goToPlace = (placeName: string, cityId?: string) => {
+  router.push({
+    path: `/place/${encodeURIComponent(placeName)}`,
+    query: cityId ? { cityId } : {}
+  });
+  showSuggestions.value = false;
+};
 
 const selectCategory = (category: string) => {
   selectedCategory.value = category

@@ -110,7 +110,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             if (!isValid) {
                throw new Error('Date of visit cannot be in the future.');
             }
-
+            console.log('Submitting recommendation payload:', recommendation);
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations`, {
                method: 'POST',
                headers: {
@@ -121,8 +121,9 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             })
 
             if (!response.ok) {
-               const errorResponse = await response.json()
-               throw new Error(errorResponse.error || 'No data available');
+              const errorResponse = await response.json();
+              console.error('Error response body:', errorResponse);
+              throw new Error(errorResponse.error || JSON.stringify(errorResponse));
             }
 
             const recommendationData = await response.json()
