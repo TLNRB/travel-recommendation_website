@@ -1,3 +1,5 @@
+import type { Role, Social } from '@/interfaces/interfaces'
+
 export type User = {
    firstName: string,
    lastName: string,
@@ -8,8 +10,8 @@ export type User = {
    bio?: string,
    country?: string,
    city?: string,
-   socials?: Array<object>,
-   role: string | Array<object>,
+   socials?: Social[],
+   role: string | Role,
    registerDate: Date
 }
 
@@ -18,6 +20,7 @@ export type UpdateProfile = {
    lastName: string,
    username: string,
    profilePicture?: string,
+   newImage?: string | File,
    bio?: string,
    country?: string,
    city?: string,

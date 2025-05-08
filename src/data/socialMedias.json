@@ -1,0 +1,41 @@
+{
+   "data": [
+      {
+        "name": "Facebook",
+        "icon": "bxl-facebook text-blue-500"
+      },
+      {
+        "name": "Instagram",
+        "icon": "bxl-instagram text-pink-500"
+      },
+      {
+        "name": "LinkedIn",
+        "icon": "bxl-linkedin text-blue-500"
+      },
+      {
+        "name": "Twitter",
+        "icon": "bxl-twitter text-blue-400"
+      },
+      {
+        "name": "YouTube",
+        "icon": "bxl-youtube text-red-600"
+      },
+      {
+        "name": "Pinterest",
+        "icon": "bxl-pinterest-alt text-red-600"
+      },
+      {
+        "name": "Snapchat",
+        "icon": "bxl-snapchat text-yellow-400"
+      },
+      {
+        "name": "TikTok",
+        "icon": "bxl-tiktok text-black"
+      },
+      {
+        "name": "Reddit",
+        "icon": "bxl-reddit text-orange-600"
+      }
+    ]
+    
+}

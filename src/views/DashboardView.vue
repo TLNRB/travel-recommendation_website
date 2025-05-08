@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto p-4">
+  <div class="max-w-6xl w-full mx-auto py-16 px-4 md:px-6">
     <h1 class="text-3xl font-bold mb-6 text-center">Dashboard</h1>
 
     <!-- Tabs -->
@@ -73,7 +73,7 @@ const canEditPlaces = computed(() => {
 
 //-- Tabs
 const tabs = ['Requests', 'Places', 'Users', 'City Images', 'Country Images'];
-const activeTab = ref('Country Images');
+const activeTab = ref('Requests');
 
 onMounted(async () => {
   await rolesStore.fetchRoles();

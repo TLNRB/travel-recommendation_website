@@ -1,14 +1,14 @@
 /**
  * == ADMIN ==
- * Error update (?)
- * -make it to an object so it stores id and message thus only appears on one card
+ * - Error update (?)
+ *    - make it to an object so it stores id and message thus only appears on one card
+ * - Place request recommendation appears twice until refresh after adding
  * 
  * == USER PROFILE ==
- * - user profile edit
- * - user profile view (url)
- * - collections creation
- * - recommendations display
- * - socials creation
+ * - Collections
+ *    - click on place goes to place
  * 
+ * == Recommendations ==
+ *    - click goes to place
+ *    - edit & delete on place page
  */
-

@@ -49,13 +49,14 @@ const router = createRouter({
       component: PlaceView,
     },
     {
-      path: '/profile',
+      path: '/profile/:id',
       name: 'profile',
       component: ProfileView,
     },
     {
       path: '/settings',
       name: 'settings',
+      meta: { requiresAuth: true },
       component: SettingsView,
     },
     {

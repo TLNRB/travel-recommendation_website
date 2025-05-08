@@ -73,7 +73,7 @@ const handleUpdateUserRole = async (userRole: string, userId: string): Promise<v
 
    console.log('userData:', updatedUserData);
    try {
-      await usersStore.updateUser(userId, authStore.getUserId!, updatedUserData, authStore.getToken!);
+      await usersStore.updateUserRole(userId, authStore.getUserId!, updatedUserData, authStore.getToken!);
 
       if (!usersStore.getUpdateError) {
          handleClose();

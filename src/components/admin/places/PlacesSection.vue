@@ -118,7 +118,7 @@ const handleAddPlace = async (newPlace: AddPlace, recommendation: AddRecommendat
          handleCloseAdd();
       }
    } catch (err) {
-      console.error('Error adding place request:', err);
+      console.error('Error adding place:', err);
    }
 };
 
@@ -157,7 +157,7 @@ const handleAddRecommendation = async (placeId: string, recommendation: AddRecom
             handleCloseAddRecommendation();
          }
       } catch (err) {
-         console.error('Error adding recommendation request:', err);
+         console.error('Error adding recommendation:', err);
       }
    }
 };
@@ -191,7 +191,7 @@ const handleUpdatePlace = async (updatedPlace: EditPlace, placeId: string): Prom
       }
 
    } catch (err) {
-      console.error('Error updating place request:', err);
+      console.error('Error updating place:', err);
    }
 };
 

@@ -25,17 +25,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watchEffect } from 'vue'
-import { usePlacesStore } from '@/stores/crud/placesStore'
+import { ref, onMounted } from 'vue'
+// Stores
+import { usePlacesStore } from '@/stores/crud/placesStore';
+import { useUsersStore } from '@/stores/crud/usersStore';
 import TopDestinations from '@/components/home/TopDestinations.vue'
 import GetInspired from '@/components/home/getInspired.vue'
 import WhereNext from '@/components/home/whereNext.vue'
 import SearchAndPopular from '@/components/home/searchAndPopular.vue'
 
-const placesStore = usePlacesStore()
+const placesStore = usePlacesStore();
+const usersStore = useUsersStore();
 
 onMounted(() => {
-  placesStore.fetchPlaces()
+  placesStore.fetchPlaces();
+  usersStore.fetchUsers();
 })
 
 
