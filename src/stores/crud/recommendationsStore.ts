@@ -22,6 +22,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          this.isLoading = true
 
          try {
+            console.log('Fetching all recommendations from API...');
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/?populateCreatedBy=true&populatePlace=${populatePlace}`, {
                method: 'GET',
             })
@@ -41,10 +42,15 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
                   if (!this.recommendationsMap[placeId]) {
                      this.recommendationsMap[placeId] = []; // Initialize if not present
                   }
-                  this.recommendationsMap[placeId].push(recommendation); // Push the recommendation to the array
-                  this.isLoaded = true;
-                  this.error = null;
+
+                  // Check if the recommendation already exists in the array
+                  const exists = this.recommendationsMap[placeId].some((rec) => rec._id === recommendation._id);
+                  if (!exists) {
+                     this.recommendationsMap[placeId].push(recommendation); // Push the recommendation to the array
+                  }
                })
+               this.isLoaded = true;
+               this.error = null;
             } else {
                // Do not store anything if the array is empty
                console.log('No recommendations found.');
@@ -69,6 +75,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          this.isLoading = true;
 
          try {
+            console.log(`Fetching recommendations for place with Id: ${placeId}...`);
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/query?field=place&value=${placeId}&populateCreatedBy=true&populatePlace=${populatePlace}`, {
                method: 'GET',
             })
@@ -121,9 +128,9 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             })
 
             if (!response.ok) {
-              const errorResponse = await response.json();
-              console.error('Error response body:', errorResponse);
-              throw new Error(errorResponse.error || JSON.stringify(errorResponse));
+               const errorResponse = await response.json();
+               console.error('Error response body:', errorResponse);
+               throw new Error(errorResponse.error || JSON.stringify(errorResponse));
             }
 
             const recommendationData = await response.json()
