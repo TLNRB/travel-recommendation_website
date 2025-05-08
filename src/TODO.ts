@@ -8,10 +8,7 @@
  * - Collections
  *    - click on place goes to place
  * 
- *    - edit
- *    - delete
- * 
- * - Recommendations
+ * == Recommendations ==
  *    - click goes to place
  *    - edit & delete on place page
  */
