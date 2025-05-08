@@ -1,11 +1,11 @@
 <template>
   <div class="max-w-6xl w-full mx-auto py-16 px-4 space-y-8 md:px-6">
     <div v-if="usersStore.getIsLoading" class="loader"></div>
-    <ProfileCard v-else :user="user!" :roleName="roleName!" />
+    <ProfileCard v-else-if="user" :user="user!" :roleName="roleName!" />
 
-    <RecommendationsSection :userId="user?._id" />
+    <RecommendationsSection v-if="user" :userId="user?._id" />
 
-    <CollectionsSection :userId="user?._id" />
+    <CollectionsSection v-if="user" :userId="user?._id" />
   </div>
 </template>
 

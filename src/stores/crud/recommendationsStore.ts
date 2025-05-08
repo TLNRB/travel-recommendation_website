@@ -136,7 +136,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             const recommendationData = await response.json()
             console.log('Add recommendation response:', recommendationData)
 
-            await this.fetchRecommendationsByPlace(recommendationData.data.place, true); // Fetch recommendations for the specific place by force
+            await this.fetchRecommendationsByPlace(recommendationData.data.place, true, 'true'); // Fetch recommendations for the specific place by force
 
             this.addError = null;
          }

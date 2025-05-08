@@ -188,7 +188,7 @@ const recommendations = computed(() =>
 onMounted(async () => {
   await getPlaceByName(placeName);
   if (singlePlace.value?._id) {
-    await recommendationsStore.fetchRecommendationsByPlace(singlePlace.value._id);
+    await recommendationsStore.fetchRecommendationsByPlace(singlePlace.value._id, false, 'true');
   }
 });
 
