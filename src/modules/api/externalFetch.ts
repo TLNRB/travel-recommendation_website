@@ -147,7 +147,7 @@ import type { Continent, Country, City, ApiResponse, ApiResponseCountries } from
     }))
 
     const allCitiesRes = await fetch(
-      `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=1000&order=-population&include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location&where=${where}`,
+      `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=100&order=-population&include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location&where=${where}`,
       {
         headers: {
           'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
@@ -166,11 +166,33 @@ import type { Continent, Country, City, ApiResponse, ApiResponseCountries } from
     }
   }
 
+  const fetchCitiesForCountry = async (countryId: string) => {
+    const where = encodeURIComponent(JSON.stringify({
+      country: {
+        "__type": "Pointer",
+        "className": "Country",
+        "objectId": countryId
+      }
+    }))
+
+    const res = await fetch(
+      `${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City?limit=100&order=-population&include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location&where=${where}`,
+      {
+        headers: {
+          'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
+          'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
+        }
+      }
+    )
+    const data = await res.json()
+    return data.results
+  }
+
   const fetchSingleCity = async (id: string) => {
     try {
       loading.value = true
 
-      const cityResponse = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City/${id}`, {
+      const cityResponse = await fetch(`${import.meta.env.VITE_EXTERNAL_API_URL}/classes/City/${id}?include=country,country.continent&keys=name,country,country.name,country.continent,country.continent.name,population,location,cityId`, {
         headers: {
           'X-Parse-Application-Id': `${import.meta.env.VITE_EXTERNAL_API_HEADERS_ID}`,
           'X-Parse-Master-Key': `${import.meta.env.VITE_EXTERNAL_API_MASTER_KEY}`
@@ -272,7 +294,9 @@ import type { Continent, Country, City, ApiResponse, ApiResponseCountries } from
     fetchAllCountries,
     allCountriesGlobal,
     validateCountry,
-    validateCity
+    validateCity,
+    fetchCitiesForCountry
+
 
   }
 }
