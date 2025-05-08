@@ -6,7 +6,8 @@
 
     <!-- Recommendations -->
     <div v-else-if="!recommendationsStore.getIsLoading && recommendations.length > 0" class="flex flex-col gap-6">
-      <div v-for="recommendation in recommendations" :key="recommendation._id"
+      <RouterLink :to="{ path: `/place/${recommendation.place.name}`, query: { activeTab: 'recommendations' } }"
+        v-for="recommendation in recommendations" :key="recommendation._id"
         class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex gap-4">
         <!-- Place Image -->
         <div v-if="recommendation.place.images.length" class="w-24 h-24 shrink-0 rounded-md overflow-hidden">
@@ -51,7 +52,7 @@
             <div class="text-sm">👍 {{ recommendation.upvotes }}</div>
           </div>
         </div>
-      </div>
+      </RouterLink>
     </div>
 
     <!-- Error -->
