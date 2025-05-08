@@ -21,8 +21,25 @@
          <div v-if="activeCollection !== collection._id">
             <!-- Places Preview (stacked) -->
             <div class="flex flex-col gap-2">
-               <div v-if="props.collection.places!.length > 0"
-                  v-for="(place, index) in props.collection.places.slice(0, 2)" :key="index"
+               <RouterLink :to="`/place/${place.name}`"
+                  v-if="props.collection.places!.length > 0 && props.collection.places!.length <= 2"
+                  v-for="(place, index) in props.collection.places.slice(0, 2)" :key="'link-' + index"
+                  class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-md overflow-hidden border border-gray-200 shrink-0">
+                     <img :src="place.images?.[0]" alt="Place image" class="w-full h-full object-cover" />
+                  </div>
+                  <div class="text-sm text-gray-700">
+                     <p class="font-medium text-gray-800 truncate">{{ place.name }}</p>
+                     <p class="text-xs text-gray-500">
+                        📍 {{ place.location?.city ? place.location.city + ', ' : '' }}
+                        {{ place.location?.country }}, {{ place.location?.continent }}
+                     </p>
+                  </div>
+               </RouterLink>
+
+               <!-- Linking in the large display -->
+               <div v-else-if="props.collection.places!.length > 2"
+                  v-for="(place, index) in props.collection.places.slice(0, 2)" :key="'div-' + index"
                   class="flex items-center gap-3">
                   <div class="w-12 h-12 rounded-md overflow-hidden border border-gray-200 shrink-0">
                      <img :src="place.images?.[0]" alt="Place image" class="w-full h-full object-cover" />
@@ -48,7 +65,7 @@
          <!-- Large Place Display -->
          <div v-else class="mt-4 flex flex-col gap-3">
             <!-- TODO: link to place page -->
-            <RouterLink to="/settings" v-if="props.collection.places!.length > 0"
+            <RouterLink :to="`/place/${place.name}`" v-if="props.collection.places!.length > 0"
                v-for="(place, index) in props.collection.places" :key="index" class="flex items-center gap-3">
                <div class="w-12 h-12 rounded-md overflow-hidden border border-gray-200 shrink-0">
                   <img :src="place.images?.[0]" alt="Place image" class="w-full h-full object-cover" />
