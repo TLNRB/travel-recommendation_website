@@ -194,7 +194,10 @@
   <div v-if="!recommendations.length" class="text-gray-500 mt-6">No recommendations yet. Be the first to add one!</div>
 </div>
 </div>
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 </template>
 
 <script setup lang="ts">
