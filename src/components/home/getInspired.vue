@@ -50,6 +50,7 @@
 
       <!-- Cards Grid -->
       <div class="mx-auto w-full grid grid-cols-2 max-w-2xl  gap-6">
+
         <div
           v-for="place in displayedPlaces"
           :key="place.name"
@@ -82,6 +83,7 @@ const { getPlaces, places } = usePlaces()
 const router = useRouter()
 
 const categories = ['Beach', 'Museum', 'Monument', 'Street']
+
 const selectedCategory = ref('Beach')
 const shuffledSet = ref<Set<string>>(new Set())
 const isShuffling = ref(false)
@@ -127,6 +129,7 @@ onMounted(async () => {
   await getPlaces()
   reshuffle()
   emit('loaded')
+
 })
 </script>
 

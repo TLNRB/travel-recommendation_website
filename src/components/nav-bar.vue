@@ -1,7 +1,8 @@
 <template>
   <div>
     <nav v-if="route.path !== '/auth'"
-      class="flex justify-between items-center py-3 px-4 md:px-6 bg-gray-100 text-black relative">
+
+      class="flex justify-between items-center py-3 px-4 md:px-6 bg-white text-black relative border-b-[1px] border-gray-300">
 
       <div class="flex items-center gap-x-4 flex-shrink-0">
         <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 -ml-2">
@@ -58,6 +59,7 @@
           <img @click="toggleProfileDropdown" src="https://i.pravatar.cc/40" alt="avatar"
             class="w-10 h-10 rounded-full cursor-pointer border border-gray-300" />
 
+
           <div v-if="profileDropdownOpen"
             class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg pt-2 z-50">
             <RouterLink to="/profile" @click="closeProfileDropdown" class="block px-4 py-2 text-sm hover:bg-gray-100">Profile</RouterLink>
@@ -73,6 +75,7 @@
           Login
         </RouterLink>
       </div>
+
 
       <transition
           enter-active-class="transition ease-out duration-300"
@@ -91,7 +94,9 @@
 
           <div class="mt-10 space-y-4">
             <div class="relative">
+
               <button @click="toggleDropdown" class="px-4 py-2 text-black rounded-lg flex items-center w-full justify-between">
+
                 Explore
                 <svg class="w-4 h-4 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor" :class="{ 'transform rotate-180': isOpen }">
@@ -99,12 +104,14 @@
                 </svg>
               </button>
               <div v-if="isOpen" class="mt-2 w-full bg-white rounded-lg shadow-lg z-20">
+
                   <continentList @continentSelected="closeMobileMenu(); isOpen = false" />
                </div>
             </div>
 
             <button @click="openSuggestModalAndCloseMenu"
               class="w-full px-4 py-2 bg-blue-200 hover:bg-blue-400 text-black rounded transition text-sm text-left">
+
               Suggest a Place
             </button>
           </div>
@@ -114,11 +121,13 @@
 
     </nav>
 
+
     <nav v-else class="absolute m-5">
       <RouterLink to="/">
         <img class="w-32 h-32" src="../assets/images/planet-2.svg" alt="logo">
       </RouterLink>
     </nav>
+
 
     
 
@@ -180,6 +189,7 @@ const closeDropdown = (event: Event) => {
 
 const closeMobileMenu = () => {
     mobileMenuOpen.value = false;
+
 }
 
 
@@ -304,4 +314,5 @@ onUnmounted(() => {
 .z-30 { z-index: 30; }
 .z-40 { z-index: 40; }
 .z-50 { z-index: 50; }
+
 </style>

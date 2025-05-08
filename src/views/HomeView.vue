@@ -1,6 +1,5 @@
 <template>
   <main>
-
     <div>
       <!-- Search Section -->
       <SearchAndPopular  />
@@ -54,4 +53,5 @@ onMounted(() => {
   }
 }
 </style>
+
 

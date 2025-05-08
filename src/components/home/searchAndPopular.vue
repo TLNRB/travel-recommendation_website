@@ -5,6 +5,7 @@
   <div class="flex gap-4 justify-start mb-4 flex-wrap">
     <span
       v-for="cat in ['All', 'Museum', 'Monument', 'Beach', 'Street']"
+
       :key="cat"
       @click="selectCategory(cat)"
       :class="[
@@ -51,6 +52,7 @@
 </div>
 <div>
   <h2 class="text-xl font-semibold mb-4">Most Rated</h2>
+
   <div  class="grid grid-cols-2 md:grid-cols-3 gap-4">
     <div
       v-for="place in mostRatedPlaces"
@@ -70,13 +72,13 @@
       </div>
       <div class="absolute bottom-2 left-2 text-white font-semibold text-sm drop-shadow-lg">
         {{ place.location.city }}, {{ place.location.country }}
+
       </div>
       <div class="absolute bottom-2 right-2 text-white font-semibold text-sm drop-shadow-lg">
         ⬆️ {{ place.upvotes }}
       </div>
     </div>
   </div>
-
 </div>
 </div>
 
@@ -101,6 +103,7 @@ declare const URL: {
 onMounted(() => {
   getPlaces()
   emit('loaded')
+
 })
 
 const filteredPlaces = computed(() => {
@@ -149,4 +152,3 @@ const mostRatedPlaces = computed(() => {
     .slice(0, 6)
 })
 </script>
-

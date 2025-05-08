@@ -105,7 +105,12 @@
         />
       </div>
     </div>
+
   </div>
+</div>
+
+
+  <!-- RECOMMENDATIONS Header -->
 
   <!-- Recommendations Tab Content -->
   <div v-show="activeTab === 'recommendations'" class="mt-0">
@@ -205,6 +210,9 @@ const { getPlaceByName, singlePlace, loading, error } = usePlaces();
 const recommendationsStore = useRecommendationsStore();
 const authStore = useAuthStore();
 const placeName = route.params.id as string;
+
+// undefined from homepage problem to fix
+
 const cityId = route.query.cityId as string;
 const activeTab = ref<'info' | 'recommendations'>('info');
 

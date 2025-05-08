@@ -61,7 +61,6 @@
   <div class="z-10 px-2 pb-3 pt-2 text-center w-full bg-black/30 backdrop-blur-sm">
     <h2 class="text-sm font-semibold truncate">{{ country.name }}</h2>
   </div>
-
 </RouterLink>
     </div>
 
@@ -71,6 +70,7 @@
     Loading...
   </div>
 </div>
+
 </template>
 
 
@@ -110,6 +110,7 @@ const backgroundImage = computed(() => {
 const { getPlaces, places } = usePlaces();
 
 const { fetchContinentAndCountries, continent, allCountries, loading, allCities } = externalAPI()
+
 
 const route = useRoute()
 const continentId = ref(route.params.id as string)
@@ -186,6 +187,7 @@ const displayedCountries = computed(() => {
 
   if (searchTerm.value.length >= 3) {
     return base.filter(c =>
+
       c.name.toLowerCase().includes(searchTerm.value.toLowerCase())
     );
   }
