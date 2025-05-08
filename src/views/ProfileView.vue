@@ -6,22 +6,6 @@
     <RecommendationsSection :userId="user?._id" />
 
     <CollectionsSection :userId="user?._id" />
-
-    <!-- Collections Section -->
-    <!-- <h2 class="text-xl font-bold mt-16 mb-4">Collections</h2>
-    <div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-sm">
-          <p class="font-medium">Hidden Beaches 🌊</p>
-        </div>
-        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-sm">
-          <p class="font-medium">Weekend Getaways 🚗</p>
-        </div>
-        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-sm">
-          <p class="font-medium">Foodie Heaven 🍜</p>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 

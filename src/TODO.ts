@@ -6,9 +6,14 @@
  * 
  * == USER PROFILE ==
  * - Collections
- *    - click on place goes to place
+ *    - when there is no collection it writes an error on profile
  * 
  * == Recommendations ==
- *    - click goes to place
- *    - edit & delete on place page
+ *    - double rendering
+ * 
+ * == Footer revamp ==
+ * 
+ * == Deploy ==
+ * 
+ * == Place Upvotes ==
  */
