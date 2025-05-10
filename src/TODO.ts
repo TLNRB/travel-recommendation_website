@@ -7,9 +7,7 @@
  * - Error update (?)
  *    - make it to an object so it stores id and message thus only appears on one card
  * 
- * == TODOs ==
- * - Footer revamp
- * 
+ * == TODOs == 
  * - Place Upvotes
  * - Save place to collection
  * - Deployment
