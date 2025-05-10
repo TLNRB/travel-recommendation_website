@@ -1,18 +1,19 @@
-/**== ISSUES ==
+/**
+ * == ISSUES ==
  * - test named place takes to wrong place page
  * 
- * == ADMIN ==
+ * == Updates ==
  * - Error update (?)
  *    - make it to an object so it stores id and message thus only appears on one card
- * - Place request recommendation appears twice until refresh after adding
  * 
- * == USER PROFILE ==
- * - Collections
+ * == TODOs ==
+ * - user profile collections 
  *    - when there is no collection it writes an error on profile
+ * - Footer revamp
+ * - Deployment
  * 
- * == Footer revamp ==
+ * - Place Upvotes
+ * - Save place to collection
  * 
- * == Deploy ==
- * 
- * == Place Upvotes ==
+ * - Report recommendation (?)
  */
