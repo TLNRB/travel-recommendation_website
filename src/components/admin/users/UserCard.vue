@@ -45,11 +45,18 @@
                   Permissions for: <span class="text-blue-500">{{ userRole?.name }}</span>
                </div>
                <ul class="space-y-2">
-                  <li v-for="(permission, index) in userRole?.permissions" :key="index" class="flex items-start gap-2">
-                     <span>-</span>
-                     <div>
-                        <div class="font-medium text-gray-800">{{ permission.name }}</div>
-                        <div class="text-gray-600 text-xs">{{ permission.description }}</div>
+                  <li v-for="(permission, index) in userRole?.permissions" :key="index">
+                     <div v-if="typeof permission === 'object'" class="flex items-start gap-2">
+                        <span>-</span>
+                        <div>
+                           <div class="font-medium text-gray-800">{{ permission.name }}
+                           </div>
+                           <div class="text-gray-600 text-xs">{{ permission.description }}</div>
+                        </div>
+                     </div>
+                     <div v-else class="flex items-start gap-2">
+                        <span>-</span>
+                        <div class="text-gray-800">{{ permission }}</div>
                      </div>
                   </li>
                </ul>
@@ -61,12 +68,14 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { PropType } from 'vue'
 // Interfaces
+import type { User } from '@/interfaces/userTypes'
 import type { Role } from '@/interfaces/interfaces'
 
 const props = defineProps({
-   user: { type: Object, required: true },
-   roles: { type: Array, required: true },
+   user: { type: Object as PropType<User>, required: true },
+   roles: { type: Array as PropType<Role[]>, required: true },
    loading: { type: Boolean, default: false },
 });
 

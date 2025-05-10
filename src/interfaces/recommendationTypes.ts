@@ -1,6 +1,10 @@
+import type { User } from '@/interfaces/userTypes'
+import type { Place } from '@/interfaces/placeTypes'
+
 export type Recommendation = {
-   _createdBy: string,
-   place: string,
+   _id: string,
+   _createdBy: string | User,
+   place: string | Place,
    title: string,
    content: string,
    dateOfVisit: string,
@@ -9,4 +13,4 @@ export type Recommendation = {
    upvotes: number
 }
 
-export type AddRecommendation = Omit<Recommendation, '_createdBy' | 'place' | 'dateOfWriting'>
+export type AddRecommendation = Omit<Recommendation, '_id' | '_createdBy' | 'place' | 'dateOfWriting'>

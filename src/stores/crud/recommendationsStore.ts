@@ -37,16 +37,16 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             // If the data is valid and not an empty array, store it
             if (recommendationsData && Array.isArray(recommendationsData.data)) {
                recommendationsData.data.forEach((recommendation: Recommendation) => {
-                  const placeId = populatePlace === 'true' ? recommendation.place._id : recommendation.place;
+                  const placeId = populatePlace === 'true' && typeof recommendation.place === 'object' ? recommendation.place._id : recommendation.place;
 
-                  if (!this.recommendationsMap[placeId]) {
-                     this.recommendationsMap[placeId] = []; // Initialize if not present
+                  if (!this.recommendationsMap[placeId as string]) {
+                     this.recommendationsMap[placeId as string] = []; // Initialize if not present
                   }
 
                   // Check if the recommendation already exists in the array
-                  const exists = this.recommendationsMap[placeId].some((rec) => rec._id === recommendation._id);
+                  const exists = this.recommendationsMap[placeId as string].some((rec) => rec._id === recommendation._id);
                   if (!exists) {
-                     this.recommendationsMap[placeId].push(recommendation); // Push the recommendation to the array
+                     this.recommendationsMap[placeId as string].push(recommendation); // Push the recommendation to the array
                   }
                })
                this.isLoaded = true;
@@ -213,7 +213,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          return (userId: string) => {
             const recommendations: Recommendation[] = [];
             for (const placeId in state.recommendationsMap) {
-               const userRecommendations = state.recommendationsMap[placeId].filter((recommendation) => recommendation._createdBy._id === userId);
+               const userRecommendations = state.recommendationsMap[placeId].filter((recommendation) => typeof recommendation._createdBy === 'object' ? recommendation._createdBy._id === userId : recommendation._createdBy === userId);
                if (userRecommendations.length > 0) {
                   recommendations.push(...userRecommendations);
                }

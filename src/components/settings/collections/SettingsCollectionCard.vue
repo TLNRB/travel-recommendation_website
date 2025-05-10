@@ -36,13 +36,15 @@
                v-for="(place, index) in props.collection.places!.slice(0, 2)" :key="index"
                class="flex items-center gap-3">
                <div class="w-12 h-12 rounded-md overflow-hidden border border-gray-200 shrink-0">
-                  <img :src="place.images?.[0]" alt="Place image" class="w-full h-full object-cover" />
+                  <img :src="typeof place === 'object' ? place.images?.[0] as string : ''" alt="Place image"
+                     class="w-full h-full object-cover" />
                </div>
                <div class="text-sm text-gray-700">
-                  <p class="font-medium text-gray-800 truncate">{{ place.name }}</p>
+                  <p class="font-medium text-gray-800 truncate">{{ typeof place === 'object' ? place.name : '' }}</p>
                   <p class="text-xs text-gray-500">
-                     📍 {{ place.location?.city ? place.location.city + ', ' : '' }}
-                     {{ place.location?.country }}, {{ place.location?.continent }}
+                     📍 {{ typeof place === 'object' && place.location?.city ? place.location.city + ', ' : '' }}
+                     {{ typeof place === 'object' ? place.location?.country : '' }}, {{ typeof place === 'object' ?
+                        place.location?.continent : '' }}
                   </p>
                </div>
             </div>
@@ -63,10 +65,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import type { PropType } from 'vue';
+// Interfaces
+import type { Collection } from '@/interfaces/collectionTypes';
 
 //-- Props
 const props = defineProps({
-   collection: { type: Object, required: true },
+   collection: { type: Object as PropType<Collection>, required: true },
    deleteError: { type: [String, null], default: null }
 })
 

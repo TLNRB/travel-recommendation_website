@@ -18,8 +18,8 @@
           <h2 class="text-2xl font-bold">{{ props.user?.firstName }} {{ props.user?.lastName }}</h2>
           <div class="flex items-center gap-2">
             <p class="text-gray-500 text-sm">@{{ props.user?.username }}</p>
-            <span class="text-gray-500 text-sm">·</span>
-            <span v-if="roleName !== 'User'" class="text-sm font-medium text-blue-500">
+            <span v-if="roleName !== 'user'" class="text-gray-500 text-sm">·</span>
+            <span v-if="roleName !== 'user'" class="text-sm font-medium text-blue-500">
               {{ roleName }}
             </span>
           </div>
@@ -49,7 +49,8 @@
       </p>
 
       <!-- Socials -->
-      <div v-if="props.user?.socials.length >= 0" class="flex gap-[10px] mt-6 justify-start">
+      <div v-if="Array.isArray(props.user?.socials) && props.user?.socials.length >= 0"
+        class="flex gap-[10px] mt-6 justify-start">
         <a v-for="(social, index) in props.user.socials" :key="index" :href="social.link" target="_blank"
           class="w-8 h-8 flex items-center justify-center rounded-full bg-white border-[1px] border-gray-300 hover:border-gray-500 duration-[.2s] ease-in-out">
           <i class="bx text-[18px]" :class="social.icon"></i>
@@ -61,8 +62,11 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
+import type { PropType } from 'vue';
 // Stores
 import { useAuthStore } from '@/stores/authStore';
+// Interfaces
+import type { User } from '@/interfaces/userTypes';
 
 const authStore = useAuthStore();
 
@@ -70,7 +74,7 @@ const authStore = useAuthStore();
 const route = useRoute();
 
 const props = defineProps({
-  user: { type: Object, required: true },
+  user: { type: Object as PropType<User>, required: true },
   roleName: { type: String, required: true }
 });
 </script>

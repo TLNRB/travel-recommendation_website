@@ -171,16 +171,17 @@
 
          <div class="mt-8">
             <h3 class="text-lg font-medium mb-2">Recommendations</h3>
-            <ul v-if="recommendations?.length > 0" class="space-y-2">
-               <li v-if="!recommendationLoading" v-for="recommendation in recommendations" :key="recommendation?._id"
+            <ul v-if="recommendations.length > 0" class="space-y-2">
+               <li v-if="!recommendationLoading" v-for="recommendation in recommendations" :key="recommendation._id"
                   class="bg-gray-50 p-3 rounded-md flex justify-between items-center text-sm">
                   <!-- title -->
                   <div class="flex flex-col gap-1">
-                     <span class="text-gray-500 text-xs">@{{ recommendation?._createdBy.username }}</span>
-                     <span class="mt-1 font-semibold text-gray-700">{{ recommendation?.title }}</span>
+                     <span class="text-gray-500 text-xs">@{{ typeof recommendation._createdBy === 'object' ?
+                        recommendation._createdBy.username : '' }}</span>
+                     <span class="mt-1 font-semibold text-gray-700">{{ recommendation.title }}</span>
                      <span class="line-clamp-2">{{ recommendation.content }}</span>
                   </div>
-                  <button type="button" @click="deleteRecommendation(recommendation?._id)"
+                  <button type="button" @click="deleteRecommendation(recommendation._id)"
                      class="text-red-500 hover:text-red-700 flex justify-center items-center mb-auto text-[20px] w-[20px] h-[20px] duration-200 ease-in-out cursor-pointer"
                      title="Remove tag">
                      &times;
@@ -202,15 +203,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { PropType } from 'vue'
 // Components
 import type { EditPlace } from '@/interfaces/placeTypes'
 // Data
 import { continents } from '@/data/continents.json'
+// Interfaces
+import type { Place } from '@/interfaces/placeTypes'
+import type { Recommendation } from '@/interfaces/recommendationTypes'
 
 const props = defineProps({
-   place: { type: Object, required: true },
-   recommendations: { type: Array, default: () => [] }, // Fresh empty array in default to prevent shared state
-   updateError: { type: String, default: null },
+   place: { type: Object as PropType<Place>, required: true },
+   recommendations: { type: Array as PropType<Recommendation[]>, default: () => [] }, // Fresh empty array in default to prevent shared state
+   updateError: { type: [String, null], default: null },
+   deleteError: { type: [String, null], default: null },
    placeLoading: { type: Boolean, default: false },
    recommendationLoading: { type: Boolean, default: false },
 })

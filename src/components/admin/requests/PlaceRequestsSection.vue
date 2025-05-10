@@ -13,11 +13,11 @@
          <div v-else class="text-gray-500">No place requests to display.</div>
 
          <!-- Edit Card -->
-         <PlaceRequestEditModal v-if="showEditModal" :place="placesStore.getPlaceById(editPlaceRequestId!)"
+         <PlaceRequestEditModal v-if="showEditModal" :place="placesStore.getPlaceById(editPlaceRequestId!)!"
             :recommendations="recommendations" :updateError="placesStore.getUpdateError"
-            :placeLoading="placesStore.getIsLoading" :recommendationLoading="recommendationsStore.getIsLoading"
-            @submit="handleUpdatePlaceRequest" @close="handleClose"
-            @delete-recommendation="handleDeleteRecommendation" />
+            :deleteError="recommendationsStore.getDeleteError" :placeLoading="placesStore.getIsLoading"
+            :recommendationLoading="recommendationsStore.getIsLoading" @submit="handleUpdatePlaceRequest"
+            @close="handleClose" @delete-recommendation="handleDeleteRecommendation" />
       </div>
    </section>
 </template>
@@ -67,7 +67,7 @@ const handleClose = () => {
 };
 
 const handleUpdatePlaceRequest = async (updatedPlace: EditPlace, placeId: string): Promise<void> => {
-   const createdBy: string = placesStore.getPlaceById(placeId)!._createdBy
+   const createdBy: string = placesStore.getPlaceById(placeId)!._createdBy as string;
 
    try {
       await placesStore.updatePlace(placeId, updatedPlace, authStore.getToken!, createdBy);

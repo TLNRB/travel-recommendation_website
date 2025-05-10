@@ -10,8 +10,9 @@
         v-for="recommendation in recommendations" :key="recommendation._id"
         class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex gap-4">
         <!-- Place Image -->
-        <div v-if="recommendation.place.images.length" class="w-24 h-24 shrink-0 rounded-md overflow-hidden">
-          <img :src="recommendation.place.images[0]" alt="Place image" class="w-full h-full object-cover" />
+        <div v-if="typeof recommendation.place === 'object' && recommendation.place.images.length"
+          class="w-24 h-24 shrink-0 rounded-md overflow-hidden">
+          <img :src="recommendation.place.images[0] as string" alt="Place image" class="w-full h-full object-cover" />
         </div>
 
 
@@ -23,8 +24,10 @@
                 {{ recommendation.title }}
               </h3>
               <p class="text-sm text-gray-500">
-                📍 {{ recommendation.place.name }} — {{ recommendation.place.location.city }},
-                {{ recommendation.place.location.country }}
+                📍 {{ typeof recommendation.place === 'object' ? recommendation.place.name : '' }} — {{ typeof
+                  recommendation.place === 'object' && recommendation.place.location.city ?
+                  recommendation.place.location.city : '' }},
+                {{ typeof recommendation.place === 'object' ? recommendation.place.location.country : '' }}
               </p>
             </div>
             <span class="text-yellow-500 font-semibold whitespace-nowrap">⭐ {{ recommendation.rating }}/5</span>
@@ -37,8 +40,8 @@
 
           <!-- Tags -->
           <div class="flex flex-wrap gap-1 text-xs text-blue-600">
-            <span v-for="(tag, tagIndex) in recommendation.place.tags" :key="tagIndex"
-              class="bg-blue-100 px-2 py-0.5 rounded-full">
+            <span v-for="(tag, tagIndex) in typeof recommendation.place === 'object' ? recommendation.place.tags : []"
+              :key="tagIndex" class="bg-blue-100 px-2 py-0.5 rounded-full">
               #{{ tag }}
             </span>
           </div>

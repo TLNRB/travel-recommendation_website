@@ -8,12 +8,12 @@
          </div>
          <!-- Dropdown Actions -->
          <div v-if="props.tab == 'Unused'" class="relative dropdown-actions">
-            <button @click="toggleMenu(props.city.key)"
+            <button @click="toggleMenu(props.cityKey)"
                class="w-[28px] h-[28px] rounded-full border-[1px] border-gray-200 text-gray-800 hover:bg-gray-200 duration-[.15s] ease-in cursor-pointer"
-               :class="activeMenuId === props.city.key ? 'bg-gray-200' : 'bg-gray-100'">
+               :class="activeMenuId === props.cityKey ? 'bg-gray-200' : 'bg-gray-100'">
                ⋮
             </button>
-            <div v-if="activeMenuId === props.city.key"
+            <div v-if="activeMenuId === props.cityKey"
                class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                <button @click="editEvent"
                   class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-50 duration-[.15s] ease-in cursor-pointer rounded-t-md">
@@ -32,7 +32,7 @@
       </div>
 
       <!-- Image -->
-      <div v-if="props.city.images?.length">
+      <div v-if="'images' in props.city && props.city.images.length">
          <img :src="props.city.images[0].url" :alt="props.city.images[0].alt"
             class="w-full h-48 object-cover rounded-lg border" />
       </div>
@@ -51,9 +51,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import type { PropType } from 'vue'
+// Interfaces
+import type { CityImage, EditCityImage, UniqueCity } from '@/interfaces/cityImageTypes'
 
 const props = defineProps({
-   city: { type: Object, required: true },
+   city: { type: Object as PropType<CityImage | UniqueCity>, required: true },
    cityKey: { type: String, required: true },
    tab: { type: String, required: true },
    deleteError: { type: [String, null], default: null },
@@ -63,7 +66,7 @@ const props = defineProps({
 const emit = defineEmits(['delete', 'edit']);
 
 const deleteEvent = () => {
-   emit('delete', props.cityKey, props.city._id);
+   emit('delete', props.cityKey, '_id' in props.city ? props.city._id : null);
    activeMenuId.value = null;
 }
 

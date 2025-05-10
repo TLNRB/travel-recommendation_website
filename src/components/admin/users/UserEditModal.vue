@@ -51,16 +51,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { PropType } from 'vue'
+// Interfaces
+import type { User } from '@/interfaces/userTypes'
+import type { Role } from '@/interfaces/interfaces'
 
 const props = defineProps({
-   user: { type: Object, required: true },
-   roles: { type: Array, required: true },
-   error: { type: String, default: null },
+   user: { type: Object as PropType<User>, required: true },
+   roles: { type: Array as PropType<Role[]>, required: true },
+   error: { type: [String, null], default: null },
    loading: { type: Boolean, default: false },
 })
 
 //-- Edit
-const selectedRole = ref<string>(props.user.role)
+const selectedRole = ref<string>(props.user.role as string)
 const noChangesError = ref<string>('')
 
 //-- Emit

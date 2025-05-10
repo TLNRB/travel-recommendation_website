@@ -12,7 +12,7 @@
          <div v-else class="text-gray-500">No users to display.</div>
 
          <!-- Edit Card -->
-         <UserEditModal v-if="showEditModal" :user="usersStore.getUserById(editUserId)" :roles="roles"
+         <UserEditModal v-if="showEditModal" :user="usersStore.getUserById(editUserId!)!" :roles="roles"
             :error="usersStore.getUpdateError" :loading="usersStore.getIsLoading" @submit="handleUpdateUserRole"
             @close="handleClose" />
       </div>

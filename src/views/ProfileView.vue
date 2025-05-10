@@ -38,7 +38,7 @@ const roleName = computed(() => {
 onMounted(async () => {
   await usersStore.fetchUsers();
   await rolesStore.fetchRoles();
-  await collectionsStore.fecthCollectionsByUserId(user.value?._id, false, 'false')
+  await collectionsStore.fecthCollectionsByUserId(user.value?._id as string, false, 'false')
 });
 </script>
 

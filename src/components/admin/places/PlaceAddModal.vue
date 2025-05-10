@@ -206,7 +206,7 @@ const permissionIdPlaces = computed((): string | null => rolesStore.getPermissio
 
 // Check if the user has the permission to manage plcaes
 const canManagePlaces = computed(() => {
-   const userRole = userStore.getUser!.role;
+   const userRole = userStore.getUser!.role as { permissions: string[] };
    if (!permissionIdPlaces.value) return false; // No permission Id found
 
    return userRole.permissions.includes(permissionIdPlaces.value);
