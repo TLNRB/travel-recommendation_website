@@ -1,4 +1,7 @@
+import type { User } from '@/interfaces/userTypes'
+
 export type Place = {
+   _id: string,
    name: string,
    description: string,
    images: (File | string)[],
@@ -12,10 +15,10 @@ export type Place = {
    upvotes: number,
    tags: string[],
    approved: boolean,
-   _createdBy: string
+   _createdBy: string | User
 }
 
-export type AddPlace = Omit<Place, '_createdBy'>
+export type AddPlace = Omit<Place, '_id' | '_createdBy'> & { _createdBy?: string }
 
-export type EditPlace = Omit<Place, '_createdBy'> & { newImages?: File[] }
+export type EditPlace = Omit<Place, '_id' | '_createdBy'> & { newImages?: File[], _createdBy?: string }
 

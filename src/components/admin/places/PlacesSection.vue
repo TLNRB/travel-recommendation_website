@@ -75,7 +75,7 @@ const handleCloseAdd = () => {
 };
 
 const handleAddPlace = async (newPlace: AddPlace, recommendation: AddRecommendation): Promise<void> => {
-   const placeData: Place = {
+   const placeData: AddPlace = {
       ...newPlace,
       _createdBy: authStore.getUserId!,
    };
@@ -181,7 +181,7 @@ const handleCloseEdit = () => {
 };
 
 const handleUpdatePlace = async (updatedPlace: EditPlace, placeId: string): Promise<void> => {
-   const createdBy: string = placesStore.getPlaceById(placeId)!._createdBy
+   const createdBy: string = placesStore.getPlaceById(placeId)!._createdBy as string;
 
    try {
       await placesStore.updatePlace(placeId, updatedPlace, authStore.getToken!, createdBy);

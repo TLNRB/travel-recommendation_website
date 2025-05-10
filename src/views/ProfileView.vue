@@ -1,11 +1,11 @@
 <template>
   <div class="max-w-6xl w-full mx-auto py-16 px-4 space-y-8 md:px-6">
     <div v-if="usersStore.getIsLoading" class="loader"></div>
-    <ProfileCard v-else :user="user!" :roleName="roleName!" />
+    <ProfileCard v-else-if="user?._id" :user="user!" :roleName="roleName!" />
 
-    <RecommendationsSection :userId="user?._id" />
+    <RecommendationsSection v-if="user?._id" :userId="user?._id" />
 
-    <CollectionsSection :userId="user?._id" />
+    <CollectionsSection v-if="user?._id" :userId="user?._id" />
 
     <!-- Collections Section -->
     <!-- <h2 class="text-xl font-bold mt-16 mb-4">Collections</h2>
@@ -54,7 +54,7 @@ const roleName = computed(() => {
 onMounted(async () => {
   await usersStore.fetchUsers();
   await rolesStore.fetchRoles();
-  await collectionsStore.fecthCollectionsByUserId(user.value?._id, false, 'false')
+  await collectionsStore.fecthCollectionsByUserId(user.value?._id as string, false, 'false')
 });
 </script>
 

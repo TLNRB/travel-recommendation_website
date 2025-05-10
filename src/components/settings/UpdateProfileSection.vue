@@ -81,7 +81,7 @@
 
                      <div v-if="editUser.newImage" class="mt-2 w-fit text-xs px-2 py-1 bg-gray-100 rounded">
                         {{ typeof editUser.newImage === 'string' ? editUser.newImage : editUser.newImage.name }}
-                        <span type="button" @click="removeNewImage(index)"
+                        <span type="button" @click="removeNewImage"
                            class="text-red-500 hover:text-red-700 pl-1 duration-200 ease-in-out cursor-pointer"
                            title="Remove image">
                            &times;
@@ -232,7 +232,7 @@ const editUser = ref<UpdateProfile>({
    country: user.value?.country || '',
    city: user.value?.city || '',
    socials: user.value?.socials?.length! > 0 ? [...user.value?.socials!] : [],
-   role: user.value?.role._id,
+   role: typeof user.value?.role === 'object' ? user.value?.role._id : user.value?.role!,
 })
 
 // Populate Edit User
@@ -247,7 +247,7 @@ const populateEditUser = () => {
       country: user.value?.country || '',
       city: user.value?.city || '',
       socials: user.value?.socials?.length! > 0 ? [...user.value?.socials!] : [],
-      role: user.value?.role._id,
+      role: typeof user.value?.role === 'object' ? user.value?.role._id : user.value?.role!,
    })
 }
 

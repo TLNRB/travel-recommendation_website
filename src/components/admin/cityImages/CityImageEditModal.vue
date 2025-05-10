@@ -80,11 +80,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-// Components
-import type { EditCityImage } from '@/interfaces/cityImageTypes'
+import type { PropType } from 'vue'
+// Interfaces
+import type { CityImage, EditCityImage, UniqueCity } from '@/interfaces/cityImageTypes'
 
 const props = defineProps({
-   city: { type: Object, required: true },
+   city: { type: Object as PropType<CityImage | UniqueCity>, required: true },
    cityKey: { type: String, required: true },
    addError: { type: [String, null], default: null },
    updateError: { type: [String, null], default: null },
@@ -95,7 +96,7 @@ const props = defineProps({
 const editCityImage = ref<EditCityImage>({
    name: props.city.name,
    country: props.city.country,
-   images: props.city.images ? [...props.city.images] : [],
+   images: 'images' in props.city ? [...props.city.images] : [],
    newImages: []
 })
 
@@ -156,7 +157,7 @@ const submit = () => {
       return
    }
 
-   emit('submit', editCityImage.value, props.city._id || '')
+   emit('submit', editCityImage.value, '_id' in props.city ? props.city._id : '')
 }
 </script>
 

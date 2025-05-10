@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Collection } from "@/interfaces/collectionTypes";
+import type { AddCollection, Collection } from "@/interfaces/collectionTypes";
 
 export const useCollectionsStore = defineStore('collectionsStore', {
    state: () => ({
@@ -55,7 +55,7 @@ export const useCollectionsStore = defineStore('collectionsStore', {
 
       },
 
-      async addCollection(newCollection: Collection, token: string): Promise<void> {
+      async addCollection(newCollection: AddCollection, token: string): Promise<void> {
          this.isLoading = true;
          this.addError = null;
 
@@ -63,7 +63,7 @@ export const useCollectionsStore = defineStore('collectionsStore', {
          if (newCollection.places!.length > 0) {
             console.log('Places before:', newCollection.places);
 
-            const placeIds: string[] = newCollection.places!.map((place) => place._id);
+            const placeIds: string[] = newCollection.places!.map((place) => typeof place === 'object' ? place._id : place);
             newCollection.places = placeIds;
 
             console.log('Places after:', newCollection.places);
@@ -89,7 +89,7 @@ export const useCollectionsStore = defineStore('collectionsStore', {
                const responseData = await response.json();
                console.log('Collection added successfully:', responseData);
 
-               await this.fecthCollectionsByUserId(newCollection._createdBy, true, 'false'); // Refresh the collections for the user
+               await this.fecthCollectionsByUserId(newCollection._createdBy as string, true, 'false'); // Refresh the collections for the user
             }
 
 
@@ -110,7 +110,7 @@ export const useCollectionsStore = defineStore('collectionsStore', {
          if (updatedCollection.places!.length > 0) {
             console.log('Places before:', updatedCollection.places);
 
-            const placeIds: string[] = updatedCollection.places!.map((place) => place._id);
+            const placeIds: string[] = updatedCollection.places!.map((place) => typeof place === 'object' ? place._id : place);
             updatedCollection.places = placeIds;
 
             console.log('Places after:', updatedCollection.places);

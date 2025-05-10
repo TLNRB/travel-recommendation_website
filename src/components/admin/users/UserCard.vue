@@ -61,12 +61,14 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { PropType } from 'vue'
 // Interfaces
+import type { User } from '@/interfaces/userTypes'
 import type { Role } from '@/interfaces/interfaces'
 
 const props = defineProps({
-   user: { type: Object, required: true },
-   roles: { type: Array, required: true },
+   user: { type: Object as PropType<User>, required: true },
+   roles: { type: Array as PropType<Role[]>, required: true },
    loading: { type: Boolean, default: false },
 });
 

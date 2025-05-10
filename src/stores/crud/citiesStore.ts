@@ -129,7 +129,7 @@ export const useCitiesStore = defineStore('citiesStore', {
             }))
 
             // Create the cityImage object
-            const cityImageData: CityImage = {
+            const cityImageData: EditCityImage = {
                name: newCity.name,
                country: newCity.country,
                images: imagesData
@@ -168,7 +168,7 @@ export const useCitiesStore = defineStore('citiesStore', {
          this.updateError = null;
 
          // Create the cityImageData object with the existing images
-         let cityImageData: CityImage = {
+         let cityImageData: EditCityImage = {
             name: updatedCity.name,
             country: updatedCity.country,
             images: [...updatedCity.images]

@@ -1,6 +1,7 @@
 import type { Role, Social } from '@/interfaces/interfaces'
 
 export type User = {
+   _id: string,
    firstName: string,
    lastName: string,
    username: string,
@@ -24,6 +25,6 @@ export type UpdateProfile = {
    bio?: string,
    country?: string,
    city?: string,
-   socials?: Array<object>,
+   socials?: Social[],
    role: string
 }

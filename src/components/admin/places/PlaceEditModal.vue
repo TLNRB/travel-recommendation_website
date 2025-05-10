@@ -171,14 +171,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { PropType } from 'vue'
 // Interfaces
-import type { EditPlace } from '@/interfaces/placeTypes'
+import type { Place, EditPlace } from '@/interfaces/placeTypes'
+import type { Recommendation } from '@/interfaces/recommendationTypes'
 // Data
 import { continents } from '@/data/continents.json'
 
+
 const props = defineProps({
-   place: { type: Object, required: true },
-   recommendations: { type: Array, default: () => [] },
+   place: { type: Object as PropType<Place>, required: true },
+   recommendations: { type: Array as PropType<Recommendation[]>, default: () => [] },
    updateError: { type: [String, null], default: null },
    loading: { type: Boolean, default: false },
 })

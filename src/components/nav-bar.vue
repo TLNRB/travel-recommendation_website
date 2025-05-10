@@ -1,7 +1,7 @@
 <template>
   <div class="fixed top-0 w-full py-3 px-4 md:px-6 bg-white text-black border-b-[1px] border-gray-300 z-40">
     <nav v-if="route.path !== '/auth'" class="container mx-auto flex justify-between items-center">
-    
+
       <div class="flex items-center gap-x-4 flex-shrink-0">
         <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 -ml-2">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -28,21 +28,21 @@
             </div>
           </div>
           <div v-if="userStore.getUser" class="flex w-64 justify-center">
-          <button @click="handleAdd"
-            class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg duration-[.2s] ease-in-out text-sm cursor-pointer">
-            Suggest a Place
-          </button>
+            <button @click="handleAdd"
+              class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg duration-[.2s] ease-in-out text-sm cursor-pointer">
+              Suggest a Place
+            </button>
 
-          <!-- Suggestion Modal -->
-          <PlaceAddModal v-if="showAddModal" :addError="placesStore.getAddError" :loading="placesStore.getIsLoading"
-            @submit="handleAddPlace" @close="handleCloseAdd" />
+            <!-- Suggestion Modal -->
+            <PlaceAddModal v-if="showAddModal" :addError="placesStore.getAddError" :loading="placesStore.getIsLoading"
+              @submit="handleAddPlace" @close="handleCloseAdd" />
 
-          <!-- Failed Recommendation Card -->
-          <PlaceRecommendationFail v-else-if="showRecommendationModal"
-            :place="placesStore.getPlaceById(failedRecommendationPlaceId!)!" :recommendation="failedRecommendation!"
-            :addError="recommendationsStore.getAddError" :loading="recommendationsStore.getIsLoading"
-            @submit="handleAddRecommendation" @close="handleCloseAddRecommendation" />
-        </div>
+            <!-- Failed Recommendation Card -->
+            <PlaceRecommendationFail v-else-if="showRecommendationModal"
+              :place="placesStore.getPlaceById(failedRecommendationPlaceId!)!" :recommendation="failedRecommendation!"
+              :addError="recommendationsStore.getAddError" :loading="recommendationsStore.getIsLoading"
+              @submit="handleAddRecommendation" @close="handleCloseAddRecommendation" />
+          </div>
         </div>
       </div>
 
@@ -72,8 +72,9 @@
             <RouterLink to="/settings" @click="profileDropdownOpen = false"
               class="block px-4 py-2 text-sm hover:bg-gray-100">
               Settings</RouterLink>
-            <RouterLink v-if="userStore.getUser?.role?.name !== 'user'" to="/dashboard"
-              @click="profileDropdownOpen = false" class="block px-4 py-2 text-sm hover:bg-gray-100">Dashboard
+            <RouterLink v-if="typeof userStore.getUser?.role === 'object' && userStore.getUser?.role?.name !== 'user'"
+              to="/dashboard" @click="profileDropdownOpen = false" class="block px-4 py-2 text-sm hover:bg-gray-100">
+              Dashboard
             </RouterLink>
             <LogoutBtn @click="closeProfileDropdown" @loggedOut="profileDropdownOpen = false" />
           </div>
@@ -89,15 +90,17 @@
         leave-from-class="transform translate-x-0" leave-to-class="transform -translate-x-full">
         <div v-if="mobileMenuOpen" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40 p-4 md:hidden">
           <button @click="mobileMenuOpen = false" class="absolute top-3 right-3 p-1">
-             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-             </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
           </button>
 
           <div class="mt-10 space-y-4">
             <div class="relative">
 
-              <button @click="toggleDropdown" class="px-4 py-2 text-black rounded-lg flex items-center w-full justify-between">
+              <button @click="toggleDropdown"
+                class="px-4 py-2 text-black rounded-lg flex items-center w-full justify-between">
 
                 Explore
                 <svg class="w-4 h-4 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -107,13 +110,12 @@
               </button>
               <div v-if="isOpen" class="mt-2 w-full bg-white rounded-lg shadow-lg z-20">
 
-                  <continentList @continentSelected="closeMobileMenu(); isOpen = false" />
-               </div>
+                <continentList @continentSelected="closeMobileMenu(); isOpen = false" />
+              </div>
             </div>
 
-            <button @click="openSuggestModalAndCloseMenu"
-              class="w-full px-4 py-2 bg-blue-200 hover:bg-blue-400 text-black rounded transition text-sm text-left">
-
+            <button @click="handleAdd"
+              class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg duration-[.2s] ease-in-out text-sm cursor-pointer">
               Suggest a Place
             </button>
           </div>
@@ -184,7 +186,7 @@ const closeDropdown = (event: Event) => {
 };
 
 const closeMobileMenu = () => {
-    mobileMenuOpen.value = false;
+  mobileMenuOpen.value = false;
 
 }
 
@@ -207,7 +209,7 @@ const handleCloseAdd = () => {
 };
 
 const handleAddPlace = async (newPlace: AddPlace, recommendation: AddRecommendation): Promise<void> => {
-  const placeData: Place = {
+  const placeData: AddPlace = {
     ...newPlace,
     _createdBy: authStore.getUserId!,
   };
@@ -306,9 +308,19 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.z-20 { z-index: 20; }
-.z-30 { z-index: 30; }
-.z-40 { z-index: 40; }
-.z-50 { z-index: 50; }
+.z-20 {
+  z-index: 20;
+}
 
+.z-30 {
+  z-index: 30;
+}
+
+.z-40 {
+  z-index: 40;
+}
+
+.z-50 {
+  z-index: 50;
+}
 </style>

@@ -48,7 +48,7 @@
          </div>
          <!-- Edit Card -->
          <CityImageEditModal v-if="showEditModal"
-            :city="activeTab !== 'Missing' ? citiesStore.getCityImagesByKey(editCityKey!) : citiesStore.getUniqueCityByKey(editCityKey!)"
+            :city="activeTab !== 'Missing' ? citiesStore.getCityImagesByKey(editCityKey!)! : citiesStore.getUniqueCityByKey(editCityKey!)!"
             :cityKey="editCityKey!" :addError="citiesStore.addError" :updateError="citiesStore.getUpdateError"
             :loading="citiesStore.getIsLoading" @submit="handleSubmit" @close="handleCloseEdit" />
       </div>

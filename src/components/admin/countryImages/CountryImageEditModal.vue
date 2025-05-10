@@ -1,4 +1,4 @@
-<template>
+g<template>
    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <!-- Modal box -->
       <div
@@ -15,7 +15,7 @@
 
          <div class="flex items-center mb-4">
             <h3 class="text-xl font-bold text-gray-800">
-               {{ props.country.name ? props.country.name : props.country }}
+               {{ typeof props.country === 'object' && props.country ? props.country.name : props.country }}
             </h3>
          </div>
 
@@ -82,11 +82,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-// Components
-import type { EditCountryImage } from '@/interfaces/countryImageTypes'
+import type { PropType } from 'vue'
+// Interfaces
+import type { CountryImage, EditCountryImage } from '@/interfaces/countryImageTypes'
 
 const props = defineProps({
-   country: { type: [Object, String], required: true },
+   country: { type: [Object, String] as PropType<CountryImage | string>, required: true },
    addError: { type: [String, null], default: null },
    updateError: { type: [String, null], default: null },
    loading: { type: Boolean, default: false },
@@ -94,8 +95,8 @@ const props = defineProps({
 
 //-- Edit
 const editCountryImage = ref<EditCountryImage>({
-   name: props.country.name ? props.country.name : props.country,
-   images: props.country.images ? [...props.country.images] : [],
+   name: typeof props.country === 'object' && props.country ? props.country.name : props.country,
+   images: typeof props.country === 'object' && props.country ? [...props.country.images] : [],
    newImages: []
 })
 
@@ -156,7 +157,7 @@ const submit = () => {
       return
    }
 
-   emit('submit', editCountryImage.value, props.country._id || '')
+   emit('submit', editCountryImage.value, typeof props.country === 'object' && props.country ? props.country._id : '')
 }
 </script>
 

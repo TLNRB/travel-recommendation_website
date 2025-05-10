@@ -24,7 +24,7 @@
 
          <!-- Edit Modal -->
          <CollectionEditModal v-if="showEditModal"
-            :collection="collectionsStore.getCollectionById(authStore.getUserId!, editCollectionId!)"
+            :collection="collectionsStore.getCollectionById(authStore.getUserId!, editCollectionId!)!"
             :userId="authStore.getUserId!" :updateError="collectionsStore.getUpdateError"
             :loading="collectionsStore.getIsLoading" @submit="handleUpdateCollection" @close="handCloseEdit" />
       </div>
@@ -41,7 +41,7 @@ import CollectionEditModal from '@/components/settings/collections/CollectionEdi
 import { useCollectionsStore } from '@/stores/crud/collectionsStore'
 import { useAuthStore } from '@/stores/authStore';
 // Interfaces
-import type { Collection } from '@/interfaces/collectionTypes'
+import type { AddCollection, Collection } from '@/interfaces/collectionTypes'
 
 const collectionsStore = useCollectionsStore()
 const authStore = useAuthStore();
@@ -60,7 +60,7 @@ const handleCloseAdd = () => {
    collectionsStore.clearErrors();
 };
 
-const handleAddCollection = async (newCollection: Collection): Promise<void> => {
+const handleAddCollection = async (newCollection: AddCollection): Promise<void> => {
    try {
       await collectionsStore.addCollection(newCollection, authStore.getToken!)
 
