@@ -18,8 +18,8 @@
           <h2 class="text-2xl font-bold">{{ props.user?.firstName }} {{ props.user?.lastName }}</h2>
           <div class="flex items-center gap-2">
             <p class="text-gray-500 text-sm">@{{ props.user?.username }}</p>
-            <span class="text-gray-500 text-sm">·</span>
-            <span v-if="roleName !== 'User'" class="text-sm font-medium text-blue-500">
+            <span v-if="roleName !== 'user'" class="text-gray-500 text-sm">·</span>
+            <span v-if="roleName !== 'user'" class="text-sm font-medium text-blue-500">
               {{ roleName }}
             </span>
           </div>
