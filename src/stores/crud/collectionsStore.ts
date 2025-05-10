@@ -38,12 +38,7 @@ export const useCollectionsStore = defineStore('collectionsStore', {
                this.collectionsMap[userId] = collectionsData.data;
                this.isLoaded = true;
                this.error = null;
-            } else {
-               // Do not store anything if the array is empty
-               console.log('No collections found.');
-               throw new Error('No collections found.');
             }
-
          }
          catch (err) {
             this.error = (err as Error).message

@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 // Components
 import ProfileCard from '@/components/profile/ProfileCard.vue';
@@ -34,6 +34,13 @@ const user = computed(() => { return usersStore.getUserById(route.params.id as s
 const roleName = computed(() => {
   return rolesStore.getRoleById(user.value?.role as string)?.name
 });
+
+// Watch for changes in params and fetch user data
+watch(() => route.params.id, async (newId) => {
+  if (newId) {
+    await collectionsStore.fecthCollectionsByUserId(user.value?._id as string, true, 'false');
+  }
+})
 
 onMounted(async () => {
   await usersStore.fetchUsers();
