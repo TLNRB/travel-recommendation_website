@@ -42,16 +42,21 @@
 
                   <!-- Display Selected Places -->
                   <div v-if="editCollection.places!.length > 0" class="space-y-2">
-                     <div v-for="(place, index) in editCollection.places" :key="place._id"
+                     <div v-for="(place, index) in editCollection.places" :key="index"
                         class="flex items-center gap-3 p-2 border border-gray-200 rounded-lg">
                         <div class="w-12 h-12 rounded-md overflow-hidden border border-gray-200 shrink-0">
-                           <img :src="place.images?.[0]" alt="Place image" class="w-full h-full object-cover" />
+                           <img :src="typeof place === 'object' ? place.images?.[0] as string : ''" alt="Place image"
+                              class="w-full h-full object-cover" />
                         </div>
                         <div class="flex-1">
-                           <p class="text-sm font-medium text-gray-800 truncate">{{ place.name }}</p>
+                           <p class="text-sm font-medium text-gray-800 truncate">{{ typeof place === 'object' ?
+                              place.name : '' }}</p>
                            <p class="text-xs text-gray-500">
-                              📍 {{ place.location?.city ? place.location.city + ', ' : '' }}
-                              {{ place.location?.country }}, {{ place.location?.continent }}
+                              📍 {{ typeof place === 'object' && place.location?.city ? place.location.city + ', ' : ''
+                              }}
+                              {{ typeof place === 'object' ? place.location?.country : '' }}, {{ typeof place ===
+                                 'object' ?
+                                 place.location?.continent : '' }}
                            </p>
                         </div>
                         <button type="button" @click="removePlace(index)"
@@ -83,17 +88,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import type { PropType } from 'vue'
 // Interfaces
-import type { Collection } from '@/interfaces/collectionTypes'
-import type { Place } from '@/interfaces/placeTypes'
+import type { AddCollection, Collection } from '@/interfaces/collectionTypes'
 // Stores
 import { usePlacesStore } from '@/stores/crud/placesStore'
 
 const placesStore = usePlacesStore()
 
 const props = defineProps({
-   collection: { type: Object, required: true },
+   collection: { type: Object as PropType<Collection>, required: true },
    userId: { type: String, required: true },
    updateError: { type: [String, null], default: null },
    loading: { type: Boolean, default: false }
@@ -101,23 +106,23 @@ const props = defineProps({
 
 //-- Edit
 console.log('Edit Collection:', props.collection)
-const editCollection = ref<Collection>({
+const editCollection = ref<AddCollection>({
    _createdBy: props.userId,
    name: props.collection.name,
-   places: [...props.collection.places],
+   places: [...props.collection.places!] as any,
    visible: props.collection.visible
 })
 
 // Add Place
 const availablePlaces = computed(() => placesStore.filterPlacesByApproved(true));
-const selectedPlace = ref<Place | null>(null)
+const selectedPlace = ref<any>(null)
 const placeError = ref<string | null>(null)
 
 const addPlace = () => {
    if (selectedPlace.value === null) return
 
    // Check if the selected place is already in the collection
-   const alreadyAdded = editCollection.value.places?.find((place) => place._id === selectedPlace.value?._id)
+   const alreadyAdded = editCollection.value.places?.find((place) => typeof place === 'object' ? place._id === selectedPlace.value?._id : place === selectedPlace.value?._id)
    if (alreadyAdded) {
       placeError.value = 'This place is already added.'
       return
@@ -143,6 +148,10 @@ const close = () => {
 const submit = () => {
    emit('submit', editCollection.value, props.collection._id, props.userId)
 }
+
+onMounted(async () => {
+   await placesStore.fetchPlaces();
+})
 </script>
 
 <style scoped>

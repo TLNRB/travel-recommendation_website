@@ -1,8 +1,13 @@
 import type { CountryImage } from "./countryImageTypes"
 
 export type Role = {
+  _id: string,
   name: string,
-  permissions: string[]
+  permissions: string[] | Array<{
+    _id: string,
+    description: string
+    name: string
+  }>,
 }
 
 export type Social = {
@@ -71,4 +76,3 @@ export type Place = {
 export type AddPlace = Omit<Place, '_createdBy'>
 
 export type EditPlace = Omit<Place, '_createdBy'> & { newImages?: File[] }
-

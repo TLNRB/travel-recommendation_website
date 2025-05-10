@@ -7,8 +7,8 @@
       </div>
 
       <!-- Image -->
-      <div v-if="props.place.images?.length">
-         <img :src="props.place.images[0]" :alt="`Image of ${props.place.name}`"
+      <div v-if="props.place.images.length">
+         <img :src="props.place.images[0] as string" :alt="`Image of ${props.place.name}`"
             class="w-full h-48 object-cover rounded-lg border" />
       </div>
 
@@ -38,7 +38,7 @@
       </div>
 
       <!-- Recommendations -->
-      <div v-if="recommendations.length > 0 && !recommendationsStore.getIsloading"
+      <div v-if="recommendations.length > 0 && !recommendationsStore.getIsLoading"
          class="space-y-4 bg-gray-50 p-4 rounded-md text-sm text-gray-800">
          <div v-for="recommendation in recommendations" :key="recommendation._id"
             class="p-3 bg-white rounded-md shadow-sm border border-gray-200">
@@ -49,7 +49,10 @@
 
             <!-- Author and Dates -->
             <div class="text-xs text-gray-500 mb-2 flex flex-wrap justify-between gap-2">
-               <span>By {{ recommendation._createdBy.username }}</span>
+               <span>
+                  By {{ typeof recommendation._createdBy === 'object' ? recommendation._createdBy.username :
+                     '' }}
+               </span>
                <span class="text-[12px] font-medium text-yellow-600">
                   ⭐ {{ recommendation.rating }} / 5
                </span>
@@ -62,7 +65,7 @@
          </div>
       </div>
       <!-- Loading -->
-      <div v-else-if="recommendationsStore.getIsloading"
+      <div v-else-if="recommendationsStore.getIsLoading"
          class="space-y-4 bg-gray-50 p-4 rounded-md text-sm text-gray-600 italic">
          <span class="loader"></span>
       </div>
@@ -107,17 +110,20 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import type { PropType } from 'vue'
 // Interfaces
 import type { EditPlace } from '@/interfaces/placeTypes'
 // Stores
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore'
+// Interfaces
+import type { Place } from '@/interfaces/placeTypes'
 
 const recommendationsStore = useRecommendationsStore()
 
 const props = defineProps({
-   place: { type: Object, required: true },
-   updateError: { type: String, default: null },
-   deleteError: { type: String, default: null },
+   place: { type: Object as PropType<Place>, required: true },
+   updateError: { type: [String, null], default: null },
+   deleteError: { type: [String, null], default: null },
 });
 
 //-- Recommendation

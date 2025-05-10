@@ -48,27 +48,25 @@ const rolesStore = useRolesStore();
 
 //-- Permission Check
 // Get the permission Id for the ability to assign roles
-const permissionIdRoles = computed((): string | null => rolesStore.getPermissionIdByPermissionName('user:assignRoles'));
+const permissionIdRoles = computed((): string | null => rolesStore.getPermissionIdByPermissionName('user:assignRoles')!);
 
 // Check if the user has the permission to edit users
 const canEditUsers = computed(() => {
   const userRole = userStore.getUser!.role;
-  if (!permissionIdRoles.value) return false; // No permission Id found
+  if (!permissionIdRoles.value || typeof userRole === 'string') return false; // No permission Id found
 
-  return userRole.permissions.includes(permissionIdRoles.value);
+  return userRole.permissions.some(permission => typeof permission === 'string' ? permission === permissionIdRoles.value : permission._id === permissionIdRoles.value);
 })
 
 // Get the permission Id for the ability to edit places / requests
-const permissionIdPlaces = computed((): string | null => rolesStore.getPermissionIdByPermissionName('content:managePlaces'));
+const permissionIdPlaces = computed((): string | null => rolesStore.getPermissionIdByPermissionName('content:managePlaces')!);
 
 // Check if the user has the permission to manage plcaes
 const canEditPlaces = computed(() => {
   const userRole = userStore.getUser!.role;
-  console.log('User Role:', userRole);
-  console.log('Permission Id:', permissionIdPlaces.value);
-  if (!permissionIdPlaces.value) return false; // No permission Id found
+  if (!permissionIdPlaces.value || typeof userRole === 'string') return false; // No permission Id found
 
-  return userRole.permissions.includes(permissionIdPlaces.value);
+  return userRole.permissions.some(permission => typeof permission === 'string' ? permission === permissionIdPlaces.value : permission._id === permissionIdPlaces.value);
 })
 
 //-- Tabs

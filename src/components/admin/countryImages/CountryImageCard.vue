@@ -3,11 +3,12 @@
       <div class="flex items-start justify-between">
          <!-- Country Info -->
          <div>
-            <h3 class="text-xl font-bold text-gray-800">{{ props.country.name ? props.country.name : props.country }}
+            <h3 class="text-xl font-bold text-gray-800">{{ typeof props.country === 'object' ?
+               props.country.name : props.country }}
             </h3>
          </div>
          <!-- Dropdown Actions -->
-         <div v-if="props.tab == 'Unused'" class="relative dropdown-actions">
+         <div v-if="props.tab == 'Unused' && typeof props.country === 'object'" class="relative dropdown-actions">
             <button @click="toggleMenu(props.country._id)"
                class="w-[28px] h-[28px] rounded-full border-[1px] border-gray-200 text-gray-800 hover:bg-gray-200 duration-[.15s] ease-in cursor-pointer"
                :class="activeMenuId === props.country._id ? 'bg-gray-200' : 'bg-gray-100'">
@@ -32,7 +33,7 @@
       </div>
 
       <!-- Image -->
-      <div v-if="props.country.images?.length">
+      <div v-if="typeof props.country === 'object' && props.country.images.length">
          <img :src="props.country.images[0].url" :alt="props.country.images[0].alt"
             class="w-full h-48 object-cover rounded-lg border" />
       </div>
@@ -51,9 +52,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import type { PropType } from 'vue'
+// Interfaces
+import type { CountryImage } from '@/interfaces/countryImageTypes'
 
 const props = defineProps({
-   country: { type: [Object, String], required: true },
+   country: { type: [Object, String] as PropType<CountryImage | string>, required: true },
    tab: { type: String, required: true },
    deleteError: { type: [String, null], default: null },
 });
@@ -62,12 +66,12 @@ const props = defineProps({
 const emit = defineEmits(['delete', 'edit']);
 
 const deleteEvent = () => {
-   emit('delete', props.country._id);
+   emit('delete', typeof props.country === 'object' ? props.country._id : null);
    activeMenuId.value = null;
 }
 
 const editEvent = () => {
-   emit('edit', props.country.name ? props.country.name : props.country);
+   emit('edit', typeof props.country === 'object' ? props.country.name : props.country);
    activeMenuId.value = null;
 }
 

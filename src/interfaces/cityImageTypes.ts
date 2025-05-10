@@ -1,16 +1,20 @@
 export type CityImage = {
+   _id: string,
    name: string,
    country: string,
    images: Array<{
-    url: string
-    alt?: string
-  }>
+      url: string
+      alt: string
+   }>
 }
 
 export type EditCityImage = {
    name: string,
    country: string,
-   images: Array<object>,
+   images: Array<{
+      url: string
+      alt: string
+   }>,
    newImages?: File[]
 }
 

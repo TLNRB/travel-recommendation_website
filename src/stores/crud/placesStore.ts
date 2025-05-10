@@ -66,7 +66,7 @@ export const usePlacesStore = defineStore('placesStore', {
          return this.places.filter((place) => place.approved === approved)
       },
 
-      async addPlace(newPlace: Place, token: string): Promise<string | null> {
+      async addPlace(newPlace: AddPlace, token: string): Promise<string | null> {
          this.isLoading = true;
          this.addError = null
 
@@ -206,7 +206,7 @@ export const usePlacesStore = defineStore('placesStore', {
          const { newImages, ...placeData } = updatedData;
 
          // Add the createdBy field to the updated place data
-         let updatedPlace: Place = {
+         let updatedPlace: EditPlace = {
             ...placeData,
             _createdBy: createdBy
          }
@@ -300,7 +300,7 @@ export const usePlacesStore = defineStore('placesStore', {
          }
       },
 
-      normalizePlace(place: Place): Place {
+      normalizePlace(place: AddPlace | EditPlace): AddPlace | EditPlace {
          place.name = normalize(place.name);
          place.location.country = normalize(place.location.country);
 

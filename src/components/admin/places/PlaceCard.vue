@@ -8,7 +8,7 @@
 
       <!-- Image -->
       <div v-if="props.place.images?.length">
-         <img :src="props.place.images[0]" :alt="`Image of ${props.place.name}`"
+         <img :src="props.place.images[0] as string" :alt="`Image of ${props.place.name}`"
             class="w-full h-48 object-cover rounded-lg border" />
       </div>
 
@@ -71,9 +71,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import type { PropType } from 'vue'
+// Interfaces
+import type { Place } from '@/interfaces/placeTypes'
 
 const props = defineProps({
-   place: { type: Object, required: true },
+   place: { type: Object as PropType<Place>, required: true },
    deleteError: { type: [String, null], default: null },
 });
 

@@ -29,24 +29,24 @@
       <div v-else>
          <!-- Display Cards Based On Active Tab -->
          <div v-if="activeTab === 'Active'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            <CountryImageCard v-if="activeCountries.length" v-for="country in activeCountries" :key="country.name"
+            <CountryImageCard v-if="activeCountries.length > 0" v-for="country in activeCountries" :key="country.name"
                :country="country" tab="Active" @edit="handleEdit" />
             <div v-else class="text-gray-500">No countries to display.</div>
          </div>
          <div v-else-if="activeTab === 'Missing'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            <CountryImageCard v-if="missingCountries.length" v-for="country in missingCountries" :key="country"
+            <CountryImageCard v-if="missingCountries.length > 0" v-for="country in missingCountries" :key="country"
                :country="country" tab="Missing" @edit="handleEdit" />
             <div v-else class="text-gray-500">No countries to display.</div>
          </div>
          <div v-else-if="activeTab === 'Unused'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            <CountryImageCard v-if="unusedCountries.length" v-for="country in unusedCountries" :key="country.name"
+            <CountryImageCard v-if="unusedCountries.length > 0" v-for="country in unusedCountries" :key="country.name"
                :deleteError="countriesStore.getDeleteError" :country="country" tab="Unused" @edit="handleEdit"
                @delete="handleDelete" />
             <div v-else class="text-gray-500">No countries to display.</div>
          </div>
          <!-- Edit Card -->
          <CountryImageEditModal v-if="showEditModal"
-            :country="activeTab !== 'Missing' ? countriesStore.getCountryImagesByName(editCountryName!) : countriesStore.getUniqueCountryByName(editCountryName!)"
+            :country="activeTab !== 'Missing' ? countriesStore.getCountryImagesByName(editCountryName!)! : countriesStore.getUniqueCountryByName(editCountryName!)!"
             :addError="countriesStore.addError" :updateError="countriesStore.getUpdateError"
             :loading="countriesStore.getIsLoading" @submit="handleSubmit" @close="handleCloseEdit" />
       </div>

@@ -139,7 +139,10 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { PropType } from 'vue'
+// Interfaces
 import type { AddRecommendation } from '@/interfaces/recommendationTypes'
+import type { Place } from '@/interfaces/placeTypes'
 // Store
 import { useUserStore } from '@/stores/userStore'
 import { useRolesStore } from '@/stores/rolesStore'
@@ -152,15 +155,15 @@ const permissionIdPlaces = computed((): string | null => rolesStore.getPermissio
 
 // Check if the user has the permission to manage plcaes
 const canManagePlaces = computed(() => {
-   const userRole = userStore.getUser!.role;
+   const userRole = userStore.getUser!.role as { permissions: string[] };
    if (!permissionIdPlaces.value) return false; // No permission Id found
 
    return userRole.permissions.includes(permissionIdPlaces.value);
 })
 
 const props = defineProps({
-   place: { type: Object, required: true },
-   recommendation: { type: Object, required: true },
+   place: { type: Object as PropType<Place>, required: true },
+   recommendation: { type: Object as PropType<AddRecommendation>, required: true },
    loading: { type: Boolean, default: false },
    addError: { type: [String, null], default: null }
 })
