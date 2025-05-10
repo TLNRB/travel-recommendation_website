@@ -45,11 +45,18 @@
                   Permissions for: <span class="text-blue-500">{{ userRole?.name }}</span>
                </div>
                <ul class="space-y-2">
-                  <li v-for="(permission, index) in userRole?.permissions" :key="index" class="flex items-start gap-2">
-                     <span>-</span>
-                     <div>
-                        <div class="font-medium text-gray-800">{{ permission.name }}</div>
-                        <div class="text-gray-600 text-xs">{{ permission.description }}</div>
+                  <li v-for="(permission, index) in userRole?.permissions" :key="index">
+                     <div v-if="typeof permission === 'object'" class="flex items-start gap-2">
+                        <span>-</span>
+                        <div>
+                           <div class="font-medium text-gray-800">{{ permission.name }}
+                           </div>
+                           <div class="text-gray-600 text-xs">{{ permission.description }}</div>
+                        </div>
+                     </div>
+                     <div v-else class="flex items-start gap-2">
+                        <span>-</span>
+                        <div class="text-gray-800">{{ permission }}</div>
                      </div>
                   </li>
                </ul>
