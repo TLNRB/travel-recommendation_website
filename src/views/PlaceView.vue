@@ -4,7 +4,7 @@
   <!-- Background Image -->
   <img
     v-if="singlePlace?.images?.length"
-    :src="singlePlace.images[0]"
+    :src="singlePlace.images[0] as string"
     alt="Place hero image"
     class="absolute inset-0 w-full h-full object-cover brightness-75"
   />
@@ -99,7 +99,7 @@
         <img
           v-for="(img, idx) in singlePlace.images"
           :key="idx"
-          :src="img"
+          :src="img as string"
           alt="Gallery image"
           class="w-full h-64 object-cover rounded-xl shadow"
         />
@@ -129,7 +129,7 @@
         <h4 class="text-lg font-bold text-green-700 mb-2">
           {{ rec.title }}
           <span class="ms-2 text-sm text-gray-400 font-light">
-            {{ rec._createdBy.username }}
+            {{ typeof rec._createdBy === 'object' ? rec._createdBy.username : '' }}
           </span>
         </h4>
         <p class="text-sm text-gray-700 mb-4">{{ rec.content }}</p>
