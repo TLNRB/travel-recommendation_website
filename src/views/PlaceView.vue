@@ -70,7 +70,7 @@
             <h2 class="text-2xl font-bold text-green-800">{{ singlePlace.name }}</h2>
 
             <!-- Save Button -->
-            <div class="relative">
+            <div v-if="authStore.getIsLoggedIn" class="relative">
               <button @click="toggleSaveMenu"
                 class="flex justify-center items-center bg-blue-600 text-sm text-white h-[34px] p-2 rounded-lg hover:bg-blue-700 transition duration-200 ease-in-out cursor-pointer sm:px-4">
                 <span class=" sm:hidden"><i

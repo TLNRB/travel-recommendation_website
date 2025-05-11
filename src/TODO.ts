@@ -1,6 +1,7 @@
 /**
  * == ISSUES ==
  * - test named place takes to wrong place page
+ * - you can search for a place that are a request in search bar as well as through the url
  * - homepage top destinations card writes one place instead of 2 for cairo
  * 
  * == Updates ==
@@ -9,11 +10,14 @@
  * 
  * == TODOs == 
  * - recommendation appears only if place is approved
- * - save place appears only for authenticated users
+ *    - recommendation orde by date (?)
+ *    - recommendation display max 5 than load more (?)
  * 
  * - Place Upvotes
- * - Deployment
+ * - User role creation
+ *    - dashboard access should be looked at after this
  * 
- * - User role creation (?)
+ * - unit tests
+ * 
  * - Report recommendation (?)
  */
