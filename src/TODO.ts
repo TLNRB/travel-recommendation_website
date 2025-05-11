@@ -14,6 +14,7 @@
  *    - recommendation display max 5 than load more (?)
  * 
  * - Place Upvotes
+ * - recommendation upvotes
  * - User role creation
  *    - dashboard access should be looked at after this
  * 

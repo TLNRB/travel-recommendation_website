@@ -221,6 +221,19 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             return recommendations;
          }
       },
+      getApprovedRecommendationsByUserId: (state) => {
+         return (userId: string) => {
+            const recommendations: Recommendation[] = [];
+            for (const placeId in state.recommendationsMap) {
+               const userRecommendations = state.recommendationsMap[placeId].filter((recommendation) => (typeof recommendation._createdBy === 'object' ? recommendation._createdBy._id === userId : recommendation._createdBy === userId) && (typeof recommendation.place === 'object' ? recommendation.place.approved : false));
+               console.log('userRecommendations:', userRecommendations);
+               if (userRecommendations.length > 0) {
+                  recommendations.push(...userRecommendations);
+               }
+            }
+            return recommendations;
+         }
+      },
       getError: (state) => state.error,
       getAddError: (state) => state.addError,
       getDeleteError: (state) => state.deleteError,

@@ -6,7 +6,8 @@
 
     <!-- Recommendations -->
     <div v-else-if="!recommendationsStore.getIsLoading && recommendations.length > 0" class="flex flex-col gap-6">
-      <RouterLink :to="{ path: `/place/${recommendation.place.name}`, query: { activeTab: 'recommendations' } }"
+      <RouterLink
+        :to="{ path: `/place/${typeof recommendation.place === 'object' ? recommendation.place.name : '#'}`, query: { activeTab: 'recommendations' } }"
         v-for="recommendation in recommendations" :key="recommendation._id"
         class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex gap-4">
         <!-- Place Image -->
@@ -60,7 +61,7 @@
 
     <!-- Error -->
     <div v-else-if="recommendationsStore.getError" class="text-red-500 text-sm">{{ recommendationsStore.getError
-      }}</div>
+    }}</div>
 
     <div v-else class="text-gray-500">No recommendations to display.</div>
   </section>
@@ -80,7 +81,12 @@ const props = defineProps({
 });
 
 const recommendations = computed(() => {
-  return recommendationsStore.getRecommendationsByUserId(props.userId);
+  const unOrderedRecommendation = recommendationsStore.getApprovedRecommendationsByUserId(props.userId);
+
+  // Order recommendations by date
+  return unOrderedRecommendation.sort((a, b) => {
+    return new Date(b.dateOfWriting).getTime() - new Date(a.dateOfWriting).getTime();
+  });
 });
 
 //-- Date formatting function
