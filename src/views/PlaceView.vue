@@ -66,7 +66,59 @@
       <div v-show="activeTab === 'info'">
         <!-- Place Info (unchanged) -->
         <div class="bg-white rounded-xl shadow p-6 mb-8">
-          <h2 class="text-2xl font-bold text-green-800 mb-4">{{ singlePlace.name }}</h2>
+          <div class="flex gap-4 justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-green-800">{{ singlePlace.name }}</h2>
+
+            <!-- Save Button -->
+            <div class="relative">
+              <button @click="toggleSaveMenu"
+                class="flex justify-center items-center bg-blue-600 text-sm text-white h-[34px] p-2 rounded-lg hover:bg-blue-700 transition duration-200 ease-in-out cursor-pointer sm:px-4">
+                <span class=" sm:hidden"><i
+                    class='bx bx-pin flex justify-center items-center text-[18px] translate-y-[1px]'></i></span>
+                <span class="hidden sm:flex">Save Place</span>
+              </button>
+
+              <!-- Dropdown -->
+              <div v-if="isSaveMenuOpen"
+                class="absolute right-0 mt-2 p-4 bg-white shadow-lg rounded-lg pt-2 border-[1px] border-gray-300 z-50 w-80"
+                :class="isSaveMenuOpen ? 'block' : 'hidden'">
+                <div class="flex justify-between items-center mb-3">
+                  <label class="text-sm font-medium">Your Collections</label>
+                  <button @click="isSaveMenuOpen = false"
+                    class="text-gray-400 hover:text-red-500 duration-200 ease-in-out cursor-pointer text-lg"
+                    title="Close">
+                    &times;
+                  </button>
+                </div>
+
+                <div v-if="availableCollections.length === 0" class="text-sm text-gray-500">
+                  You have no collections yet.
+                  <RouterLink :to="`/profile/${userStore.getUser?._id}`" class="text-blue-600 hover:underline">
+                    Go to your profile to create one.
+                  </RouterLink>
+                </div>
+
+                <!-- Collections List -->
+                <div v-else class="space-y-2 max-h-60 overflow-y-auto">
+                  <div v-for="collection in availableCollections" :key="collection._id"
+                    class="flex items-center justify-between gap-3 bg-gray-50 border-[1px] border-gray-300 px-3 py-2 rounded-lg duration-200 ease-in-out">
+                    <span class="truncate text-sm">{{ collection.name }}</span>
+                    <button @click="toggleSaveToCollection(collection._id)"
+                      class="text-sm font-medium px-2 py-1 rounded duration-200 ease-in-out cursor-pointer" :class="isPlaceInCollection(collection._id)
+                        ? 'bg-red-200 text-red-600 hover:bg-red-200'
+                        : 'bg-green-200 text-green-600 hover:bg-green-200'">
+                      {{ isPlaceInCollection(collection._id) ? 'Remove' : 'Save' }}
+                    </button>
+                  </div>
+                  <!-- Error Display -->
+                  <div v-if="collectionsStore.getUpdateError" class="text-red-500 text-sm mt-2">
+                    {{ collectionsStore.getUpdateError }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
           <p class="text-gray-700 mb-4">{{ singlePlace.description }}</p>
           <div class="flex flex-col md:flex-row md:space-x-8 text-gray-600 text-sm">
             <p><strong>City:</strong> {{ singlePlace.location.city }}</p>
@@ -83,7 +135,6 @@
               class="w-full h-64 object-cover rounded-xl shadow" />
           </div>
         </div>
-
       </div>
     </div>
 
@@ -155,14 +206,22 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { usePlaces } from '@/modules/places/usePlaces';
-import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
+// Interfaces
 import type { Recommendation, AddRecommendation } from '@/interfaces/recommendationTypes';
+// Stores
+import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useUserStore } from '@/stores/userStore';
+import { useCollectionsStore } from '@/stores/crud/collectionsStore';
 
 const route = useRoute();
+
 const { getPlaceByName, singlePlace, loading, error } = usePlaces();
 const recommendationsStore = useRecommendationsStore();
 const authStore = useAuthStore();
+const userStore = useUserStore();
+const collectionsStore = useCollectionsStore();
+
 const placeName = route.params.id as string;
 const paramsActiveTab = route.query.activeTab as 'info' | 'recommendations' || 'info'; // Default value is 'info' if no query param is provided
 
@@ -184,13 +243,6 @@ const recommendations = computed(() =>
     ? recommendationsStore.getRecommendationsByPlaceId(singlePlace.value._id)
     : []
 );
-
-onMounted(async () => {
-  await getPlaceByName(placeName);
-  if (singlePlace.value?._id) {
-    await recommendationsStore.fetchRecommendationsByPlace(singlePlace.value._id, false, 'true');
-  }
-});
 
 const submitRecommendation = async () => {
   if (!singlePlace.value?._id || !authStore.token || !authStore.userId) return;
@@ -230,4 +282,39 @@ function formatDate(dateStr: string): string {
   });
 }
 
+//-- Save Place
+const isSaveMenuOpen = ref(false)
+const availableCollections = computed(() =>
+  collectionsStore.getCollectionsByUserId(authStore.getUserId!)
+)
+
+const toggleSaveMenu = () => {
+  isSaveMenuOpen.value = !isSaveMenuOpen.value
+}
+
+const isPlaceInCollection = (collectionId: string) => {
+  /* console.log("Checking if place is in collection:", collectionId, singlePlace.value!._id, authStore.getUserId!)
+  console.log("result", collectionsStore.isPlaceInCollection(collectionId, singlePlace.value!._id, authStore.getUserId!)) */
+  return collectionsStore.isPlaceInCollection(collectionId, singlePlace.value!._id, authStore.getUserId!)
+}
+
+const toggleSaveToCollection = async (collectionId: string) => {
+  const placeId = singlePlace.value!._id
+
+  if (isPlaceInCollection(collectionId)) {
+    await collectionsStore.removePlaceFromCollection(collectionId, placeId, authStore.getUserId!, authStore.token!)
+  } else {
+    await collectionsStore.addPlaceToCollection(collectionId, placeId, authStore.getUserId!, authStore.token!)
+  }
+}
+
+
+onMounted(async () => {
+  await getPlaceByName(placeName);
+  if (singlePlace.value?._id) {
+    await recommendationsStore.fetchRecommendationsByPlace(singlePlace.value._id, false, 'true');
+  }
+
+  await collectionsStore.fecthCollectionsByUserId(authStore.getUserId!, false, 'false')
+})
 </script>

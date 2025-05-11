@@ -8,8 +8,10 @@
  *    - make it to an object so it stores id and message thus only appears on one card
  * 
  * == TODOs == 
+ * - recommendation appears only if place is approved
+ * - save place appears only for authenticated users
+ * 
  * - Place Upvotes
- * - Save place to collection
  * - Deployment
  * 
  * - User role creation (?)
