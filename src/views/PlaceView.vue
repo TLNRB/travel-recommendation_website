@@ -235,7 +235,7 @@ const newRecommendation = ref<AddRecommendation>({
   content: '',
   dateOfVisit: '',
   rating: 5,
-  upvotes: 0,
+  upvotes: [],
 });
 
 const recommendations = computed(() =>
@@ -255,7 +255,7 @@ const submitRecommendation = async () => {
     content,
     dateOfVisit,
     rating,
-    upvotes: 0,
+    upvotes: [],
     place: singlePlace.value._id,
     _createdBy: authStore.userId!
   };
@@ -270,7 +270,7 @@ const submitRecommendation = async () => {
     content: '',
     dateOfVisit: '',
     rating: 5,
-    upvotes: 0,
+    upvotes: [],
   };
 };
 
