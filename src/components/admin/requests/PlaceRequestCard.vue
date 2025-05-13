@@ -33,7 +33,7 @@
             </span>
          </div>
          <div class="text-gray-500 text-sm font-medium">
-            👍 {{ props.place.upvotes }}
+            👍 {{ props.place.upvotes.length }}
          </div>
       </div>
 
@@ -144,7 +144,7 @@ const approve = () => {
          street: props.place.location.street,
          streetNumber: props.place.location.streetNumber
       },
-      upvotes: props.place.upvotes,
+      upvotes: [...props.place.upvotes],
       tags: [...props.place.tags],
       approved: true,
    })

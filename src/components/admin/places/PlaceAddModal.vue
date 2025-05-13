@@ -103,12 +103,6 @@
                   </div>
                </div>
 
-               <!-- Upvotes -->
-               <div v-if="canManagePlaces">
-                  <label class="block text-sm font-medium mb-1">Upvotes</label>
-                  <input v-model="newPlace.upvotes" type="number" min="0" class="w-full px-3 py-2 border rounded-lg" />
-               </div>
-
                <!-- Tags -->
                <div>
                   <label class="block text-sm font-medium mb-1">Tags</label>
@@ -231,7 +225,7 @@ const newPlace = ref<AddPlace>({
       street: '',
       streetNumber: ''
    },
-   upvotes: 0,
+   upvotes: [],
    tags: [],
    approved: false
 })
@@ -246,7 +240,7 @@ const recommendation = ref<AddRecommendation>({
    content: '',
    dateOfVisit: '',
    rating: 0,
-   upvotes: 0,
+   upvotes: [],
 })
 
 // Image Upload

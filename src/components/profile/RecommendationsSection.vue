@@ -53,7 +53,7 @@
               <p>Visited: {{ formatDate(recommendation.dateOfVisit) }}</p>
               <p>Written: {{ formatDate(recommendation.dateOfWriting) }}</p>
             </div>
-            <div class="text-sm">👍 {{ recommendation.upvotes }}</div>
+            <div class="text-sm">👍 {{ recommendation.upvotes.length }}</div>
           </div>
         </div>
       </RouterLink>

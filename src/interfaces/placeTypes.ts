@@ -12,7 +12,7 @@ export type Place = {
       street?: string,
       streetNumber?: string
    },
-   upvotes: number,
+   upvotes: string[],
    tags: string[],
    approved: boolean,
    _createdBy: string | User

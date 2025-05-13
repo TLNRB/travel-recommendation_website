@@ -9,10 +9,6 @@
  *    - make it to an object so it stores id and message thus only appears on one card
  * 
  * == TODOs == 
- * - recommendation appears only if place is approved
- *    - recommendation orde by date (?)
- *    - recommendation display max 5 than load more (?)
- * 
  * - Place Upvotes
  * - recommendation upvotes
  * - User role creation
