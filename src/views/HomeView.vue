@@ -13,13 +13,6 @@
       <!-- Where Next Section -->
       <WhereNext />
 
-      <!-- FAQ Section -->
-      <div class="container-fluid h-32 p-6 bg-green-100">
-        <h2 class="font-bold text-2xl flex justify-center">Any additional Questions?</h2>
-        <h3 class="font-bold text-lg">sample question</h3>
-        <p class="ms-4">sample answer sample answer sample answer sample answer</p>
-        <p class="flex justify-end">link to faq page maybe idk</p>
-      </div>
     </div>
   </main>
 </template>

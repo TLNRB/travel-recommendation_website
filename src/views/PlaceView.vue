@@ -111,7 +111,7 @@
 
 
   <!-- RECOMMENDATIONS Header -->
-
+  <UpdateRecModal ref="editModal" @updated="handleUpdate" />
   <!-- Recommendations Tab Content -->
   <div v-show="activeTab === 'recommendations'" class="mt-0">
   <h3 class="text-2xl font-bold text-green-800 mb-6">Visitor Recommendations</h3>
@@ -124,7 +124,7 @@
       <div
         v-for="(rec, idx) in recommendations"
         :key="idx"
-        class="bg-white rounded-xl shadow p-5 hover:shadow-lg transition-shadow"
+        class="bg-white rounded-xl relative shadow p-5 hover:shadow-lg transition-shadow"
       >
         <h4 class="text-lg font-bold text-green-700 mb-2">
           {{ rec.title }}
@@ -137,6 +137,18 @@
           <p><strong>Visited:</strong> {{ formatDate(rec.dateOfVisit) }}</p>
           <p><strong>Rating:</strong> ⭐ {{ rec.rating }}/5</p>
         </div>
+        <div
+    v-if="rec._createdBy && typeof rec._createdBy === 'object' && rec._createdBy._id === currentUser"
+    class="flex gap-2 absolute bottom-4 right-4"
+  >
+  <button
+  @click="handleDelete(rec)"
+  class="px-2 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white"> Delete </button>
+
+  <button
+  @click="tryOpenEditModal(rec)"
+  class="px-2 py-1 rounded-lg bg-blue-400 text-white hover:bg-blue-500"> Edit </button>
+  </div>
       </div>
     </div>
 
@@ -177,6 +189,9 @@
             />
           </div>
           <div class="text-right">
+            <div v-if="errorMessage" class="text-red-600 text-sm mb-3">
+              {{ errorMessage }}
+            </div>
             <button
               type="submit"
               class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm transition"
@@ -198,23 +213,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { usePlaces } from '@/modules/places/usePlaces';
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 import type { Recommendation, AddRecommendation } from '@/interfaces/recommendationTypes';
 import { useAuthStore } from '@/stores/authStore';
+import UpdateRecModal from '@/components/place/updateRecModal.vue'
 
 const route = useRoute();
 const { getPlaceByName, singlePlace, loading, error } = usePlaces();
 const recommendationsStore = useRecommendationsStore();
 const authStore = useAuthStore();
 const placeName = route.params.id as string;
+const errorMessage = ref<string | null>(null);
 
-// undefined from homepage problem to fix
-
+const editModal = ref<InstanceType<typeof UpdateRecModal> | null>(null)
 const cityId = route.query.cityId as string;
 const activeTab = ref<'info' | 'recommendations'>('info');
+console.log(editModal.value)
 
 const newRecommendation = ref<AddRecommendation>({
   title: '',
@@ -226,9 +243,20 @@ const newRecommendation = ref<AddRecommendation>({
 
 const recommendations = computed(() =>
   singlePlace.value?._id
-    ? recommendationsStore.getRecommendationsByPlaceId(singlePlace.value._id)
+    ? recommendationsStore.recommendationsMap[singlePlace.value._id] || []
     : []
 );
+
+watch(recommendations, (newVal) => {
+  console.log('Recommendations updated:', newVal)
+});
+
+const handleUpdate = () => {
+  if (singlePlace.value?._id) {
+    // Optionally refetch if needed:
+    recommendationsStore.fetchRecommendationsByPlace(singlePlace.value._id);
+  }
+};
 
 onMounted(async () => {
   await getPlaceByName(placeName);
@@ -237,34 +265,51 @@ onMounted(async () => {
   }
 });
 
+
+
 const submitRecommendation = async () => {
-  if (!singlePlace.value?._id || !authStore.token || !authStore.userId) return;
+  // Clear any previous error messages
+  errorMessage.value = null;
 
+  // Validate the time field
   const { title, content, dateOfVisit, rating } = newRecommendation.value;
-  console.log("authStore.userId", authStore.userId);
 
+  const visitDate = new Date(dateOfVisit);
+  const today = new Date();
+  if (visitDate > today) {
+    errorMessage.value = "Date of visit cannot be in the future.";
+    return;
+  }
+
+  // Prepare the recommendation payload
   const newRec: Partial<Recommendation> = {
     title,
     content,
     dateOfVisit,
     rating,
     upvotes: 0,
-    place: singlePlace.value._id,
+    place: singlePlace.value?._id,
     _createdBy: authStore.userId!
   };
 
   console.log("Submitting recommendation payload:", newRec);
 
-  await recommendationsStore.addRecommendation(newRec, authStore.token);
+  // Try adding the recommendation using the store
+  try {
+    await recommendationsStore.addRecommendation(newRec, authStore.token!);
 
-  // Reset form
-  newRecommendation.value = {
-    title: '',
-    content: '',
-    dateOfVisit: '',
-    rating: 5,
-    upvotes: 0,
-  };
+    // Reset form after successful submission
+    newRecommendation.value = {
+      title: '',
+      content: '',
+      dateOfVisit: '',
+      rating: 5,
+      upvotes: 0,
+    };
+  } catch (err) {
+    errorMessage.value = "Failed to submit recommendation.";
+    console.error("Error adding recommendation:", err);
+  }
 };
 
 function formatDate(dateStr: string): string {
@@ -272,8 +317,31 @@ function formatDate(dateStr: string): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
-  });
+  });}
+
+
+const currentUser = authStore.userId
+
+const handleDelete = async (rec: Recommendation) => {
+  const confirmed = confirm('Are you sure you want to delete this recommendation?');
+  if (!confirmed) return;
+
+  try {
+    const placeId = typeof rec.place === 'string' ? rec.place : rec.place._id;
+    await recommendationsStore.deleteRecommendation(rec._id, authStore.token!, placeId);
+  } catch (err) {
+    console.error('Failed to delete recommendation:', err);
+  }
 }
+
+const tryOpenEditModal = (rec: Recommendation) => {
+  if (editModal.value) {
+    editModal.value.open(rec)
+  } else {
+    console.warn('Edit modal is not yet mounted.')
+  }
+}
+
 
 </script>
 
