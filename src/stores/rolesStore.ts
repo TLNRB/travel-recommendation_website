@@ -6,6 +6,8 @@ export const useRolesStore = defineStore('rolesStore', {
    state: () => ({
       roles: ref<Role[]>([]),
       error: ref<string | null>(null),
+      addError: ref<string | null>(null),
+      updateError: ref<string | null>(null),
       isRolesLoaded: ref<boolean>(false),
       isLoading: ref<boolean>(false),
    }),
@@ -75,6 +77,12 @@ export const useRolesStore = defineStore('rolesStore', {
          finally {
             this.isLoading = false;
          }
+      },
+
+      clearErrors(): void {
+         this.error = null;
+         this.addError = null;
+         this.updateError = null;
       }
    },
 
@@ -87,6 +95,8 @@ export const useRolesStore = defineStore('rolesStore', {
          return typeof permission === 'object' ? permission._id : null;
       },
       getError: (state) => state.error,
+      getAddError: (state) => state.addError,
+      getUpdateError: (state) => state.updateError,
       getIsRolesLoaded: (state) => state.isRolesLoaded,
       getIsLoading: (state) => state.isLoading,
    }

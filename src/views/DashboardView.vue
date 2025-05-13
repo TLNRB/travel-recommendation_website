@@ -28,6 +28,9 @@
 
     <!-- Users Tab -->
     <UsersSection v-else-if="activeTab === 'Users' && canEditUsers" />
+
+    <!-- Roles Tab -->
+    <RolesSection v-else-if="activeTab === 'User Roles' && canManageRoles" />
   </div>
 </template>
 
@@ -37,6 +40,7 @@ import { ref, computed, onMounted } from 'vue';
 import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSection.vue';
 import PlacesSections from '@/components/admin/places/PlacesSection.vue';
 import UsersSection from '@/components/admin/users/UsersSection.vue';
+import RolesSection from '@/components/admin/roles/RolesSection.vue';
 import CityImagesSection from '@/components/admin/cityImages/CityImagesSection.vue';
 import CountryImagesSection from '@/components/admin/countryImages/CountryImagesSection.vue';
 // Stores
@@ -69,9 +73,23 @@ const canEditPlaces = computed(() => {
   return userRole.permissions.some(permission => typeof permission === 'string' ? permission === permissionIdPlaces.value : permission._id === permissionIdPlaces.value);
 })
 
+// Get the permission Id for the ability to edit roles
+const permissionIdManageRoles = computed((): string | null => rolesStore.getPermissionIdByPermissionName('user:manageRoles')!);
+
+// Check if the user has the permission to edit users
+const canManageRoles = computed(() => {
+  const userRole = userStore.getUser!.role;
+  if (!permissionIdManageRoles.value || typeof userRole === 'string') return false; // No permission Id found
+
+  console.log('userRole', userRole);
+  console.log('permissionIdManageRoles', permissionIdManageRoles.value);
+
+  return userRole.permissions.some(permission => typeof permission === 'string' ? permission === permissionIdManageRoles.value : permission._id === permissionIdManageRoles.value);
+})
+
 //-- Tabs
-const tabs = ['Requests', 'Places', 'Users', 'City Images', 'Country Images'];
-const activeTab = ref('Requests');
+const tabs = ['Requests', 'Places', 'Users', 'User Roles', 'City Images', 'Country Images'];
+const activeTab = ref('User Roles');
 
 onMounted(async () => {
   await rolesStore.fetchRoles();
