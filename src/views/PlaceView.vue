@@ -66,64 +66,80 @@
       <div v-show="activeTab === 'info'">
         <!-- Place Info (unchanged) -->
         <div class="bg-white rounded-xl shadow p-6 mb-8">
-          <div class="flex gap-4 justify-between items-center mb-4">
+          <div class="flex gap-4 justify-between flex-wrap items-center mb-4">
             <h2 class="text-2xl font-bold text-green-800">{{ singlePlace.name }}</h2>
 
-            <!-- Save Button -->
-            <div v-if="authStore.getIsLoggedIn" class="relative">
-              <button @click="toggleSaveMenu"
-                class="flex justify-center items-center bg-blue-600 text-sm text-white h-[34px] p-2 rounded-lg hover:bg-blue-700 transition duration-200 ease-in-out cursor-pointer sm:px-4">
-                <span class=" sm:hidden"><i
-                    class='bx bx-pin flex justify-center items-center text-[18px] translate-y-[1px]'></i></span>
-                <span class="hidden sm:flex">Save Place</span>
+            <div v-if="authStore.getIsLoggedIn" class="flex gap-3">
+              <!-- Place Upvotes -->
+              <button @click="upvotePlace"
+                class="h-[34px] flex justify-center items-center gap-1 bg-gray-50 border-[1px] px-2 text-sm border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 duration-200 ease-in-out">
+                <i class='bx duration-200 ease-in-out'
+                  :class="isPlaceUpvoted ? 'bxs-upvote text-blue-500' : 'bx-upvote text-gray-500'"></i>
+                <span class="text-sm text-gray-500 font-semibold">
+                  {{ singlePlace.upvotes.length }}
+                </span>
               </button>
 
-              <!-- Dropdown -->
-              <div v-if="isSaveMenuOpen"
-                class="absolute right-0 mt-2 p-4 bg-white shadow-lg rounded-lg pt-2 border-[1px] border-gray-300 z-50 w-80"
-                :class="isSaveMenuOpen ? 'block' : 'hidden'">
-                <div class="flex justify-between items-center mb-3">
-                  <label class="text-sm font-medium">Your Collections</label>
-                  <button @click="isSaveMenuOpen = false"
-                    class="text-gray-400 hover:text-red-500 duration-200 ease-in-out cursor-pointer text-lg"
-                    title="Close">
-                    &times;
-                  </button>
-                </div>
+              <!-- Save Button -->
+              <div class="relative">
+                <button @click="toggleSaveMenu"
+                  class="flex justify-center items-center bg-blue-600 text-sm text-white h-[34px] p-2 rounded-lg hover:bg-blue-700 duration-200 ease-in-out cursor-pointer sm:px-4">
+                  <span class=" sm:hidden"><i
+                      class='bx bx-pin flex justify-center items-center text-[18px] translate-y-[1px]'></i></span>
+                  <span class="hidden sm:flex">Save Place</span>
+                </button>
 
-                <div v-if="availableCollections.length === 0" class="text-sm text-gray-500">
-                  You have no collections yet.
-                  <RouterLink :to="`/profile/${userStore.getUser?._id}`" class="text-blue-600 hover:underline">
-                    Go to your profile to create one.
-                  </RouterLink>
-                </div>
-
-                <!-- Collections List -->
-                <div v-else class="space-y-2 max-h-60 overflow-y-auto">
-                  <div v-for="collection in availableCollections" :key="collection._id"
-                    class="flex items-center justify-between gap-3 bg-gray-50 border-[1px] border-gray-300 px-3 py-2 rounded-lg duration-200 ease-in-out">
-                    <span class="truncate text-sm">{{ collection.name }}</span>
-                    <button @click="toggleSaveToCollection(collection._id)"
-                      class="text-sm font-medium px-2 py-1 rounded duration-200 ease-in-out cursor-pointer" :class="isPlaceInCollection(collection._id)
-                        ? 'bg-red-200 text-red-600 hover:bg-red-200'
-                        : 'bg-green-200 text-green-600 hover:bg-green-200'">
-                      {{ isPlaceInCollection(collection._id) ? 'Remove' : 'Save' }}
+                <!-- Dropdown -->
+                <div v-if="isSaveMenuOpen"
+                  class="absolute right-0 mt-2 p-4 bg-white shadow-lg rounded-lg pt-2 border-[1px] border-gray-300 z-50 w-80"
+                  :class="isSaveMenuOpen ? 'block' : 'hidden'">
+                  <div class="flex justify-between items-center mb-3">
+                    <label class="text-sm font-medium">Your Collections</label>
+                    <button @click="isSaveMenuOpen = false"
+                      class="text-gray-400 hover:text-red-500 duration-200 ease-in-out cursor-pointer text-lg"
+                      title="Close">
+                      &times;
                     </button>
                   </div>
-                  <!-- Error Display -->
-                  <div v-if="collectionsStore.getUpdateError" class="text-red-500 text-sm mt-2">
-                    {{ collectionsStore.getUpdateError }}
+
+                  <div v-if="availableCollections.length === 0" class="text-sm text-gray-500">
+                    You have no collections yet.
+                    <RouterLink :to="`/profile/${userStore.getUser?._id}`" class="text-blue-600 hover:underline">
+                      Go to your profile to create one.
+                    </RouterLink>
+                  </div>
+
+                  <!-- Collections List -->
+                  <div v-else class="space-y-2 max-h-60 overflow-y-auto">
+                    <div v-for="collection in availableCollections" :key="collection._id"
+                      class="flex items-center justify-between gap-3 bg-gray-50 border-[1px] border-gray-300 px-3 py-2 rounded-lg duration-200 ease-in-out">
+                      <span class="truncate text-sm">{{ collection.name }}</span>
+                      <button @click="toggleSaveToCollection(collection._id)"
+                        class="text-sm font-medium px-2 py-1 rounded duration-200 ease-in-out cursor-pointer" :class="isPlaceInCollection(collection._id)
+                          ? 'bg-red-200 text-red-600 hover:bg-red-200'
+                          : 'bg-green-200 text-green-600 hover:bg-green-200'">
+                        {{ isPlaceInCollection(collection._id) ? 'Remove' : 'Save' }}
+                      </button>
+                    </div>
+                    <!-- Error Display -->
+                    <div v-if="collectionsStore.getUpdateError" class="text-red-500 text-sm mt-2">
+                      {{ collectionsStore.getUpdateError }}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
           <p class="text-gray-700 mb-4">{{ singlePlace.description }}</p>
           <div class="flex flex-col md:flex-row md:space-x-8 text-gray-600 text-sm">
             <p><strong>City:</strong> {{ singlePlace.location.city }}</p>
             <p><strong>Country:</strong> {{ singlePlace.location.country }}</p>
             <p><strong>Street:</strong> {{ singlePlace.location.street }} {{ singlePlace.location.streetNumber }}</p>
+          </div>
+
+          <!-- Error -->
+          <div v-if="placesStore.getUpdateError" class="text-red-500 text-sm mt-2">
+            {{ placesStore.getUpdateError }}
           </div>
         </div>
 
@@ -151,17 +167,35 @@
         <!-- Recommendations Grid -->
         <div class="flex-1 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
           <div v-for="(rec, idx) in recommendations" :key="idx"
-            class="bg-white rounded-xl shadow p-5 hover:shadow-lg transition-shadow">
-            <h4 class="text-lg font-bold text-green-700 mb-2">
-              {{ rec.title }}
-              <span class="ms-2 text-sm text-gray-400 font-light">
-                {{ rec._createdBy.username }}
-              </span>
-            </h4>
+            class="max-w-[300px] w-full bg-white rounded-xl shadow p-5 hover:shadow-lg transition-shadow">
+
+            <div class="flex gap-3 justify-between mb-2">
+              <h4 class="text-lg font-bold text-green-700 mb-2">
+                {{ rec.title }}
+                <span class="ms-2 text-sm text-gray-400 font-light">
+                  {{ rec._createdBy.username }}
+                </span>
+              </h4>
+              <!-- Recommendation Upvotes -->
+              <button v-if="authStore.getIsLoggedIn" @click="upvoteRecommendation(rec._id)"
+                class="h-[34px] flex justify-center items-center gap-1 bg-gray-50 border-[1px] px-2 text-sm border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 duration-200 ease-in-out">
+                <i class='bx duration-200 ease-in-out'
+                  :class="isRecommendationUpvoted(rec._id) ? 'bxs-upvote text-blue-500' : 'bx-upvote text-gray-500'"></i>
+                <span class="text-sm text-gray-500 font-semibold">
+                  {{ rec.upvotes.length }}
+                </span>
+              </button>
+            </div>
+
             <p class="text-sm text-gray-700 mb-4">{{ rec.content }}</p>
             <div class="text-sm text-gray-500 mt-4">
               <p><strong>Visited:</strong> {{ formatDate(rec.dateOfVisit) }}</p>
               <p><strong>Rating:</strong> ⭐ {{ rec.rating }}/5</p>
+            </div>
+
+            <!-- Error -->
+            <div v-if="recommendationsStore.getUpdateError" class="text-red-500 text-sm mt-2">
+              {{ recommendationsStore.getUpdateError }}
             </div>
           </div>
         </div>
@@ -212,6 +246,7 @@ import type { Recommendation, AddRecommendation } from '@/interfaces/recommendat
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserStore } from '@/stores/userStore';
+import { usePlacesStore } from '@/stores/crud/placesStore';
 import { useCollectionsStore } from '@/stores/crud/collectionsStore';
 
 const route = useRoute();
@@ -220,6 +255,7 @@ const { getPlaceByName, singlePlace, loading, error } = usePlaces();
 const recommendationsStore = useRecommendationsStore();
 const authStore = useAuthStore();
 const userStore = useUserStore();
+const placesStore = usePlacesStore();
 const collectionsStore = useCollectionsStore();
 
 const placeName = route.params.id as string;
@@ -280,6 +316,35 @@ function formatDate(dateStr: string): string {
     month: 'long',
     day: 'numeric'
   });
+}
+
+//-- Upvotes
+// Place
+const isPlaceUpvoted = computed(() => {
+  return placesStore.getIsPlaceUpvoted(singlePlace.value!._id, authStore.userId!);
+});
+
+const upvotePlace = async () => {
+  try {
+    await placesStore.updatePlaceUpvotes(singlePlace.value!._id, authStore.userId!, authStore.token!);
+  }
+  catch (error) {
+    console.error('Error upvoting place:', error);
+  }
+}
+
+// Recommendation
+const isRecommendationUpvoted = (recommendationId: string) => {
+  return recommendationsStore.getIsRecommendationUpvoted(singlePlace.value!._id, recommendationId, authStore.userId!);
+};
+
+const upvoteRecommendation = async (recommendationId: string) => {
+  try {
+    await recommendationsStore.updateRecommendationUpvotes(singlePlace.value!._id, recommendationId, authStore.userId!, authStore.token!);
+  }
+  catch (error) {
+    console.error('Error upvoting recommendation:', error);
+  }
 }
 
 //-- Save Place

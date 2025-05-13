@@ -10,7 +10,8 @@
  * 
  * == TODOs == 
  * - Place Upvotes
- * - recommendation upvotes
+ *    - conditional styling and updateUpvote on placeView but it needs place fetch refactor from pinia store
+ * 
  * - User role creation
  *    - dashboard access should be looked at after this
  * 

@@ -58,6 +58,34 @@ export const usePlacesStore = defineStore('placesStore', {
          }
       },
 
+      async fetcPlaceById(placeId: string): Promise<Place | null> {
+         this.isLoading = true;
+         this.error = null
+
+         try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places/query/?field=_id&value=${placeId}`, {
+               method: 'GET',
+            })
+
+            if (!response.ok) {
+               const errorResponse = await response.json()
+               throw new Error(errorResponse.error || 'No data available');
+            }
+
+            const placeData = await response.json()
+            console.log('Fetched place data by id:', placeData.data)
+
+            this.error = null;
+            return placeData.data[0];
+         }
+         catch (err) {
+            this.error = (err as Error).message;
+            return null
+         }
+         finally {
+            this.isLoading = false;
+         }
+      },
 
       filterPlacesByApproved(approved: boolean): Place[] {
          if (this.places.length === 0) {
@@ -268,6 +296,55 @@ export const usePlacesStore = defineStore('placesStore', {
          }
       },
 
+      async updatePlaceUpvotes(placeId: string, userId: string, token: string): Promise<void> {
+         this.isLoading = true
+         this.updateError = null
+
+         try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places/upvotes/${placeId}`, {
+               method: 'PUT',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'auth-token': token
+               },
+               body: JSON.stringify({ userId })
+            })
+
+            if (!response.ok) {
+               const errorResponse = await response.json()
+               throw new Error(errorResponse.error || 'Failed to update upvote')
+            }
+            else {
+               const responseText = await response.text()
+               console.log('Update place upvotes response:', responseText)
+            }
+
+            const updatedPlace: Place | null = await this.fetcPlaceById(placeId) // Fetch the updated place by ID
+
+            console.log('Updated place from database: ', updatedPlace)
+
+
+            if (updatedPlace) {
+               // Update the place in the local state so we don't have to refetch all places
+               const index = this.places.findIndex((place) => place._id === updatedPlace._id);
+
+               if (index !== -1) {
+                  this.places[index] = updatedPlace; // Update the place in the local state
+               }
+               console.log('Updated place in state:', this.places[index])
+            }
+            else {
+               throw new Error('Failed to fetch updated place')
+            }
+         }
+         catch (err) {
+            this.updateError = (err as Error).message
+         }
+         finally {
+            this.isLoading = false
+         }
+      },
+
       async deletePlace(placeId: string, token: string): Promise<void> {
          this.isLoading = true;
          this.deleteError = null;
@@ -324,6 +401,15 @@ export const usePlacesStore = defineStore('placesStore', {
       getPlaces: (state) => state.places,
       getPlaceById: (state) => {
          return (placeId: string) => state.places.find((place) => place._id === placeId) || null
+      },
+      getIsPlaceUpvoted: (state) => {
+         return (placeId: string, userId: string) => {
+            const place = state.places.find((place) => place._id === placeId)
+            if (place) {
+               return place.upvotes.includes(userId)
+            }
+            return false
+         }
       },
       getError: (state) => state.error,
       getAddError: (state) => state.addError,

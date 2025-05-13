@@ -53,7 +53,10 @@
               <p>Visited: {{ formatDate(recommendation.dateOfVisit) }}</p>
               <p>Written: {{ formatDate(recommendation.dateOfWriting) }}</p>
             </div>
-            <div class="text-sm">👍 {{ recommendation.upvotes.length }}</div>
+            <div class="flex justify-center items-center gap-1 text-sm">
+              <i class='bx bxs-upvote text-blue-500 duration-200 ease-in-out'></i>
+              <span class="text-sm text-gray-500 font-semibold">{{ recommendation.upvotes.length }}</span>
+            </div>
           </div>
         </div>
       </RouterLink>
@@ -61,7 +64,7 @@
 
     <!-- Error -->
     <div v-else-if="recommendationsStore.getError" class="text-red-500 text-sm">{{ recommendationsStore.getError
-    }}</div>
+      }}</div>
 
     <div v-else class="text-gray-500">No recommendations to display.</div>
 

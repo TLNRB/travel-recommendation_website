@@ -6,6 +6,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
       recommendationsMap: {} as Record<string, Recommendation[]>,
       error: null as string | null,
       addError: null as string | null,
+      updateError: null as string | null,
       deleteError: null as string | null,
       isLoaded: false,
       isLoading: false,
@@ -107,6 +108,35 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          }
       },
 
+      async fetchRecommendationById(recommendationId: string, populatePlace = 'false'): Promise<Recommendation | null> {
+         this.isLoading = true;
+         this.error = null;
+
+         try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/query?field=_id&value=${recommendationId}&populateCreatedBy=true&populatePlace=${populatePlace}`, {
+               method: 'GET',
+            })
+
+            if (!response.ok) {
+               const errorResponse = await response.json()
+               throw new Error(errorResponse.error || 'No data available');
+            }
+
+            const recommendationsData = await response.json()
+            console.log('Feteched recommendation by id: ', recommendationsData.data);
+
+            this.error = null;
+            return recommendationsData.data[0];
+         }
+         catch (err) {
+            this.error = (err as Error).message;
+            return null;
+         }
+         finally {
+            this.isLoading = false;
+         }
+      },
+
       async addRecommendation(recommendation: Partial<Recommendation>, token: string): Promise<void> {
          this.isLoading = true;
          this.addError = null;
@@ -148,7 +178,55 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          }
       },
 
-      async deleteRecommendation(recommendationId: string, token: string, placeId: string): Promise<void> {
+      async updateRecommendationUpvotes(placeId: string, recommendationId: string, userId: string, token: string): Promise<void> {
+         this.isLoading = true;
+         this.updateError = null;
+
+         try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/upvotes/${recommendationId}`, {
+               method: 'PUT',
+               headers: {
+                  'Content-Type': 'application/json',
+                  'auth-token': token
+               },
+               body: JSON.stringify({ userId })
+            })
+
+            if (!response.ok) {
+               const errorResponse = await response.json()
+               throw new Error(errorResponse.error || 'Failed to update upvote');
+            }
+            else {
+               const responseText = await response.text()
+               console.log('Update recommendation upvotes response:', responseText)
+            }
+
+            const updatedRecommendation: Recommendation | null = await this.fetchRecommendationById(recommendationId, 'true'); // Fetch the updated recommendation by ID
+
+            console.log('Updated recommendation from database: ', updatedRecommendation);
+
+            if (updatedRecommendation) {
+               // Update the recommendation in the recommendationsMap
+               const index = this.recommendationsMap[placeId].findIndex((recommendation) => recommendation._id === updatedRecommendation._id);
+               if (index !== -1) {
+                  this.recommendationsMap[placeId][index] = updatedRecommendation;
+               }
+
+               console.log('Updated recommendation in recommendationsMap: ', this.recommendationsMap[placeId][index]);
+            }
+            else {
+               throw new Error('Failed to fetch updated recommendation');
+            }
+         }
+         catch (err) {
+            this.updateError = (err as Error).message;
+         }
+         finally {
+            this.isLoading = false;
+         }
+      },
+
+      async deleteRecommendation(recommendationId: string, token: string): Promise<void> {
          this.isLoading = true;
          this.deleteError = null;
 
@@ -201,6 +279,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
       clearErrors(): void {
          this.error = null;
          this.addError = null;
+         this.updateError = null;
          this.deleteError = null;
       }
    },
@@ -234,8 +313,18 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             return recommendations;
          }
       },
+      getIsRecommendationUpvoted: (state) => {
+         return (placeId: string, recommendationId: string, userId: string) => {
+            const recommendation = state.recommendationsMap[placeId]?.find((recomendation) => recomendation._id === recommendationId);
+            if (recommendation) {
+               return recommendation.upvotes.includes(userId);
+            }
+            return false;
+         }
+      },
       getError: (state) => state.error,
       getAddError: (state) => state.addError,
+      getUpdateError: (state) => state.updateError,
       getDeleteError: (state) => state.deleteError,
       getIsLoaded: (state) => state.isLoaded,
       getIsLoading: (state) => state.isLoading,
