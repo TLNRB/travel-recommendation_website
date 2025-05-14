@@ -7,6 +7,8 @@
  * == Updates ==
  * - Error update (?)
  *    - make it to an object so it stores id and message thus only appears on one card
+ * - nav modal open to suggest place open / close issue
+ * - recommendations card width
  * 
  * == TODOs ==  
  * - refactor = rolesStore getPermissionIdByPermissionName maybe move to permissionsStore (?)

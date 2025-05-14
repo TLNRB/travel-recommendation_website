@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading" class="flex justify-center items-center h-screen">
+  <div v-if="externalAPIStore.getLoading" class="flex justify-center items-center h-screen">
     <div class="text-2xl animate-pulse">Loading...</div>
   </div>
 
@@ -66,7 +66,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { externalAPI } from '@/modules/api/externalFetch';
 import europeImg from '@/assets/images/europe-continent.avif'
 import asiaImg from '@/assets/images/asia-continent.jpg'
 import africaImg from '@/assets/images/africa-continent.webp'
@@ -77,6 +76,8 @@ import antarcticaImg from '@/assets/images/anctartica-continent.avif'
 // Stores
 import { useCountriesStore } from '@/stores/crud/countriesStore'
 import { usePlacesStore } from '@/stores/crud/placesStore'
+import { useExternalAPIStore } from '@/stores/externalAPIStore'
+// Interfaces
 import type { Country } from '@/interfaces/interfaces';
 
 const continentBackgrounds: Record<string, string> = {
@@ -91,6 +92,11 @@ const continentBackgrounds: Record<string, string> = {
 
 const countriesStore = useCountriesStore()
 const placesStore = usePlacesStore()
+const externalAPIStore = useExternalAPIStore()
+
+const continent = computed(() => externalAPIStore.getContinent)
+const allCountries = computed(() => externalAPIStore.getCountries)
+const allCities = computed(() => externalAPIStore.getCities)
 
 const backgroundImage = computed(() => {
   const id = continent.value?.objectId
@@ -99,15 +105,13 @@ const backgroundImage = computed(() => {
     : ''
 })
 
-const { fetchContinentAndCountries, continent, allCountries, loading, allCities } = externalAPI()
-
 const route = useRoute()
 const continentId = ref(route.params.id as string)
 
 onMounted(async () => {
   await countriesStore.fetchUniqueCountries()
   await countriesStore.fetchCountryImages()
-  await fetchContinentAndCountries(continentId.value)
+  await externalAPIStore.fetchContinentAndCountries(continentId.value)
   await placesStore.fetchPlaces()
 })
 
@@ -115,7 +119,7 @@ watch(
   () => route.params.id,
   (newId) => {
     continentId.value = newId as string
-    fetchContinentAndCountries(continentId.value)
+    externalAPIStore.fetchContinentAndCountries(continentId.value)
     placesStore.fetchPlaces()
   }
 )

@@ -3,11 +3,10 @@ import type { Place, EditPlace, AddPlace } from "@/interfaces/placeTypes";
 // Composables
 import { useImages } from "@/composables/useImages";
 import { normalize } from "@/composables/normalizeString";
-// External API
-import { externalAPI } from "@/modules/api/externalFetch";
+// Stores
+import { useExternalAPIStore } from '@/stores/externalAPIStore'
 
 const { uploadImages } = useImages()
-const { validateCountry, validateCity } = externalAPI()
 
 export const usePlacesStore = defineStore('placesStore', {
    state: () => ({
@@ -105,13 +104,15 @@ export const usePlacesStore = defineStore('placesStore', {
          newPlace = this.normalizePlace(newPlace)
 
          try {
+            const externalAPIStore = useExternalAPIStore();
+
             // Validate country and city
-            const country = await validateCountry(newPlace.location.country)
+            const country = await externalAPIStore.validateCountry(newPlace.location.country)
             if (!country) {
                throw new Error('Invalid country')
             }
             else if (country && newPlace.location.city) {
-               const city = await validateCity(newPlace.location.city, country.objectId)
+               const city = await externalAPIStore.validateCity(newPlace.location.city, country.objectId)
                if (!city) {
                   throw new Error('Invalid city')
                }
@@ -243,18 +244,20 @@ export const usePlacesStore = defineStore('placesStore', {
          updatedPlace = this.normalizePlace(updatedPlace)
 
          try {
+            const externalAPIStore = useExternalAPIStore();
+
             // Check if images and newImages are empty arrays
             if (updatedData.images.length === 0 && (updatedData.newImages && updatedData.newImages.length === 0)) {
                throw new Error('Upload at least one image')
             }
 
             // Validate country and city
-            const country = await validateCountry(updatedData.location.country)
+            const country = await externalAPIStore.validateCountry(updatedData.location.country)
             if (!country) {
                throw new Error('Invalid country')
             }
             else if (country && updatedData.location.city) {
-               const city = await validateCity(updatedData.location.city, country.objectId)
+               const city = await externalAPIStore.validateCity(updatedData.location.city, country.objectId)
                if (!city) {
                   throw new Error('Invalid city')
                }

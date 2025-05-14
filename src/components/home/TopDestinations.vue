@@ -5,20 +5,13 @@
     </div>
   </div>
 
-  <div  class="container-fluid py-10 px-10 w-full flex flex-col justify-center bg-white">
+  <div class="container-fluid py-10 px-10 w-full flex flex-col justify-center bg-white">
 
-    <div v-if="!isLoading" class="grid grid-cols-2 lg:grid-cols-4 max-w-xl lg:max-w-6xl gap-10 px-4 mx-auto lg:px-10 pt-6 pb-10">
-      <div
-        v-for="city in topCities"
-        :key="city.objectId"
-        @click="goToCity(city.objectId)"
-        class="cursor-pointer rounded-xl overflow-hidden shadow hover:shadow-md transition-transform duration-300 hover:scale-105"
-      >
-         <img
-          :src="city.image"
-          alt="City image"
-          class="w-full h-40 md:h-64 object-cover"
-        />
+    <div v-if="!isLoading"
+      class="grid grid-cols-2 lg:grid-cols-4 max-w-xl lg:max-w-6xl gap-10 px-4 mx-auto lg:px-10 pt-6 pb-10">
+      <div v-for="city in topCities" :key="city.objectId" @click="goToCity(city.objectId)"
+        class="cursor-pointer rounded-xl overflow-hidden shadow hover:shadow-md transition-transform duration-300 hover:scale-105">
+        <img :src="city.image" alt="City image" class="w-full h-40 md:h-64 object-cover" />
         <div class="bg-white p-4">
           <div class="text-lg font-semibold text-green-700">{{ city.name }}</div>
           <div class="text-sm text-gray-500 mb-1">{{ city.country }}</div>
@@ -27,7 +20,7 @@
       </div>
     </div>
     <div v-else class="w-full flex justify-center">
-        <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+      <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
     </div>
   </div>
 </template>
@@ -35,15 +28,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, defineEmits } from 'vue'
-import { usePlacesStore } from '@/stores/crud/placesStore'
-import { externalAPI } from '@/modules/api/externalFetch'
 import { useRouter } from 'vue-router'
+// Interfaces
 import type { Place } from '@/interfaces/placeTypes'
+// Stores
+import { usePlacesStore } from '@/stores/crud/placesStore'
+import { useExternalAPIStore } from '@/stores/externalAPIStore'
 
 const emit = defineEmits(['loaded'])
 const router = useRouter()
+
 const placesStore = usePlacesStore()
-const { fetchAllCountries, allCountriesGlobal, fetchCitiesForCountry } = externalAPI()
+const externalAPIStore = useExternalAPIStore()
 
 const approvedPlaces = computed(() =>
   placesStore.places.filter(p => p.approved && p.location.city && p.location.country)
@@ -82,48 +78,48 @@ const generateTopCities = async () => {
 
   // Map country names to IDs
   const countryNameToIdMap = new Map<string, string>()
-  allCountriesGlobal.value.forEach(country => {
+  externalAPIStore.getCountriesGlobal.forEach(country => {
     countryNameToIdMap.set(country.name.trim().toLowerCase(), country.objectId)
   })
 
   // const matchedCities: CityDisplayData[] = []
   const matchedCities: any[] = []
 
-for (const [key, value] of placeMap) {
-  const [cityName, countryName] = key.split('__')
-  const countryId = countryNameToIdMap.get(countryName)
+  for (const [key, value] of placeMap) {
+    const [cityName, countryName] = key.split('__')
+    const countryId = countryNameToIdMap.get(countryName)
 
-  if (!countryId) continue
+    if (!countryId) continue
 
-  const citiesInCountry = await fetchCitiesForCountry(countryId)
+    const citiesInCountry = await externalAPIStore.fetchCitiesForCountry(countryId)
 
-  const normalize = (str: string) =>
-    str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+    const normalize = (str: string) =>
+      str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 
-  const city = citiesInCountry.find(
-    (    c: { name: string }) => normalize(c.name) === normalize(cityName)
-  )
+    const city = citiesInCountry.find(
+      (c: { name: string }) => normalize(c.name) === normalize(cityName)
+    )
 
-  if (city) {
-    const image = typeof value.place.images[0] === 'string' ? value.place.images[0] : ''
-    matchedCities.push({
-      objectId: city.objectId,
-      name: city.name,
-      country: countryName,
-      count: value.count,
-      image: image || '/fallback.jpg'
-    })
-  } else {
-    console.warn(`City not found in fetched cities: ${cityName}`)
+    if (city) {
+      const image = typeof value.place.images[0] === 'string' ? value.place.images[0] : ''
+      matchedCities.push({
+        objectId: city.objectId,
+        name: city.name,
+        country: countryName,
+        count: value.count,
+        image: image || '/fallback.jpg'
+      })
+    } else {
+      console.warn(`City not found in fetched cities: ${cityName}`)
+    }
   }
-}
 
-// Now sort and limit to top 4 after full loop
-matchedCities.sort((a, b) => b.count - a.count)
-const finalTopCities = matchedCities.slice(0, 4)
+  // Now sort and limit to top 4 after full loop
+  matchedCities.sort((a, b) => b.count - a.count)
+  const finalTopCities = matchedCities.slice(0, 4)
 
-topCities.value = finalTopCities
-isLoading.value = false
+  topCities.value = finalTopCities
+  isLoading.value = false
 }
 
 const goToCity = (id: string) => {
@@ -131,7 +127,8 @@ const goToCity = (id: string) => {
 }
 
 onMounted(async () => {
-  await Promise.all([placesStore.fetchPlaces(), fetchAllCountries()])
+  await placesStore.fetchPlaces()
+  await externalAPIStore.fetchAllCountries()
   await generateTopCities()
   emit('loaded')
 })
@@ -141,10 +138,10 @@ onMounted(async () => {
   border-top-color: #3498db;
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 </style>
-

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading" class="flex justify-center items-center h-screen">
+  <div v-if="externalAPIStore.getLoading" class="flex justify-center items-center h-screen">
     <!-- Loading Spinner -->
     <div class="text-2xl animate-pulse">Loading...</div>
   </div>
@@ -59,23 +59,26 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed, watchEffect } from 'vue'
 import { RouterLink, useRoute } from 'vue-router';
-import { externalAPI } from '@/modules/api/externalFetch';
-const { fetchSingleCity, city, loading } = externalAPI()
 // Stores
 import { useCitiesStore } from '@/stores/crud/citiesStore'
 import { usePlacesStore } from '@/stores/crud/placesStore'
+import { useExternalAPIStore } from '@/stores/externalAPIStore'
 
 const route = useRoute()
 const cityId = ref(route.params.id as string)
 const citiesStore = useCitiesStore()
 const placesStore = usePlacesStore()
+const externalAPIStore = useExternalAPIStore();
 
 onMounted(async () => {
-  await fetchSingleCity(cityId.value)
+  await externalAPIStore.fetchSingleCity(cityId.value)
   await placesStore.fetchPlaces()
   await citiesStore.fetchUniqueCities()
   await citiesStore.fetchCityImages()
 })
+
+const city = computed(() => externalAPIStore.getCity)
+
 watchEffect(() => {
   console.log('cityImagesMap:', citiesStore.cityImagesMap)
   console.log("City name:", city.value?.name)
@@ -86,7 +89,7 @@ watch(
   () => route.params.id,
   (newId) => {
     cityId.value = newId as string
-    fetchSingleCity(cityId.value)
+    externalAPIStore.fetchSingleCity(cityId.value)
   }
 )
 

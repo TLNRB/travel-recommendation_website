@@ -33,16 +33,16 @@
 
 
 <script setup lang="ts">
-import { externalAPI } from '@/modules/api/externalFetch'
 import { ref, computed, onMounted, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
 // Stores
 import { usePlacesStore } from '@/stores/crud/placesStore'
+import { useExternalAPIStore } from '@/stores/externalAPIStore'
 
 const placesStore = usePlacesStore()
+const externalAPI = useExternalAPIStore()
 
 const emit = defineEmits(['loaded'])
-const { fetchAllCountries, allCountriesGlobal } = externalAPI()
 const router = useRouter()
 
 const places = computed(() => placesStore.filterPlacesByApproved(true));
@@ -53,7 +53,7 @@ const isShuffling = ref(false)
 onMounted(async () => {
 
   await placesStore.fetchPlaces()
-  await Promise.all([fetchAllCountries()])
+  await externalAPI.fetchAllCountries()
   reshuffle()
   emit('loaded')
 })
@@ -61,7 +61,7 @@ onMounted(async () => {
 const reshuffle = () => {
   isShuffling.value = true
   setTimeout(() => {
-    if (!places.value.length || !allCountriesGlobal.value.length) return
+    if (!places.value.length || !externalAPI.getCountriesGlobal.length) return
 
     const seen = new Map<string, any>()
 
@@ -69,7 +69,7 @@ const reshuffle = () => {
       const placeCountry = place.location.country?.toLowerCase()
       if (!placeCountry) return
 
-      const match = allCountriesGlobal.value.find(
+      const match = externalAPI.getCountriesGlobal.find(
         c => c.name.toLowerCase() === placeCountry
       )
 
