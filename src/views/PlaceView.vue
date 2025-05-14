@@ -42,22 +42,20 @@
   </div>
 
 
-
-  <!-- CONTENT Section -->
+   <!-- CONTENT Section -->
   <div class="max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 py-8">
     <div v-if="loading" class="text-center text-gray-500 text-lg">Loading place...</div>
 
     <div v-else-if="error" class="text-center text-red-500 text-lg">{{ error }}</div>
 
     <div v-else-if="singlePlace">
-      <!-- Info and Gallery Tab Content -->
-      <div v-show="activeTab === 'info'">
-        <!-- Place Info (unchanged) -->
-        <div class="bg-white rounded-xl shadow p-6 mb-8">
-          <div class="flex gap-4 justify-between flex-wrap items-center mb-4">
-            <h2 class="text-2xl font-bold text-green-800">{{ singlePlace.name }}</h2>
-
-            <div v-if="authStore.getIsLoggedIn" class="flex gap-3">
+  <!-- Info and Gallery Tab Content -->
+  <div v-show="activeTab === 'info'">
+    <!-- Place Info (unchanged) -->
+    <div class="bg-white rounded-xl shadow p-6 mb-8">
+    <div class="flex justify-between">
+<h2 class="text-2xl font-bold text-green-800 mb-4">{{ singlePlace.name }}</h2>
+       <div v-if="authStore.getIsLoggedIn" class="flex gap-3">
               <!-- Place Upvotes -->
               <button @click="upvotePlace"
                 class="h-[34px] flex justify-center items-center gap-1 bg-gray-50 border-[1px] px-2 text-sm border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 duration-200 ease-in-out">
@@ -117,19 +115,15 @@
                 </div>
               </div>
             </div>
-          </div>
-          <p class="text-gray-700 mb-4">{{ singlePlace.description }}</p>
-          <div class="flex flex-col md:flex-row md:space-x-8 text-gray-600 text-sm">
-            <p><strong>City:</strong> {{ singlePlace.location.city }}</p>
-            <p><strong>Country:</strong> {{ singlePlace.location.country }}</p>
-            <p><strong>Street:</strong> {{ singlePlace.location.street }} {{ singlePlace.location.streetNumber }}</p>
-          </div>
+    </div>
 
-          <!-- Error -->
-          <div v-if="placesStore.getUpdateError" class="text-red-500 text-sm mt-2">
-            {{ placesStore.getUpdateError }}
-          </div>
-        </div>
+      <p class="text-gray-700 mb-4">{{ singlePlace.description }}</p>
+      <div class="flex flex-col md:flex-row md:space-x-8 text-gray-600 text-sm">
+        <p><strong>City:</strong> {{ singlePlace.location.city }}</p>
+        <p><strong>Country:</strong> {{ singlePlace.location.country }}</p>
+        <p><strong>Street:</strong> {{ singlePlace.location.street }} {{ singlePlace.location.streetNumber }}</p>
+      </div>
+    </div>
 
     <!-- Gallery (unchanged) -->
     <div>
@@ -178,7 +172,7 @@
         </div>
         <div
     v-if="rec._createdBy && typeof rec._createdBy === 'object' && rec._createdBy._id === currentUser"
-    class="flex gap-2 absolute bottom-4 right-4"
+    class="flex gap-2 justify-between absolute bottom-4 right-4"
   >
   <button
   @click="handleDelete(rec)"
@@ -188,33 +182,7 @@
   @click="tryOpenEditModal(rec)"
   class="px-2 py-1 rounded-lg bg-blue-400 text-white hover:bg-blue-500"> Edit </button>
   </div>
-      </div>
-    </div>
-
-
-    <!-- RECOMMENDATIONS Header -->
-
-    <!-- Recommendations Tab Content -->
-    <div v-show="activeTab === 'recommendations'" class="mt-0">
-      <h3 class="text-2xl font-bold text-green-800 mb-6">Visitor Recommendations</h3>
-
-      <!-- Responsive Wrapper: side-by-side on lg+, stacked on md and below -->
-      <div class="flex flex-col lg:flex-row gap-8">
-
-        <!-- Recommendations Grid -->
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
-          <div v-for="(rec, idx) in recommendations" :key="idx"
-            class="max-w-[300px] w-full bg-white rounded-xl shadow p-5 hover:shadow-lg transition-shadow">
-
-            <div class="flex gap-3 justify-between mb-2">
-              <h4 class="text-lg font-bold text-green-700 mb-2">
-                {{ rec.title }}
-                <span class="ms-2 text-sm text-gray-400 font-light">
-                  {{ rec._createdBy.username }}
-                </span>
-              </h4>
-              <!-- Recommendation Upvotes -->
-              <button v-if="authStore.getIsLoggedIn" @click="upvoteRecommendation(rec._id)"
+   <button v-if="authStore.getIsLoggedIn" @click="upvoteRecommendation(rec._id)"
                 class="h-[34px] flex justify-center items-center gap-1 bg-gray-50 border-[1px] px-2 text-sm border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 duration-200 ease-in-out">
                 <i class='bx duration-200 ease-in-out'
                   :class="isRecommendationUpvoted(rec._id) ? 'bxs-upvote text-blue-500' : 'bx-upvote text-gray-500'"></i>
@@ -222,18 +190,44 @@
                   {{ rec.upvotes.length }}
                 </span>
               </button>
-            </div>
+      </div>
+    </div>
 
-            <p class="text-sm text-gray-700 mb-4">{{ rec.content }}</p>
-            <div class="text-sm text-gray-500 mt-4">
-              <p><strong>Visited:</strong> {{ formatDate(rec.dateOfVisit) }}</p>
-              <p><strong>Rating:</strong> ⭐ {{ rec.rating }}/5</p>
-            </div>
+    <!-- Form Column -->
+    <div v-if="authStore.userId!" class="w-full lg:w-[400px] xl:w-[450px] shrink-0">
+      <div class="bg-white p-4 md:p-6 rounded-xl shadow w-full">
+        <h4 class="text-lg md:text-xl font-semibold mb-3 text-green-700">Add a Recommendation</h4>
 
-            <!-- Error -->
-            <div v-if="recommendationsStore.getUpdateError" class="text-red-500 text-sm mt-2">
-              {{ recommendationsStore.getUpdateError }}
-            </div>
+        <form @submit.prevent="submitRecommendation" class="space-y-3">
+          <input
+            v-model="newRecommendation.title"
+            type="text"
+            placeholder="Title"
+            class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+            required
+          />
+          <textarea
+            v-model="newRecommendation.content"
+            placeholder="Your experience..."
+            class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+            rows="3"
+            required
+          ></textarea>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input
+              v-model="newRecommendation.dateOfVisit"
+              type="date"
+              class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+              required
+            />
+            <input
+              v-model.number="newRecommendation.rating"
+              type="number"
+              min="1"
+              max="5"
+              class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+              required
+            />
           </div>
           <div class="text-right">
             <div v-if="errorMessage" class="text-red-600 text-sm mb-3">
@@ -246,15 +240,22 @@
               Submit
             </button>
           </div>
-        </div>
-
+        </form>
       </div>
+    </div>
+
+  </div>
+
+  <!-- No recommendations message -->
+  <div v-if="!recommendations.length" class="text-gray-500 mt-6">No recommendations yet. Be the first to add one!</div>
+</div>
+</div>
+
+
 
       <!-- No recommendations message -->
       <div v-if="!recommendations.length" class="text-gray-500 mt-6">No recommendations yet. Be the first to add one!
       </div>
-    </div>
-  </div>
 
 </template>
 
@@ -352,7 +353,7 @@ const submitRecommendation = async () => {
   };
 
   console.log("Submitting recommendation payload:", newRec);
-  
+
   // Try adding the recommendation using the store
   try {
     await recommendationsStore.addRecommendation(newRec, authStore.token!);
