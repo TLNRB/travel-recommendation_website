@@ -1,4 +1,5 @@
 import type { CountryImage } from "./countryImageTypes"
+import type { Place } from "./placeTypes"
 
 export type Permission = {
   _id: string,
@@ -50,26 +51,3 @@ export type City = {
   adminCode: string
   places: Place[]
 }
-
-export type Place = {
-  _id: string,
-  name: string,
-  description: string,
-  images: (File | string)[],
-  location: {
-    continent: string,
-    country: string,
-    city: string,
-    street: string,
-    streetNumber: string
-  },
-  upvotes: string[],
-  tags: string[],
-  approved: boolean,
-  _createdBy: string
-}
-
-
-export type AddPlace = Omit<Place, '_createdBy'>
-
-export type EditPlace = Omit<Place, '_createdBy'> & { newImages?: File[] }

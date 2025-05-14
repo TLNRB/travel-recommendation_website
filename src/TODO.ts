@@ -8,6 +8,6 @@
  * - Error update (?)
  *    - make it to an object so it stores id and message thus only appears on one card
  * 
- * == TODOs ==  * 
+ * == TODOs ==  
  * - refactor = rolesStore getPermissionIdByPermissionName maybe move to permissionsStore (?)
  */
