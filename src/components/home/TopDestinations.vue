@@ -27,7 +27,7 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted, computed, defineEmits } from 'vue'
+import { ref, onMounted, computed, defineEmits, watch } from 'vue'
 import { useRouter } from 'vue-router'
 // Interfaces
 import type { Place } from '@/interfaces/placeTypes'
@@ -41,9 +41,10 @@ const router = useRouter()
 const placesStore = usePlacesStore()
 const externalAPIStore = useExternalAPIStore()
 
-const approvedPlaces = computed(() =>
-  placesStore.places.filter(p => p.approved && p.location.city && p.location.country)
-)
+const approvedPlaces = computed(() => {
+  const places = placesStore.filterPlacesByApproved(true)
+  return places.filter(p => p.location.city && p.location.country)
+})
 const isLoading = ref(true)
 const topCities = ref<any[]>([])
 
@@ -126,10 +127,18 @@ const goToCity = (id: string) => {
   router.push(`/city/${id}`)
 }
 
+const stop = watch(() => placesStore.getIsPlacesLoaded, (loaded) => {
+  if (loaded) {
+    generateTopCities()
+    emit('loaded')
+    console.log('Top cities generated successfully.')
+    stop() // so it runs only once
+  }
+})
+
 onMounted(async () => {
   await placesStore.fetchPlaces()
   await externalAPIStore.fetchAllCountries()
-  await generateTopCities()
   emit('loaded')
 })
 </script>

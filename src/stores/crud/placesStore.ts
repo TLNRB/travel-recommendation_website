@@ -421,6 +421,7 @@ export const usePlacesStore = defineStore('placesStore', {
       getAddError: (state) => state.addError,
       getUpdateError: (state) => state.updateError,
       getDeleteError: (state) => state.deleteError,
+      getIsPlacesLoaded: (state) => state.isPlacesLoaded,
       getIsLoading: (state) => state.isLoading,
    }
 })
