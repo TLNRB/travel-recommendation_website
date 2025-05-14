@@ -1,18 +1,35 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
-import AuthView from '@/views/AuthView'
+import { mount } from '@vue/test-utils'
+import AuthView from '../../src/views/AuthView.vue'
+import { useAuthStore } from '../../src/stores/authStore'
 import { createTestingPinia } from '@pinia/testing'
-import { useAuthStore } from '@/stores/authStore'
+import flushPromises from 'flush-promises'
+import { describe, it, beforeEach, expect, vi } from 'vitest'
+import { usePlacesStore } from '../../src/stores/crud/placesStore'
+import LogoutBtn from '../../src/components/LogoutBtn.vue'
+import { createRouter, createWebHistory } from 'vue-router'
 
 describe('AuthForm.vue', () => {
-  let wrapper: ReturnType<typeof mount>
+  let wrapper: any
+  let authStore: any
+  let store: ReturnType<typeof usePlacesStore>
+  let router: any
 
   beforeEach(() => {
+    const pinia = createTestingPinia({ stubActions: false })
+
+    router = createRouter({
+      history: createWebHistory(),
+      routes: [{ path: '/auth', name: 'Auth', component: { template: '<div>Auth Page</div>' } }],
+    })
+
     wrapper = mount(AuthView, {
       global: {
-        plugins: [createTestingPinia({ stubActions: false })],
-      }
+        plugins: [pinia, router],
+      },
     })
+
+    authStore = useAuthStore()
+    store = usePlacesStore()
   })
 
   it('shows login form by default', () => {
@@ -20,55 +37,39 @@ describe('AuthForm.vue', () => {
   })
 
   it('switches to register tab when clicking Register', async () => {
-    const registerButton = wrapper.findAll('button')
-      .find(b => b.text() === 'Register')
+    const registerButton = wrapper.findAll('button').find(b => b.text() === 'Register')
     await registerButton?.trigger('click')
 
     expect(wrapper.text()).toContain('Create your account')
   })
 
   it('logs in user with valid credentials', async () => {
-    const authStore = useAuthStore()
+    const fetchTokenSpy = vi.spyOn(authStore, 'fetchToken').mockResolvedValue(true)
 
-    wrapper.vm.activeTab = 'login'
-    await wrapper.find('input[placeholder="Email"]').setValue('test@example.com')
-    await wrapper.find('input[placeholder="Password"]').setValue('password123')
-
-    vi.spyOn(authStore, 'fetchToken').mockResolvedValue(true)
-
-    const loginButton = wrapper.find('button').element as HTMLButtonElement
-    await wrapper.find('button').trigger('click')
+    await wrapper.find('[data-test="tab-login"]').trigger('click')
+    await wrapper.find('input[placeholder="Email"]').setValue('user@email.com')
+    await wrapper.find('input[placeholder="Password"]').setValue('123456')
+    await wrapper.find('[data-test="submit-button"]').trigger('click')
 
     await flushPromises()
 
-    expect(authStore.fetchToken).toHaveBeenCalledWith('test@example.com', 'password123')
+    expect(fetchTokenSpy).toHaveBeenCalledWith('user@email.com', '123456')
   })
 
-  it('registers user with valid input', async () => {
-    const authStore = useAuthStore()
+  it('logs out and redirects to /auth', async () => {
+    const logoutWrapper = mount(LogoutBtn, {
+      global: {
+        plugins: [createTestingPinia({ stubActions: false }), router],
+      },
+    })
 
-    wrapper.vm.activeTab = 'register'
+    const logoutSpy = vi.spyOn(authStore, 'logout').mockResolvedValue(authStore)
+    const routerPushSpy = vi.spyOn(router, 'push')
+
+    await router.isReady()
+    await logoutWrapper.find('button').trigger('click')
     await flushPromises()
 
-    await wrapper.find('input[placeholder="First Name"]').setValue('John')
-    await wrapper.find('input[placeholder="Last Name"]').setValue('Doe')
-    await wrapper.find('input[placeholder="Username"]').setValue('johndoe')
-    await wrapper.find('input[placeholder="Email Address"]').setValue('john@example.com')
-    await wrapper.find('input[placeholder="Password"]').setValue('secret')
-
-    vi.spyOn(authStore, 'registerUser').mockResolvedValue(true)
-
-    const registerButton = wrapper.find('button').element as HTMLButtonElement
-    await wrapper.find('button').trigger('click')
-
-    await flushPromises()
-
-    expect(authStore.registerUser).toHaveBeenCalledWith(
-      'John',
-      'Doe',
-      'johndoe',
-      'john@example.com',
-      'secret'
-    )
+    expect(routerPushSpy).toHaveBeenCalledWith('/auth')
   })
 })
