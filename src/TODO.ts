@@ -12,10 +12,5 @@
  * - Place Upvotes
  *    - conditional styling and updateUpvote on placeView but it needs place fetch refactor from pinia store
  * 
- * - User role creation
- *    - dashboard access should be looked at after this
- * 
  * - refactor = rolesStore getPermissionIdByPermissionName maybe move to permissionsStore (?)
- * 
- * - Report recommendation (?)
  */
