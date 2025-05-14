@@ -1,6 +1,6 @@
 <template>
   <!-- Title -->
-  <div class="container-fluid flex justify-end pe-4">
+  <div class="container-fluid flex justify-end pe-4 bg-white">
     <div class="text-black px-16 py-3 rounded-t-xl bg-gray-100">
       Get Inspired
     </div>
@@ -44,7 +44,7 @@
             class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300" />
           <div class="p-3">
             <h3 class="text-sm font-semibold truncate">{{ place.name }}</h3>
-            <p class="text-xs text-gray-600 truncate">{{ place.location.city || 'Unknown City' }}</p>
+            <p class="text-xs text-gray-600 truncate">{{ place.location.city || 'Unknown City' }}, {{ place.location.country }}</p>
           </div>
         </div>
       </div>

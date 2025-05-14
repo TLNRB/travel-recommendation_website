@@ -61,14 +61,12 @@
 
 </template>
 <script setup lang="ts">
-import { ref, computed, onMounted, defineEmits } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter  } from 'vue-router'
 // Stores
 import { usePlacesStore } from '@/stores/crud/placesStore'
 
 const placesStore = usePlacesStore()
-
-const emit = defineEmits(['loaded'])
 const router = useRouter()
 
 const searchQuery = ref('')
@@ -83,8 +81,6 @@ declare const URL: {
 
 onMounted(async () => {
   await placesStore.fetchPlaces()
-  emit('loaded')
-
 })
 
 const filteredPlaces = computed(() => {

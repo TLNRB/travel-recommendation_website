@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, computed, watchEffect } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router';
 // Stores
 import { useCitiesStore } from '@/stores/crud/citiesStore'
@@ -79,11 +79,7 @@ onMounted(async () => {
 
 const city = computed(() => externalAPIStore.getCity)
 
-watchEffect(() => {
-  console.log('cityImagesMap:', citiesStore.cityImagesMap)
-  console.log("City name:", city.value?.name)
-  console.log("City country name:", city.value?.country?.name)
-})
+
 
 watch(
   () => route.params.id,
@@ -108,10 +104,6 @@ const cityImage = computed(() => {
   }
 
   const key = `${cityName}_${countryName}`;
-
-  // DEBUG LOGGING
-  console.log("Looking for city image with key:", key);
-  console.log("Available keys in cityImagesMap:", Object.keys(citiesStore.cityImagesMap));
 
   return citiesStore.cityImagesMap[key]?.images?.[0]?.url || null;
 });

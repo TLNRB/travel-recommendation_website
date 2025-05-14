@@ -71,19 +71,6 @@ const close = () => {
 
 const submitEdit = async () => {
   try {
-    console.log("Sending update request:", {
-      recommendationId: form.value._id,
-      updatedData: {
-        place: typeof form.value.place,
-        title: form.value.title,
-        content: form.value.content,
-        dateOfVisit: form.value.dateOfVisit,
-        rating: form.value.rating,
-        _createdBy: authStore.userId,
-        upvotes: form.value.upvotes
-      },
-      token: authStore.token
-    })
 
     if (!authStore.userId) {
       throw new Error('User is not authenticated')
@@ -102,8 +89,6 @@ const submitEdit = async () => {
       },
       authStore.token!
     )
-    console.log('dateOfVisit:', form.value.dateOfVisit)
-    console.log("Updated recommendation response:", response)
 
 
     await recommendationsStore.fetchRecommendationsByPlace(typeof form.value.place === 'object' ? form.value.place._id : form.value.place, true);

@@ -39,8 +39,6 @@ export const useAuthStore = defineStore('authStore', {
             this.lastName = '';
             this.username = '';
 
-            console.log('User registered successfully: ', authData)
-
             return true;
          }
          catch (err) {
@@ -82,8 +80,6 @@ export const useAuthStore = defineStore('authStore', {
             const userStore = useUserStore();
             await userStore.fetchUserData(); // Fetch user data after login to the state
 
-            console.log('User is logged in: ', authData);
-
             return true;
          } catch (err) {
             this.error = (err as Error).message;
@@ -105,9 +101,6 @@ export const useAuthStore = defineStore('authStore', {
 
          const userStore = useUserStore();
          userStore.$reset();
-         console.log('User data reset in user store');
-
-         console.log('User logged out');
       }
    },
 

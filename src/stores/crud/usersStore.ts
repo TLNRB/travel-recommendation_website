@@ -39,7 +39,6 @@ export const useUsersStore = defineStore('usersStore', {
             this.error = null;
             this.isUsersLoaded = true;
 
-            console.log('Users fetched successfully:', this.users)
          }
          catch (err) {
             this.error = (err as Error).message
@@ -77,10 +76,6 @@ export const useUsersStore = defineStore('usersStore', {
                const errorResponse = await response.json()
                throw new Error(errorResponse.error || 'Failed to update user role')
             }
-            else {
-               const responseText = await response.text()
-               console.log('Update response:', responseText)
-            }
 
             await this.fetchUsers(true);
          }
@@ -109,7 +104,6 @@ export const useUsersStore = defineStore('usersStore', {
             // Validate country
             let country: any;
             if (userData.country !== '') {
-               console.log('Country provided:', userData.country)
                country = await externalAPIStore.validateCountry(userData.country!);
                if (!country) {
                   throw new Error('Invalid country');
@@ -120,7 +114,6 @@ export const useUsersStore = defineStore('usersStore', {
             }
             // Validate city
             if (country && userData.city !== '') {
-               console.log('City provided:', userData.city)
                const isValidCity = await externalAPIStore.validateCity(userData.city!, country.objectId);
                if (!isValidCity) {
                   throw new Error('Invalid city');
@@ -129,7 +122,6 @@ export const useUsersStore = defineStore('usersStore', {
 
             // Check if there are newImages to upload
             if (newImage !== '') {
-               console.log('New image upload:', newImage)
                const imagesFile: File[] = [];
                imagesFile.push(newImage as File)
 
@@ -145,20 +137,16 @@ export const useUsersStore = defineStore('usersStore', {
                userData.profilePicture = imageData;
             }
 
-            console.log('Socials before: ', userData.socials)
 
             // Check the soicals and remove the _ids from the objects
             if (userData.socials && userData.socials.length > 0) {
-               console.log('Socials provided:', userData.socials)
                userData.socials = userData.socials.map((social: any) => {
                   const { _id, ...rest } = social;
                   return rest;
                });
             }
 
-            console.log('Socials after: ', userData.socials)
 
-            console.log('User data before sending:', userData)
 
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${userId}?editingUserId=${editingUserId}`, {
                method: 'PUT',
@@ -173,10 +161,7 @@ export const useUsersStore = defineStore('usersStore', {
                const errorResponse = await response.json()
                throw new Error(errorResponse.error || 'Failed to update user')
             }
-            else {
-               const responseText = await response.text()
-               console.log('Update response:', responseText)
-            }
+
 
             await this.fetchUsers(true);
          }

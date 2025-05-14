@@ -27,7 +27,6 @@ export const useUserStore = defineStore('userStore', {
          }
 
          try {
-            console.log('Fetching user data...')
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/query?field=_id&value=${userId}&populate=true`, {
                method: 'GET'
             })

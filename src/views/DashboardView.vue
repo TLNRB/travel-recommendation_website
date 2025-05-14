@@ -81,9 +81,6 @@ const canManageRoles = computed(() => {
   const userRole = userStore.getUser!.role;
   if (!permissionIdManageRoles.value || typeof userRole === 'string') return false; // No permission Id found
 
-  console.log('userRole', userRole);
-  console.log('permissionIdManageRoles', permissionIdManageRoles.value);
-
   return userRole.permissions.some(permission => typeof permission === 'string' ? permission === permissionIdManageRoles.value : permission._id === permissionIdManageRoles.value);
 })
 
@@ -93,5 +90,5 @@ const activeTab = ref('Requests');
 
 onMounted(async () => {
   await rolesStore.fetchRoles();
-}); 
+});
 </script>

@@ -21,7 +21,6 @@ export const useCountriesStore = defineStore('countriesStore', {
 
    actions: {
       async fetchUniqueCountries() {
-         console.log('Fetching unique countries...')
          const placesStore = usePlacesStore()
 
          // If the places are not loaded, fetch them
@@ -49,11 +48,8 @@ export const useCountriesStore = defineStore('countriesStore', {
 
       async fetchCountryImages(force = false): Promise<void> {
          if (!force && (this.isCountryImagesLoaded || this.isLoading)) {
-            console.log('Country images already loaded or loading')
             return
          }
-
-         console.log('Fetching country images...')
 
          this.isLoading = true
 
@@ -139,9 +135,6 @@ export const useCountriesStore = defineStore('countriesStore', {
                throw new Error(errorResponse.error || 'Failed to add country images')
             }
             else {
-               const responseData = await response.json()
-               console.log('Add response:', responseData)
-
                await this.fetchCountryImages(true) // Fetch the updated country images
             }
          }
@@ -192,7 +185,6 @@ export const useCountriesStore = defineStore('countriesStore', {
                countryImageData.images = imagesData;
             }
 
-            console.log('Country image data before sending:', countryImageData.images)
 
             // Remove _id property from each image object
             const cleanImages = countryImageData.images.map(image => ({
@@ -202,7 +194,6 @@ export const useCountriesStore = defineStore('countriesStore', {
 
             countryImageData.images = cleanImages // Clean the images object to remove any unnecessary properties
 
-            console.log('Country image data after cleaning:', countryImageData.images)
 
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/countries-images/${countryImageId}`, {
                method: 'PUT',
@@ -218,9 +209,6 @@ export const useCountriesStore = defineStore('countriesStore', {
                throw new Error(errorResponse.error || 'Failed to update country images')
             }
             else {
-               const responseData = await response.json()
-               console.log('Update response:', responseData)
-
                await this.fetchCountryImages(true) // Fetch the updated country images
             }
          }
@@ -250,8 +238,6 @@ export const useCountriesStore = defineStore('countriesStore', {
                throw new Error(errorResponse.error || 'Failed to delete country images')
             }
             else {
-               const responseData = await response.json()
-               console.log('Delete response:', responseData)
 
                await this.fetchCountryImages(true) // Fetch the updated country images
             }

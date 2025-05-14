@@ -97,17 +97,14 @@ const handleAddPlace = async (newPlace: AddPlace, recommendation: AddRecommendat
                _createdBy: authStore.getUserId!,
             };
 
-            console.log('recommendationData', recommendationData);
 
             await recommendationsStore.addRecommendation(recommendationData, authStore.getToken!);
 
             if (!recommendationsStore.getAddError) {
-               console.log('Recommendation added successfully');
                // If the recommendation is added successfully, close the modal
                handleCloseAddRecommendation();
             }
             else {
-               console.log('Recommendation failed to add');
                // If the recommendation fails, set the failed recommendation place's ID
                handleOpenAddRecommendation(placeId, recommendation);
             }
@@ -140,7 +137,6 @@ const handleAddRecommendation = async (placeId: string, recommendation: AddRecom
    // If there are no recommendations, close the modal
    if (!recommendation) {
       handleCloseAddRecommendation();
-      console.log('No recommendation provided');
    }
    else {
       const recommendationData: Partial<Recommendation> = {
@@ -148,7 +144,6 @@ const handleAddRecommendation = async (placeId: string, recommendation: AddRecom
          place: failedRecommendationPlaceId.value!,
          _createdBy: authStore.getUserId!,
       };
-      console.log('recommendationData', recommendationData);
 
       try {
          await recommendationsStore.addRecommendation(recommendationData, authStore.getToken!);
@@ -163,7 +158,7 @@ const handleAddRecommendation = async (placeId: string, recommendation: AddRecom
 };
 
 
-//-- Edit 
+//-- Edit
 // Edit Modal
 const showEditModal = ref<boolean>(false);
 const editPlaceId = ref<string | null>(null);

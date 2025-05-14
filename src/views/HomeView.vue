@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 // Stores
 import { usePlacesStore } from '@/stores/crud/placesStore';
 import { useUsersStore } from '@/stores/crud/usersStore';

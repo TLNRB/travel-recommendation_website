@@ -23,14 +23,12 @@ export const usePlacesStore = defineStore('placesStore', {
       async fetchPlaces(force = false): Promise<void> {
          // Check if places are already loaded or loading to avoid multiple API calls
          if (!force && (this.isPlacesLoaded || this.isLoading)) {
-            console.log('Places already loaded or loading, skipping fetch')
             return;
          }
 
          this.isLoading = true;
 
          try {
-            console.log('Fetching places data...')
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/places`, {
                method: 'GET',
             })
@@ -43,7 +41,6 @@ export const usePlacesStore = defineStore('placesStore', {
             const placesData = await response.json()
             this.places = placesData.data;
 
-            console.log('Fetched places data:', placesData.data)
 
             this.error = null;
             this.isPlacesLoaded = true;
@@ -72,7 +69,6 @@ export const usePlacesStore = defineStore('placesStore', {
             }
 
             const placeData = await response.json()
-            console.log('Fetched place data by id:', placeData.data)
 
             this.error = null;
             return placeData.data;
@@ -134,7 +130,6 @@ export const usePlacesStore = defineStore('placesStore', {
             }
             else {
                const responseData = await response.json()
-               console.log('Add response:', responseData)
 
                // Upload images to Cloudinary and update the place with the URLs
                await this.addUpdateImages(responseData.data._id, imagesData, token)
@@ -176,10 +171,7 @@ export const usePlacesStore = defineStore('placesStore', {
                const errorResponse = await response.json()
                throw new Error(errorResponse.error || 'Failed to update images')
             }
-            else {
-               const responseText = await response.text()
-               console.log('Update response:', responseText)
-            }
+
          }
          catch (err) {
             console.error('Error uploading images:', err)
@@ -193,7 +185,6 @@ export const usePlacesStore = defineStore('placesStore', {
             const { urls, error } = await uploadImages(newImages, 'places')
 
             if (error) {
-               console.log('error')
                throw new Error(error)
             }
 
@@ -210,15 +201,10 @@ export const usePlacesStore = defineStore('placesStore', {
                body: JSON.stringify({ images: allImages })
             })
 
-            console.log('allImages:', allImages)
 
             if (!response.ok) {
                const errorResponse = await response.json()
                throw new Error(errorResponse.error || 'Failed to update images')
-            }
-            else {
-               const responseText = await response.text()
-               console.log('Update response:', responseText)
             }
          }
          catch (err) {
@@ -277,12 +263,6 @@ export const usePlacesStore = defineStore('placesStore', {
                throw new Error(errorResponse.error || 'Failed to update place')
             }
             else {
-               const responseText = await response.text()
-               console.log('Update response:', responseText)
-
-               console.log('New images:', newImages)
-               console.log('Updated place:', updatedPlace)
-
                // Upload images to Cloudinary and update the place with the URLs
                if (newImages && newImages.length > 0) {
                   await this.editUpdateImages(placeId, newImages as File[], updatedPlace.images as string[], token)
@@ -317,14 +297,9 @@ export const usePlacesStore = defineStore('placesStore', {
                const errorResponse = await response.json()
                throw new Error(errorResponse.error || 'Failed to update upvote')
             }
-            else {
-               const responseText = await response.text()
-               console.log('Update place upvotes response:', responseText)
-            }
 
             const updatedPlace: Place | null = await this.fetcPlaceById(placeId) // Fetch the updated place by ID
 
-            console.log('Updated place from database: ', updatedPlace)
 
 
             if (updatedPlace) {
@@ -334,7 +309,6 @@ export const usePlacesStore = defineStore('placesStore', {
                if (index !== -1) {
                   this.places[index] = updatedPlace; // Update the place in the local state
                }
-               console.log('Updated place in state:', this.places[index])
             }
             else {
                throw new Error('Failed to fetch updated place')
@@ -364,10 +338,6 @@ export const usePlacesStore = defineStore('placesStore', {
             if (!response.ok) {
                const errorResponse = await response.json()
                throw new Error(errorResponse.error || 'Failed to delete place')
-            }
-            else {
-               const responseText = await response.text()
-               console.log('Delete response:', responseText)
             }
 
             await this.fetchPlaces(true) // Force refresh the places after deletion

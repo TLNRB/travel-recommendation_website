@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from 'vue';
 import type { Role, AddRole } from "@/interfaces/roleTypes";
-// Data 
+// Data
 import { baseRoles } from "@/data/baseRoles.json";
 
 export const useRolesStore = defineStore('rolesStore', {
@@ -37,7 +37,6 @@ export const useRolesStore = defineStore('rolesStore', {
             this.error = null;
             this.isRolesLoaded = true;
 
-            console.log('Roles fetched successfully:', this.roles)
          }
          catch (err) {
             this.error = (err as Error).message
@@ -70,7 +69,6 @@ export const useRolesStore = defineStore('rolesStore', {
             this.error = null;
             this.isRolesLoaded = true;
 
-            console.log('Role fetched successfully:', this.roles)
          }
          catch (err) {
             this.error = (err as Error).message
@@ -88,16 +86,13 @@ export const useRolesStore = defineStore('rolesStore', {
 
          // Check if the role has permissions and get the permission IDs
          if (newRole.permissions.length > 0) {
-            console.log('Before permissions:', newRole.permissions);
 
             const permissionIds = newRole.permissions.map((permission) =>
                typeof permission === 'object' ? permission._id : permission);
             newRole.permissions = permissionIds;
 
-            console.log('After permissions:', newRole.permissions);
          }
 
-         console.log('Adding role:', newRole);
 
          try {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/roles`, {
@@ -114,8 +109,7 @@ export const useRolesStore = defineStore('rolesStore', {
                throw new Error(errorResponse.error || 'Failed to add role');
             }
             else {
-               const responseData = await response.json();
-               console.log('Role added successfully:', responseData);
+
 
                await this.fetchRoles(true); // Refresh the roles list after adding a new role
             }
@@ -134,27 +128,20 @@ export const useRolesStore = defineStore('rolesStore', {
 
          // Check if the role has permissions and get the permission IDs
          if (updatedRole.permissions.length > 0) {
-            console.log('Before permissions:', updatedRole.permissions);
 
             const permissionIds = updatedRole.permissions.map((permission) =>
                typeof permission === 'object' ? permission._id : permission);
             updatedRole.permissions = permissionIds;
 
-            console.log('After permissions:', updatedRole.permissions);
          }
-
-         console.log('Updating role:', updatedRole);
 
          try {
             // Check if the role is a base role
             const isBaseRole = baseRoles.some((baseRole) => baseRole === updatedRole.name);
 
             if (isBaseRole) {
-               console.log('It is base role:', isBaseRole);
                throw new Error('Cannot update a base role');
             }
-
-            console.log('Is is not base role:', isBaseRole);
 
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/roles/${roleId}`, {
                method: 'PUT',
@@ -170,8 +157,6 @@ export const useRolesStore = defineStore('rolesStore', {
                throw new Error(errorResponse.error || 'Failed to update role');
             }
             else {
-               const responseData = await response.json();
-               console.log('Role updated successfully:', responseData);
 
                await this.fetchRoles(true); // Refresh the roles list after updating a role
             }
@@ -194,11 +179,8 @@ export const useRolesStore = defineStore('rolesStore', {
             const isBaseRole = baseRoles.some((baseRole) => baseRole === deletedRole!.name);
 
             if (isBaseRole) {
-               console.log('It is base role:', isBaseRole);
                throw new Error('Cannot delete a base role');
             }
-
-            console.log('Is is not base role:', isBaseRole);
 
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/roles/${roleId}`, {
                method: 'DELETE',
@@ -214,7 +196,6 @@ export const useRolesStore = defineStore('rolesStore', {
             }
             else {
                const responseData = await response.json();
-               console.log('Role deleted successfully:', responseData);
 
                await this.fetchRoles(true); // Refresh the roles list after deleting a role
             }

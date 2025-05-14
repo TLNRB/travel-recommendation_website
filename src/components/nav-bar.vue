@@ -14,6 +14,17 @@
           <img class="w-16 h-16" src="../assets/images/planet-2.svg" alt="logo">
         </RouterLink>
 
+
+        <!-- Suggestion Modal -->
+            <PlaceAddModal v-if="showAddModal" :addError="placesStore.getAddError" :loading="placesStore.getIsLoading"
+              @submit="handleAddPlace" @close="handleCloseAdd" />
+
+            <!-- Failed Recommendation Card -->
+            <PlaceRecommendationFail v-else-if="showRecommendationModal"
+              :place="placesStore.getPlaceById(failedRecommendationPlaceId!)!" :recommendation="failedRecommendation!"
+              :addError="recommendationsStore.getAddError" :loading="recommendationsStore.getIsLoading"
+              @submit="handleAddRecommendation" @close="handleCloseAddRecommendation" />
+
         <div class="hidden md:flex items-center gap-4">
           <div class="relative">
             <button @click="toggleDropdown" class="px-4 py-2 text-black rounded-lg flex items-center">
@@ -32,16 +43,6 @@
               class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg duration-[.2s] ease-in-out text-sm cursor-pointer">
               Suggest a Place
             </button>
-
-            <!-- Suggestion Modal -->
-            <PlaceAddModal v-if="showAddModal" :addError="placesStore.getAddError" :loading="placesStore.getIsLoading"
-              @submit="handleAddPlace" @close="handleCloseAdd" />
-
-            <!-- Failed Recommendation Card -->
-            <PlaceRecommendationFail v-else-if="showRecommendationModal"
-              :place="placesStore.getPlaceById(failedRecommendationPlaceId!)!" :recommendation="failedRecommendation!"
-              :addError="recommendationsStore.getAddError" :loading="recommendationsStore.getIsLoading"
-              @submit="handleAddRecommendation" @close="handleCloseAddRecommendation" />
           </div>
         </div>
       </div>
@@ -193,6 +194,9 @@ const showRecommendationModal = ref<boolean>(false);
 
 // Place
 const handleAdd = () => {
+  if (mobileMenuOpen.value) {
+    mobileMenuOpen.value = false;
+  }
   showAddModal.value = true;
 };
 
@@ -224,17 +228,13 @@ const handleAddPlace = async (newPlace: AddPlace, recommendation: AddRecommendat
           _createdBy: authStore.getUserId!,
         };
 
-        console.log('recommendationData', recommendationData);
-
         await recommendationsStore.addRecommendation(recommendationData, authStore.getToken!);
 
         if (!recommendationsStore.getAddError) {
-          console.log('Recommendation added successfully');
           // If the recommendation is added successfully, close the modal
           handleCloseAddRecommendation();
         }
         else {
-          console.log('Recommendation failed to add');
           // If the recommendation fails, set the failed recommendation place's ID
           handleOpenAddRecommendation(placeId, recommendation);
         }
@@ -267,7 +267,6 @@ const handleAddRecommendation = async (placeId: string, recommendation: AddRecom
   // If there are no recommendations, close the modal
   if (!recommendation) {
     handleCloseAddRecommendation();
-    console.log('No recommendation provided');
   }
   else {
     const recommendationData: Partial<Recommendation> = {
@@ -275,7 +274,6 @@ const handleAddRecommendation = async (placeId: string, recommendation: AddRecom
       place: failedRecommendationPlaceId.value!,
       _createdBy: authStore.getUserId!,
     };
-    console.log('recommendationData', recommendationData);
 
     try {
       await recommendationsStore.addRecommendation(recommendationData, authStore.getToken!);

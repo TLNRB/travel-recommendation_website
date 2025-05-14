@@ -303,7 +303,6 @@ const removeSocial = (index: number) => {
 
 // Update User
 const handleUpdateUser = async (): Promise<void> => {
-   console.log('userData: ', editUser.value);
    try {
       await usersStore.updateUser(authStore.getUserId!, authStore.getUserId!, editUser.value, authStore.getToken!);
 

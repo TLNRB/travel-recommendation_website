@@ -80,7 +80,6 @@ const activeCities = computed(() => {
       }
    }
 
-   console.log('Active Cities:', result);
    return result;
 })
 
@@ -97,7 +96,6 @@ const missingCities = computed(() => {
       }
    }
 
-   console.log('Missing Cities:', result);
    return result;
 });
 
@@ -111,7 +109,6 @@ const unusedCities = computed(() => {
       }
    }
 
-   console.log('Unused Cities:', result);
    return result;
 });
 
@@ -142,7 +139,6 @@ const handleSubmit = (cityData: EditCityImage, cityId: string) => {
 
 //-- Edit
 const handleUpdateCity = async (updatedCity: EditCityImage, cityId: string) => {
-   console.log('Update City:', updatedCity, cityId);
 
    try {
       await citiesStore.updateCityImage(cityId, updatedCity, authStore.getToken!);
@@ -156,7 +152,6 @@ const handleUpdateCity = async (updatedCity: EditCityImage, cityId: string) => {
 
 //-- Add
 const handleAddCity = async (newCity: EditCityImage): Promise<void> => {
-   console.log('Add City:', newCity);
    try {
       await citiesStore.addCityImage(newCity, authStore.getToken!)
 
@@ -171,7 +166,6 @@ const handleAddCity = async (newCity: EditCityImage): Promise<void> => {
 
 //-- Delete
 const handleDelete = async (cityKey: string, cityId: string) => {
-   console.log('Delete City:', cityKey, cityId);
 
    try {
       await citiesStore.deleteCityImage(cityId, authStore.getToken!);
@@ -191,7 +185,7 @@ const activeTab = ref('Active');
 onMounted(async () => {
    await citiesStore.fetchUniqueCities();
    await citiesStore.fetchCityImages();
-}); 
+});
 </script>
 
 <style scoped>
