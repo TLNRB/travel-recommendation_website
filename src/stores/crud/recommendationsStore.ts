@@ -1,12 +1,14 @@
 import { defineStore } from "pinia";
 import type { Recommendation } from "@/interfaces/recommendationTypes";
+import { reactive } from 'vue'
 
 export const useRecommendationsStore = defineStore('recommendationsStore', {
    state: () => ({
-      recommendationsMap: {} as Record<string, Recommendation[]>,
+      recommendationsMap: reactive({}) as Record<string, Recommendation[]>,
       error: null as string | null,
       addError: null as string | null,
       deleteError: null as string | null,
+      updateError: null as string | null,
       isLoaded: false,
       isLoading: false,
    }),
@@ -139,6 +141,52 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          finally {
             this.isLoading = false;
          }
+      },
+
+      async updateRecommendation(recommendationId: string, updatedData: Partial<Recommendation>, token: string ): Promise<void> {
+        this.isLoading = true;
+        this.updateError = null;
+
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/${recommendationId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'auth-token': token
+            },
+            body: JSON.stringify(updatedData)
+          });
+
+          if (!response.ok) {
+            const errorResponse = await response.json();
+            console.error('Error response:', errorResponse); // Log the error response
+            throw new Error(errorResponse.error || 'Failed to update recommendation');
+          }
+
+          const updatedRecommendation = await response.json();
+          console.log('Updated recommendation:', updatedRecommendation);
+
+          // Update the recommendation in the local store
+          for (const placeId in this.recommendationsMap) {
+            const index = this.recommendationsMap[placeId].findIndex(r => r._id === recommendationId);
+            if (index !== -1) {
+              // Clone array to trigger reactivity
+              const newArray = [...this.recommendationsMap[placeId]];
+              newArray[index] = {
+                ...newArray[index],
+                ...updatedRecommendation.data // ensure this has correct structure
+              };
+
+              // Reassign the entire array
+              this.recommendationsMap[placeId] = newArray;
+              break;
+            }
+          }
+        } catch (err) {
+          this.updateError = (err as Error).message;
+        } finally {
+          this.isLoading = false;
+        }
       },
 
       async deleteRecommendation(recommendationId: string, token: string, placeId: string): Promise<void> {
