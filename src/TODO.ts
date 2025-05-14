@@ -8,9 +8,6 @@
  * - Error update (?)
  *    - make it to an object so it stores id and message thus only appears on one card
  * 
- * == TODOs == 
- * - Place Upvotes
- *    - conditional styling and updateUpvote on placeView but it needs place fetch refactor from pinia store
- * 
+ * == TODOs ==  * 
  * - refactor = rolesStore getPermissionIdByPermissionName maybe move to permissionsStore (?)
  */

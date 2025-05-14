@@ -76,7 +76,7 @@ export const usePlacesStore = defineStore('placesStore', {
             console.log('Fetched place data by id:', placeData.data)
 
             this.error = null;
-            return placeData.data[0];
+            return placeData.data;
          }
          catch (err) {
             this.error = (err as Error).message;
@@ -401,6 +401,9 @@ export const usePlacesStore = defineStore('placesStore', {
       getPlaces: (state) => state.places,
       getPlaceById: (state) => {
          return (placeId: string) => state.places.find((place) => place._id === placeId) || null
+      },
+      getPlaceByName: (state) => {
+         return (placeName: string) => state.places.find((place) => place.name === placeName) || null
       },
       getIsPlaceUpvoted: (state) => {
          return (placeId: string, userId: string) => {

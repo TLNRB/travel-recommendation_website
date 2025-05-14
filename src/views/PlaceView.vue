@@ -1,27 +1,21 @@
 <template>
   <!-- HERO Section -->
-<div class="relative h-[60vh] w-full overflow-hidden">
-  <!-- Background Image -->
-  <img
-    v-if="singlePlace?.images?.length"
-    :src="singlePlace.images[0] as string"
-    alt="Place hero image"
-    class="absolute inset-0 w-full h-full object-cover brightness-75"
-  />
+  <div class="relative h-[60vh] w-full overflow-hidden">
+    <!-- Background Image -->
+    <img v-if="place?.images?.length" :src="place.images[0] as string" alt="Place hero image"
+      class="absolute inset-0 w-full h-full object-cover brightness-75" />
 
-  <!-- Title and Back button -->
-  <div class="relative z-10 flex flex-col justify-center items-start h-full px-8 md:px-16">
-    <h1 class="text-white text-2xl md:text-4xl lg:text-6xl font-bold drop-shadow-lg">
-      {{ singlePlace?.name || 'Place' }}
-    </h1>
-    <RouterLink
-      v-if="cityId"
-      class="md:left-16 z-20 mt-4 md:px-4 md:py-2 py-1 px-2 text-sm  bg-white text-green-600 font-semibold rounded hover:bg-green-100 transition"
-      :to="`/city/${cityId}`"
-    >
-      🔙
-    </RouterLink>
-  </div>
+    <!-- Title and Back button -->
+    <div class="relative z-10 flex flex-col justify-center items-start h-full px-8 md:px-16">
+      <h1 class="text-white text-2xl md:text-4xl lg:text-6xl font-bold drop-shadow-lg">
+        {{ place?.name || 'Place' }}
+      </h1>
+      <RouterLink v-if="cityId"
+        class="md:left-16 z-20 mt-4 md:px-4 md:py-2 py-1 px-2 text-sm  bg-white text-green-600 font-semibold rounded hover:bg-green-100 transition"
+        :to="`/city/${cityId}`">
+        🔙
+      </RouterLink>
+    </div>
 
     <!-- Desktop (lg+): Original floating style -->
     <div class="absolute bottom-0 right-4 z-20 hidden lg:flex gap-4">
@@ -42,27 +36,28 @@
   </div>
 
 
-   <!-- CONTENT Section -->
+  <!-- CONTENT Section -->
   <div class="max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 py-8">
-    <div v-if="loading" class="text-center text-gray-500 text-lg">Loading place...</div>
+    <div v-if="placesStore.isLoading && !placesStore.isPlacesLoaded" class="text-center text-gray-500 text-lg">Loading
+      place...</div>
 
-    <div v-else-if="error" class="text-center text-red-500 text-lg">{{ error }}</div>
+    <div v-else-if="placesStore.getError" class="text-center text-red-500 text-lg">{{ placesStore.getError }}</div>
 
-    <div v-else-if="singlePlace">
-  <!-- Info and Gallery Tab Content -->
-  <div v-show="activeTab === 'info'">
-    <!-- Place Info (unchanged) -->
-    <div class="bg-white rounded-xl shadow p-6 mb-8">
-    <div class="flex justify-between">
-<h2 class="text-2xl font-bold text-green-800 mb-4">{{ singlePlace.name }}</h2>
-       <div v-if="authStore.getIsLoggedIn" class="flex gap-3">
+    <div v-else-if="place">
+      <!-- Info and Gallery Tab Content -->
+      <div v-show="activeTab === 'info'">
+        <!-- Place Info (unchanged) -->
+        <div class="bg-white rounded-xl shadow p-6 mb-8">
+          <div class="flex justify-between">
+            <h2 class="text-2xl font-bold text-green-800 mb-4">{{ place.name }}</h2>
+            <div v-if="authStore.getIsLoggedIn" class="flex gap-3">
               <!-- Place Upvotes -->
               <button @click="upvotePlace"
                 class="h-[34px] flex justify-center items-center gap-1 bg-gray-50 border-[1px] px-2 text-sm border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 duration-200 ease-in-out">
                 <i class='bx duration-200 ease-in-out'
                   :class="isPlaceUpvoted ? 'bxs-upvote text-blue-500' : 'bx-upvote text-gray-500'"></i>
                 <span class="text-sm text-gray-500 font-semibold">
-                  {{ singlePlace.upvotes.length }}
+                  {{ place.upvotes.length }}
                 </span>
               </button>
 
@@ -115,186 +110,157 @@
                 </div>
               </div>
             </div>
-    </div>
-
-      <p class="text-gray-700 mb-4">{{ singlePlace.description }}</p>
-      <div class="flex flex-col md:flex-row md:space-x-8 text-gray-600 text-sm">
-        <p><strong>City:</strong> {{ singlePlace.location.city }}</p>
-        <p><strong>Country:</strong> {{ singlePlace.location.country }}</p>
-        <p><strong>Street:</strong> {{ singlePlace.location.street }} {{ singlePlace.location.streetNumber }}</p>
-      </div>
-    </div>
-
-    <!-- Gallery (unchanged) -->
-    <div>
-      <h3 class="text-xl font-semibold text-green-800 mb-4">Gallery</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <img
-          v-for="(img, idx) in singlePlace.images"
-          :key="idx"
-          :src="img as string"
-          alt="Gallery image"
-          class="w-full h-64 object-cover rounded-xl shadow"
-        />
-      </div>
-    </div>
-
-  </div>
-</div>
-
-
-  <!-- RECOMMENDATIONS Header -->
-  <UpdateRecModal ref="editModal" @updated="handleUpdate" />
-  <!-- Recommendations Tab Content -->
-  <div v-show="activeTab === 'recommendations'" class="mt-0">
-  <h3 class="text-2xl font-bold text-green-800 mb-6">Visitor Recommendations</h3>
-
-  <!-- Responsive Wrapper: side-by-side on lg+, stacked on md and below -->
-  <div class="flex flex-col lg:flex-row gap-8">
-
-    <!-- Recommendations Grid -->
-    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
-      <div
-        v-for="(rec, idx) in recommendations"
-        :key="idx"
-        class="bg-white rounded-xl relative shadow p-5 hover:shadow-lg transition-shadow"
-      >
-        <h4 class="text-lg font-bold text-green-700 mb-2">
-          {{ rec.title }}
-          <span class="ms-2 text-sm text-gray-400 font-light">
-            {{ typeof rec._createdBy === 'object' ? rec._createdBy.username : '' }}
-          </span>
-        </h4>
-        <p class="text-sm text-gray-700 mb-4">{{ rec.content }}</p>
-        <div class="text-sm text-gray-500 mt-4">
-          <p><strong>Visited:</strong> {{ formatDate(rec.dateOfVisit) }}</p>
-          <p><strong>Rating:</strong> ⭐ {{ rec.rating }}/5</p>
-        </div>
-        <div
-    v-if="rec._createdBy && typeof rec._createdBy === 'object' && rec._createdBy._id === currentUser"
-    class="flex gap-2 justify-between absolute bottom-4 right-4"
-  >
-  <button
-  @click="handleDelete(rec)"
-  class="px-2 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white"> Delete </button>
-
-  <button
-  @click="tryOpenEditModal(rec)"
-  class="px-2 py-1 rounded-lg bg-blue-400 text-white hover:bg-blue-500"> Edit </button>
-  </div>
-   <button v-if="authStore.getIsLoggedIn" @click="upvoteRecommendation(rec._id)"
-                class="h-[34px] flex justify-center items-center gap-1 bg-gray-50 border-[1px] px-2 text-sm border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 duration-200 ease-in-out">
-                <i class='bx duration-200 ease-in-out'
-                  :class="isRecommendationUpvoted(rec._id) ? 'bxs-upvote text-blue-500' : 'bx-upvote text-gray-500'"></i>
-                <span class="text-sm text-gray-500 font-semibold">
-                  {{ rec.upvotes.length }}
-                </span>
-              </button>
-      </div>
-    </div>
-
-    <!-- Form Column -->
-    <div v-if="authStore.userId!" class="w-full lg:w-[400px] xl:w-[450px] shrink-0">
-      <div class="bg-white p-4 md:p-6 rounded-xl shadow w-full">
-        <h4 class="text-lg md:text-xl font-semibold mb-3 text-green-700">Add a Recommendation</h4>
-
-        <form @submit.prevent="submitRecommendation" class="space-y-3">
-          <input
-            v-model="newRecommendation.title"
-            type="text"
-            placeholder="Title"
-            class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-            required
-          />
-          <textarea
-            v-model="newRecommendation.content"
-            placeholder="Your experience..."
-            class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-            rows="3"
-            required
-          ></textarea>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input
-              v-model="newRecommendation.dateOfVisit"
-              type="date"
-              class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-              required
-            />
-            <input
-              v-model.number="newRecommendation.rating"
-              type="number"
-              min="1"
-              max="5"
-              class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-              required
-            />
           </div>
-          <div class="text-right">
-            <div v-if="errorMessage" class="text-red-600 text-sm mb-3">
-              {{ errorMessage }}
+
+          <p class="text-gray-700 mb-4">{{ place.description }}</p>
+          <div class="flex flex-col md:flex-row md:space-x-8 text-gray-600 text-sm">
+            <p><strong>City:</strong> {{ place.location.city }}</p>
+            <p><strong>Country:</strong> {{ place.location.country }}</p>
+            <p><strong>Street:</strong> {{ place.location.street }} {{ place.location.streetNumber }}</p>
+          </div>
+        </div>
+
+        <!-- Gallery (unchanged) -->
+        <div>
+          <h3 class="text-xl font-semibold text-green-800 mb-4">Gallery</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <img v-for="(img, idx) in place.images" :key="idx" :src="img as string" alt="Gallery image"
+              class="w-full h-64 object-cover rounded-xl shadow" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- RECOMMENDATIONS Header -->
+    <UpdateRecModal ref="editModal" @updated="handleUpdate" />
+    <!-- Recommendations Tab Content -->
+    <div v-show="activeTab === 'recommendations'" class="mt-0">
+      <h3 class="text-2xl font-bold text-green-800 mb-6">Visitor Recommendations</h3>
+
+      <!-- Responsive Wrapper: side-by-side on lg+, stacked on md and below -->
+      <div class="flex flex-col lg:flex-row gap-8">
+
+        <!-- Recommendations Grid -->
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
+          <div v-for="(rec, idx) in recommendations" :key="idx"
+            class="bg-white rounded-xl relative shadow p-5 hover:shadow-lg transition-shadow">
+            <h4 class="text-lg font-bold text-green-700 mb-2">
+              {{ rec.title }}
+              <span class="ms-2 text-sm text-gray-400 font-light">
+                {{ typeof rec._createdBy === 'object' ? rec._createdBy.username : '' }}
+              </span>
+            </h4>
+            <p class="text-sm text-gray-700 mb-4">{{ rec.content }}</p>
+            <div class="text-sm text-gray-500 mt-4">
+              <p><strong>Visited:</strong> {{ formatDate(rec.dateOfVisit) }}</p>
+              <p><strong>Rating:</strong> ⭐ {{ rec.rating }}/5</p>
             </div>
-            <button
-              type="submit"
-              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm transition"
-            >
-              Submit
+            <div v-if="rec._createdBy && typeof rec._createdBy === 'object' && rec._createdBy._id === currentUser"
+              class="flex gap-2 justify-between absolute bottom-4 right-4">
+              <button @click="handleDelete(rec)" class="px-2 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white">
+                Delete </button>
+
+              <button @click="tryOpenEditModal(rec)"
+                class="px-2 py-1 rounded-lg bg-blue-400 text-white hover:bg-blue-500"> Edit </button>
+            </div>
+            <button v-if="authStore.getIsLoggedIn" @click="upvoteRecommendation(rec._id)"
+              class="h-[34px] flex justify-center items-center gap-1 bg-gray-50 border-[1px] px-2 text-sm border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 duration-200 ease-in-out">
+              <i class='bx duration-200 ease-in-out'
+                :class="isRecommendationUpvoted(rec._id) ? 'bxs-upvote text-blue-500' : 'bx-upvote text-gray-500'"></i>
+              <span class="text-sm text-gray-500 font-semibold">
+                {{ rec.upvotes.length }}
+              </span>
             </button>
           </div>
-        </form>
+        </div>
+
+        <!-- Form Column -->
+        <div v-if="authStore.userId!" class="w-full lg:w-[400px] xl:w-[450px] shrink-0">
+          <div class="bg-white p-4 md:p-6 rounded-xl shadow w-full">
+            <h4 class="text-lg md:text-xl font-semibold mb-3 text-green-700">Add a Recommendation</h4>
+
+            <form @submit.prevent="submitRecommendation" class="space-y-3">
+              <input v-model="newRecommendation.title" type="text" placeholder="Title"
+                class="w-full px-3 py-2 border border-gray-300 rounded text-sm" required />
+              <textarea v-model="newRecommendation.content" placeholder="Your experience..."
+                class="w-full px-3 py-2 border border-gray-300 rounded text-sm" rows="3" required></textarea>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input v-model="newRecommendation.dateOfVisit" type="date"
+                  class="w-full px-3 py-2 border border-gray-300 rounded text-sm" required />
+                <input v-model.number="newRecommendation.rating" type="number" min="1" max="5"
+                  class="w-full px-3 py-2 border border-gray-300 rounded text-sm" required />
+              </div>
+              <div class="text-right">
+                <div v-if="errorMessage" class="text-red-600 text-sm mb-3">
+                  {{ errorMessage }}
+                </div>
+                <button type="submit"
+                  class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm transition">
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
       </div>
-    </div>
-
-  </div>
-
-  <!-- No recommendations message -->
-  <div v-if="!recommendations.length" class="text-gray-500 mt-6">No recommendations yet. Be the first to add one!</div>
-</div>
-</div>
-
-
 
       <!-- No recommendations message -->
       <div v-if="!recommendations.length" class="text-gray-500 mt-6">No recommendations yet. Be the first to add one!
       </div>
-
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { usePlaces } from '@/modules/places/usePlaces';
 // Interfaces
 import type { Recommendation, AddRecommendation } from '@/interfaces/recommendationTypes';
+import type { Place } from '@/interfaces/placeTypes';
 // Stores
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useUserStore } from '@/stores/userStore';
 import { usePlacesStore } from '@/stores/crud/placesStore';
 import { useCollectionsStore } from '@/stores/crud/collectionsStore';
-
+// Components
 import UpdateRecModal from '@/components/place/updateRecModal.vue'
 
-
-const route = useRoute();
-
-const { getPlaceByName, singlePlace, loading, error } = usePlaces();
 const recommendationsStore = useRecommendationsStore();
 const authStore = useAuthStore();
 const userStore = useUserStore();
 const placesStore = usePlacesStore();
 const collectionsStore = useCollectionsStore();
 
-const placeName = route.params.id as string;
 
-const paramsActiveTab = route.query.activeTab as 'info' | 'recommendations' || 'info'; // Default value is 'info' if no query param is provided
-const errorMessage = ref<string | null>(null);
-
-
-const editModal = ref<InstanceType<typeof UpdateRecModal> | null>(null)
+const route = useRoute();
 const cityId = route.query.cityId as string;
 
+const paramsActiveTab = route.query.activeTab as 'info' | 'recommendations' || 'info'; // Default value is 'info' if no query param is provided
 const activeTab = ref<'info' | 'recommendations'>(paramsActiveTab);
 
+const errorMessage = ref<string | null>(null);
+
+const placeName = route.params.id as string; // Get the place name from the route params
+
+// Get the place
+const place = computed(() => {
+  return placesStore.getPlaceByName(placeName);
+});
+
+const recommendations = computed(() => {
+  console.log("Fetching recommendations for place:", place.value);
+  if (place.value?._id) {
+    return recommendationsStore.getRecommendationsByPlaceId(place.value._id);
+  }
+  return [];
+});
+
+
+//-- Add
 const newRecommendation = ref<AddRecommendation>({
   title: '',
   content: '',
@@ -303,29 +269,15 @@ const newRecommendation = ref<AddRecommendation>({
   upvotes: [],
 });
 
-const recommendations = computed(() =>
-  singlePlace.value?._id
-    ? recommendationsStore.recommendationsMap[singlePlace.value._id] || []
-    : []
-);
-
-watch(recommendations, (newVal) => {
-  console.log('Recommendations updated:', newVal)
-});
+//-- Edit
+const editModal = ref<InstanceType<typeof UpdateRecModal> | null>(null)
 
 const handleUpdate = () => {
-  if (singlePlace.value?._id) {
+  if (place.value?._id) {
     // Optionally refetch if needed:
-    recommendationsStore.fetchRecommendationsByPlace(singlePlace.value._id);
+    recommendationsStore.fetchRecommendationsByPlace(place.value._id);
   }
 };
-
-onMounted(async () => {
-  await getPlaceByName(placeName);
-  if (singlePlace.value?._id) {
-    await recommendationsStore.fetchRecommendationsByPlace(singlePlace.value._id);
-  }
-});
 
 const submitRecommendation = async () => {
   // Clear any previous error messages
@@ -348,7 +300,7 @@ const submitRecommendation = async () => {
     dateOfVisit,
     rating,
     upvotes: [],
-    place: singlePlace.value._id,
+    place: place.value?._id,
     _createdBy: authStore.userId!
   };
 
@@ -377,7 +329,8 @@ function formatDate(dateStr: string): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
-  });}
+  });
+}
 
 
 const currentUser = authStore.userId
@@ -397,12 +350,14 @@ const handleDelete = async (rec: Recommendation) => {
 //-- Upvotes
 // Place
 const isPlaceUpvoted = computed(() => {
-  return placesStore.getIsPlaceUpvoted(singlePlace.value!._id, authStore.userId!);
+  console.log("Checking if place is upvoted:", place.value);
+  console.log("IsUpvoted:", placesStore.getIsPlaceUpvoted(place.value!._id, authStore.userId!));
+  return placesStore.getIsPlaceUpvoted(place.value!._id, authStore.userId!);
 });
 
 const upvotePlace = async () => {
   try {
-    await placesStore.updatePlaceUpvotes(singlePlace.value!._id, authStore.userId!, authStore.token!);
+    await placesStore.updatePlaceUpvotes(place.value!._id, authStore.userId!, authStore.token!);
   }
   catch (error) {
     console.error('Error upvoting place:', error);
@@ -411,12 +366,12 @@ const upvotePlace = async () => {
 
 // Recommendation
 const isRecommendationUpvoted = (recommendationId: string) => {
-  return recommendationsStore.getIsRecommendationUpvoted(singlePlace.value!._id, recommendationId, authStore.userId!);
+  return recommendationsStore.getIsRecommendationUpvoted(place.value!._id, recommendationId, authStore.userId!);
 };
 
 const upvoteRecommendation = async (recommendationId: string) => {
   try {
-    await recommendationsStore.updateRecommendationUpvotes(singlePlace.value!._id, recommendationId, authStore.userId!, authStore.token!);
+    await recommendationsStore.updateRecommendationUpvotes(place.value!._id, recommendationId, authStore.userId!, authStore.token!);
   }
   catch (error) {
     console.error('Error upvoting recommendation:', error);
@@ -443,13 +398,11 @@ const toggleSaveMenu = () => {
 }
 
 const isPlaceInCollection = (collectionId: string) => {
-  /* console.log("Checking if place is in collection:", collectionId, singlePlace.value!._id, authStore.getUserId!)
-  console.log("result", collectionsStore.isPlaceInCollection(collectionId, singlePlace.value!._id, authStore.getUserId!)) */
-  return collectionsStore.isPlaceInCollection(collectionId, singlePlace.value!._id, authStore.getUserId!)
+  return collectionsStore.isPlaceInCollection(collectionId, place.value!._id, authStore.getUserId!)
 }
 
 const toggleSaveToCollection = async (collectionId: string) => {
-  const placeId = singlePlace.value!._id
+  const placeId = place.value!._id
 
   if (isPlaceInCollection(collectionId)) {
     await collectionsStore.removePlaceFromCollection(collectionId, placeId, authStore.getUserId!, authStore.token!)
@@ -460,11 +413,7 @@ const toggleSaveToCollection = async (collectionId: string) => {
 
 
 onMounted(async () => {
-  await getPlaceByName(placeName);
-  if (singlePlace.value?._id) {
-    await recommendationsStore.fetchRecommendationsByPlace(singlePlace.value._id, false, 'true');
-  }
-
+  await placesStore.fetchPlaces();
   await collectionsStore.fecthCollectionsByUserId(authStore.getUserId!, false, 'false')
 })
 </script>

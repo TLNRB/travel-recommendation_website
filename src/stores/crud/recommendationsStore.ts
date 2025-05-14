@@ -9,7 +9,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
       addError: null as string | null,
       updateError: null as string | null,
       deleteError: null as string | null,
-      updateError: null as string | null,
       isLoaded: false,
       isLoading: false,
    }),
