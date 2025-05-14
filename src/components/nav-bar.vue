@@ -135,7 +135,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
-import { useUsers } from '@/modules/auth/useUsers';
 import LogoutBtn from '@/components/logoutBtn.vue';
 import continentList from '@/components/continentList.vue';
 import PlaceAddModal from '@/components/admin/places/PlaceAddModal.vue';
@@ -153,12 +152,6 @@ const authStore = useAuthStore();
 const userStore = useUserStore();
 const placesStore = usePlacesStore();
 const recommendationsStore = useRecommendationsStore();
-
-const { token } = useUsers();
-
-//correctly displays
-
-console.log(token.value)
 
 const mobileMenuOpen = ref(false);
 
