@@ -45,13 +45,14 @@ const approvedPlaces = computed(() => {
   const places = placesStore.filterPlacesByApproved(true)
   return places.filter(p => p.location.city && p.location.country)
 })
-const isLoading = ref(true)
+const isLoading = ref(false)
 const topCities = ref<any[]>([])
 
 
 
 const generateTopCities = async () => {
   console.log('Starting top cities generation...')
+  isLoading.value = true
   const placeMap = new Map<
     string,
     { count: number; place: Place }
@@ -127,8 +128,9 @@ const goToCity = (id: string) => {
   router.push(`/city/${id}`)
 }
 
-const stop = watch(() => placesStore.getIsPlacesLoaded, (loaded) => {
-  if (loaded) {
+const stop = watch(() => placesStore.getIsLoading, (loading) => {
+  console.log('Loading status changed:', loading)
+  if (!loading) {
     generateTopCities()
     emit('loaded')
     console.log('Top cities generated successfully.')
@@ -139,6 +141,7 @@ const stop = watch(() => placesStore.getIsPlacesLoaded, (loaded) => {
 onMounted(async () => {
   await placesStore.fetchPlaces()
   await externalAPIStore.fetchAllCountries()
+  await generateTopCities()
   emit('loaded')
 })
 </script>
