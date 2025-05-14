@@ -27,7 +27,7 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted, computed, defineEmits } from 'vue'
+import { ref, onMounted, computed, defineEmits, watch } from 'vue'
 import { useRouter } from 'vue-router'
 // Interfaces
 import type { Place } from '@/interfaces/placeTypes'
@@ -41,16 +41,17 @@ const router = useRouter()
 const placesStore = usePlacesStore()
 const externalAPIStore = useExternalAPIStore()
 
-const approvedPlaces = computed(() =>
-  placesStore.places.filter(p => p.approved && p.location.city && p.location.country)
-)
-const isLoading = ref(true)
+const approvedPlaces = computed(() => {
+  const places = placesStore.filterPlacesByApproved(true)
+  return places.filter(p => p.location.city && p.location.country)
+})
+const isLoading = ref(false)
 const topCities = ref<any[]>([])
 
 
 
 const generateTopCities = async () => {
-  console.log('Starting top cities generation...')
+  isLoading.value = true
   const placeMap = new Map<
     string,
     { count: number; place: Place }
@@ -82,7 +83,6 @@ const generateTopCities = async () => {
     countryNameToIdMap.set(country.name.trim().toLowerCase(), country.objectId)
   })
 
-  // const matchedCities: CityDisplayData[] = []
   const matchedCities: any[] = []
 
   for (const [key, value] of placeMap) {
@@ -125,6 +125,15 @@ const generateTopCities = async () => {
 const goToCity = (id: string) => {
   router.push(`/city/${id}`)
 }
+
+// Watch for changes in the loading state of the places store, imprtant when the places are fetched
+const stop = watch(() => placesStore.getIsLoading, (loading) => {
+  if (!loading) {
+    generateTopCities()
+    emit('loaded')
+    stop() // so it runs only once
+  }
+})
 
 onMounted(async () => {
   await placesStore.fetchPlaces()
