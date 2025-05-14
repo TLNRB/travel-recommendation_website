@@ -51,7 +51,6 @@ const topCities = ref<any[]>([])
 
 
 const generateTopCities = async () => {
-  console.log('Starting top cities generation...')
   isLoading.value = true
   const placeMap = new Map<
     string,
@@ -84,7 +83,6 @@ const generateTopCities = async () => {
     countryNameToIdMap.set(country.name.trim().toLowerCase(), country.objectId)
   })
 
-  // const matchedCities: CityDisplayData[] = []
   const matchedCities: any[] = []
 
   for (const [key, value] of placeMap) {
@@ -128,12 +126,11 @@ const goToCity = (id: string) => {
   router.push(`/city/${id}`)
 }
 
+// Watch for changes in the loading state of the places store, imprtant when the places are fetched
 const stop = watch(() => placesStore.getIsLoading, (loading) => {
-  console.log('Loading status changed:', loading)
   if (!loading) {
     generateTopCities()
     emit('loaded')
-    console.log('Top cities generated successfully.')
     stop() // so it runs only once
   }
 })
