@@ -252,8 +252,8 @@ const place = computed(() => {
 });
 
 const recommendations = computed(() => {
-  console.log("Fetching recommendations for place:", place.value);
   if (place.value?._id) {
+    console.log("Fteching rec-----------: ", recommendationsStore.getRecommendationsByPlaceId(place.value._id))
     return recommendationsStore.getRecommendationsByPlaceId(place.value._id);
   }
   return [];
@@ -414,6 +414,7 @@ const toggleSaveToCollection = async (collectionId: string) => {
 
 onMounted(async () => {
   await placesStore.fetchPlaces();
+  await recommendationsStore.fetchRecommendationsByPlace(place.value!._id);
   await collectionsStore.fecthCollectionsByUserId(authStore.getUserId!, false, 'false')
 })
 </script>

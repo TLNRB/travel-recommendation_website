@@ -13,7 +13,8 @@
       <input v-model="form.dateOfVisit" type="date" class="w-full border p-2 rounded mb-4" required />
 
       <label class="block mb-2 text-sm font-medium">Rating</label>
-      <input v-model.number="form.rating" type="number" min="1" max="5" class="w-full border p-2 rounded mb-4" required />
+      <input v-model.number="form.rating" type="number" min="1" max="5" class="w-full border p-2 rounded mb-4"
+        required />
 
       <div class="flex justify-end gap-2">
         <button type="button" @click="close" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
@@ -35,15 +36,16 @@ const recommendationsStore = useRecommendationsStore()
 const authStore = useAuthStore()
 
 const dialogRef = ref<HTMLDialogElement | null>(null)
-const form = ref({
+const form = ref<Recommendation>({
   _id: '',
   title: '',
   content: '',
   dateOfVisit: '',
+  dateOfWriting: '',
   rating: 1,
   place: '',
-  _createdBy: authStore.userId,
-  upvotes: 0
+  _createdBy: authStore.getUserId!,
+  upvotes: []
 })
 
 
@@ -54,10 +56,11 @@ const open = (rec: Recommendation) => {
     title: rec.title,
     content: rec.content,
     dateOfVisit: new Date(rec.dateOfVisit).toISOString().split('T')[0],
+    dateOfWriting: rec.dateOfWriting,
     rating: rec.rating,
     place: typeof rec.place === 'string' ? rec.place : rec.place._id,
-    _createdBy: authStore.userId,
-    upvotes: rec.upvotes || 0
+    _createdBy: authStore.getUserId!,
+    upvotes: rec.upvotes
   }
   dialogRef.value?.showModal()
 }
@@ -83,8 +86,8 @@ const submitEdit = async () => {
     })
 
     if (!authStore.userId) {
-        throw new Error('User is not authenticated')
-      }
+      throw new Error('User is not authenticated')
+    }
 
     const response = await recommendationsStore.updateRecommendation(
       form.value._id,
@@ -103,7 +106,7 @@ const submitEdit = async () => {
     console.log("Updated recommendation response:", response)
 
 
-    await recommendationsStore.fetchRecommendationsByPlace(form.value.place, true);
+    await recommendationsStore.fetchRecommendationsByPlace(typeof form.value.place === 'object' ? form.value.place._id : form.value.place, true);
     emit('updated')
     dialogRef.value?.close();
     await nextTick();
