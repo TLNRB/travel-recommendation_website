@@ -14,12 +14,12 @@
         <h2 v-else class="text-2xl font-bold text-center mb-6">Log in to your Account</h2>
 
         <div class="flex justify-between mb-6 border-b pb-3">
-          <button class="w-1/2 text-lg font-semibold py-3 transition duration-200 cursor-pointer"
+          <button data-test="tab-login" class="w-1/2 text-lg font-semibold py-3 transition duration-200 cursor-pointer"
             :class="{ 'border-b-4 border-blue-500 text-blue-600': activeTab === 'login', 'text-gray-500': activeTab !== 'login' }"
             @click="activeTab = 'login'">
             Login
           </button>
-          <button class="w-1/2 text-lg font-semibold py-3 transition duration-200 cursor-pointer"
+          <button data-test="tab-register" class="w-1/2 text-lg font-semibold py-3 transition duration-200 cursor-pointer"
             :class="{ 'border-b-4 border-blue-500 text-blue-600': activeTab === 'register', 'text-gray-500': activeTab !== 'register' }"
             @click="activeTab = 'register'">
             Register
@@ -33,7 +33,7 @@
           <div v-if="authStore.error" class="text-red-500 text-sm mt-2">
             {{ authStore.error }}
           </div>
-          <button @click="loginAndRedirect(authStore.email, authStore.password)" type="submit"
+          <button data-test="submit-button" @click="loginAndRedirect(authStore.email, authStore.password)" type="submit"
             class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition cursor-pointer"
             :disabled="loading">
             <span v-if="loading" class="loader"></span>

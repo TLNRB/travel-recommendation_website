@@ -8,14 +8,11 @@
 
 </template>
 <script setup lang="ts">
-/* import { useUsers } from '@/modules/auth/useUsers'; */
 import { useAuthStore } from '@/stores/authStore';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-// import { defineProps } from 'vue';
 
 const router = useRouter();
-/* const {logout} = useUsers() */
 const authStore = useAuthStore();
 const loading = ref(false);
 
@@ -31,7 +28,6 @@ const logoutAndRedirect = async () => {
   }
 };
 
-// const props = defineProps<{ logout: () => void }>(); and  @click="props.logout"
 
 
 </script>
