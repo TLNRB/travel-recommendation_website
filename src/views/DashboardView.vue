@@ -8,7 +8,7 @@
         :class="{
           'border-blue-600 text-blue-600': activeTab === tab,
           'border-transparent text-gray-500 hover:text-gray-700 cursor-pointer': activeTab !== tab,
-          'hidden': tab === 'Users' && !canEditUsers,
+          'hidden': (tab === 'Users' && !canEditUsers) || (tab === 'User Roles' && !canManageRoles),
         }">
         {{ tab }}
       </button>
@@ -89,7 +89,7 @@ const canManageRoles = computed(() => {
 
 //-- Tabs
 const tabs = ['Requests', 'Places', 'Users', 'User Roles', 'City Images', 'Country Images'];
-const activeTab = ref('User Roles');
+const activeTab = ref('Requests');
 
 onMounted(async () => {
   await rolesStore.fetchRoles();
