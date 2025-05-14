@@ -33,7 +33,7 @@
 
 
 <script setup lang="ts">
-import { ref, computed, onMounted, defineEmits } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 // Stores
 import { usePlacesStore } from '@/stores/crud/placesStore'
@@ -42,7 +42,6 @@ import { useExternalAPIStore } from '@/stores/externalAPIStore'
 const placesStore = usePlacesStore()
 const externalAPI = useExternalAPIStore()
 
-const emit = defineEmits(['loaded'])
 const router = useRouter()
 
 const places = computed(() => placesStore.filterPlacesByApproved(true));
@@ -55,7 +54,6 @@ onMounted(async () => {
   await placesStore.fetchPlaces()
   await externalAPI.fetchAllCountries()
   reshuffle()
-  emit('loaded')
 })
 
 const reshuffle = () => {

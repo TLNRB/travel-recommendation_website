@@ -121,34 +121,6 @@ const switchTab = () => {
   }
 };
 
-/* const router = useRouter();
-const loading = ref(false);
-const activeTab = ref<'login' | 'register'>('register');
-const { fetchToken, registerUser, firstName, lastName, username, email, password } = useUsers()
-
-const loginAndRedirect = async (email: string, password: string): Promise<void> => {
-  loading.value = true;
-  try {
-    await fetchToken(email, password);
-    await nextTick()
-    router.push('/')
-  } catch (error) {
-    console.error('Error logging in:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const switchTab = () => {
-  if (activeTab.value === 'login') {
-    activeTab.value = 'register';
-  } else {
-    activeTab.value = 'login';
-  }
-}; */
-
-
-
 </script>
 
 

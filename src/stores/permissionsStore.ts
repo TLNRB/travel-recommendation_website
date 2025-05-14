@@ -31,8 +31,6 @@ export const usePermissionsStore = defineStore('permissionsStore', {
             this.permissions = permissionsData.data;
             this.error = null;
             this.isPermissionsLoaded = true;
-
-            console.log('Permissions fetched successfully:', this.permissions)
          }
          catch (err) {
             this.error = (err as Error).message

@@ -112,8 +112,6 @@ const citiesWithPlaces = computed(() => {
   const citiesWithContent = new Set(
     places.value.map((place) => `${place.location.city?.toLowerCase()}__${place.location.country.toLowerCase()}`)
   );
-  console.log(citiesWithContent)
-  console.log(allCities)
   return allCities.value.filter(city => {
     if (!city.country || !city.country.name) return false;
 
@@ -121,7 +119,6 @@ const citiesWithPlaces = computed(() => {
     return citiesWithContent.has(key)
   });
 });
-console.log("cities with places" + citiesWithPlaces)
 
 
 const citiesWithImages = computed(() => {

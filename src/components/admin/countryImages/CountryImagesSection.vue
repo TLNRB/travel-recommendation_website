@@ -79,7 +79,6 @@ const activeCountries = computed(() => {
       }
    }
 
-   console.log('Active Countries:', result);
    return result;
 })
 
@@ -94,7 +93,6 @@ const missingCountries = computed(() => {
       }
    }
 
-   console.log('Missing Cities:', result);
    return result;
 });
 
@@ -108,7 +106,6 @@ const unusedCountries = computed(() => {
       }
    }
 
-   console.log('Unused Cities:', result);
    return result;
 });
 
@@ -139,7 +136,6 @@ const handleSubmit = (countryData: EditCountryImage, countryId: string) => {
 
 //-- Edit
 const handleUpdateCountry = async (updatedCountry: EditCountryImage, countryId: string) => {
-   console.log('Update Country:', updatedCountry, countryId);
 
    try {
       await countriesStore.updateCountryImage(countryId, updatedCountry, authStore.getToken!);
@@ -153,7 +149,6 @@ const handleUpdateCountry = async (updatedCountry: EditCountryImage, countryId: 
 
 //-- Add
 const handleAddCountry = async (newCountry: EditCountryImage): Promise<void> => {
-   console.log('Add Country:', newCountry);
    try {
       await countriesStore.addCountryImage(newCountry, authStore.getToken!)
 
@@ -168,7 +163,6 @@ const handleAddCountry = async (newCountry: EditCountryImage): Promise<void> => 
 
 //-- Delete
 const handleDelete = async (countryId: string) => {
-   console.log('Delete Country:', countryId);
 
    try {
       await countriesStore.deleteCountryImage(countryId, authStore.getToken!);
@@ -188,7 +182,7 @@ const activeTab = ref('Active');
 onMounted(async () => {
    await countriesStore.fetchUniqueCountries();
    await countriesStore.fetchCountryImages();
-}); 
+});
 </script>
 
 <style scoped>

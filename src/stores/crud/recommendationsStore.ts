@@ -17,14 +17,12 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
       async fetchRecommendations(force = false, populatePlace = 'false'): Promise<void> {
          // Prevents multiple calls to the API
          if (!force && (this.isLoaded || this.isLoading)) {
-            console.log('Recommendations already loaded or loading, skipping fetch')
             return;
          }
 
          this.isLoading = true
 
          try {
-            console.log('Fetching all recommendations from API...');
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/?populateCreatedBy=true&populatePlace=${populatePlace}`, {
                method: 'GET',
             })
@@ -55,7 +53,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
                this.error = null;
             } else {
                // Do not store anything if the array is empty
-               console.log('No recommendations found.');
                throw new Error('No recommendations found.');
             }
          }
@@ -70,14 +67,12 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
 
       async fetchRecommendationsByPlace(placeId: string, force = false, populatePlace = 'false'): Promise<void> {
          if (!force && (this.recommendationsMap[placeId] || this.isLoading)) {
-            console.log("Recommendations already loaded or loading for this place, skipping fetch");
             return;
          }
 
          this.isLoading = true;
 
          try {
-            console.log(`Fetching recommendations for place with Id: ${placeId}...`);
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations/query?field=place&value=${placeId}&populateCreatedBy=true&populatePlace=${populatePlace}`, {
                method: 'GET',
             })
@@ -96,7 +91,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
                this.error = null;
             } else {
                // Do not store anything if the array is empty
-               console.log(`No recommendations found for place with Id: ${placeId}`);
                throw new Error('No recommendations found for this place.');
             }
          }
@@ -124,7 +118,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             }
 
             const recommendationsData = await response.json()
-            console.log('Feteched recommendation by id: ', recommendationsData.data);
 
             this.error = null;
             return recommendationsData.data[0];
@@ -148,7 +141,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             if (!isValid) {
                throw new Error('Date of visit cannot be in the future.');
             }
-            console.log('Submitting recommendation payload:', recommendation);
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/recommendations`, {
                method: 'POST',
                headers: {
@@ -165,7 +157,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             }
 
             const recommendationData = await response.json()
-            console.log('Add recommendation response:', recommendationData)
 
             await this.fetchRecommendationsByPlace(recommendationData.data.place, true, 'true'); // Fetch recommendations for the specific place by force
 
@@ -197,14 +188,9 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
                const errorResponse = await response.json()
                throw new Error(errorResponse.error || 'Failed to update upvote');
             }
-            else {
-               const responseText = await response.text()
-               console.log('Update recommendation upvotes response:', responseText)
-            }
 
             const updatedRecommendation: Recommendation | null = await this.fetchRecommendationById(recommendationId, 'true'); // Fetch the updated recommendation by ID
 
-            console.log('Updated recommendation from database: ', updatedRecommendation);
 
             if (updatedRecommendation) {
                // Update the recommendation in the recommendationsMap
@@ -212,8 +198,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
                if (index !== -1) {
                   this.recommendationsMap[placeId][index] = updatedRecommendation;
                }
-
-               console.log('Updated recommendation in recommendationsMap: ', this.recommendationsMap[placeId][index]);
             }
             else {
                throw new Error('Failed to fetch updated recommendation');
@@ -248,7 +232,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
           }
 
           const updatedRecommendation = await response.json();
-          console.log('Updated recommendation:', updatedRecommendation);
 
           // Update the recommendation in the local store
           for (const placeId in this.recommendationsMap) {
@@ -290,10 +273,7 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
                const errorResponse = await response.json()
                throw new Error(errorResponse.error || 'No data available');
             }
-            else {
-               const responseText = await response.text()
-               console.log('Delete recommendation response:', responseText)
-            }
+
 
             // Remove the recommendation from the recommendationsMap, so updating the state
             for (const placeId in this.recommendationsMap) {
@@ -312,8 +292,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
          const today = new Date();
          const dateOfVisit = date;
 
-         console.log('today:', today);
-         console.log('dateOfVisit:', dateOfVisit);
          if (dateOfVisit > today) {
             return false;
          }
@@ -352,7 +330,6 @@ export const useRecommendationsStore = defineStore('recommendationsStore', {
             const recommendations: Recommendation[] = [];
             for (const placeId in state.recommendationsMap) {
                const userRecommendations = state.recommendationsMap[placeId].filter((recommendation) => (typeof recommendation._createdBy === 'object' ? recommendation._createdBy._id === userId : recommendation._createdBy === userId) && (typeof recommendation.place === 'object' ? recommendation.place.approved : false));
-               console.log('userRecommendations:', userRecommendations);
                if (userRecommendations.length > 0) {
                   recommendations.push(...userRecommendations);
                }

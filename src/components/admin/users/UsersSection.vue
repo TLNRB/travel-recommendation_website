@@ -46,7 +46,6 @@ const editUserId = ref<string | null>(null);
 const handleEdit = (userId: string) => {
    editUserId.value = userId;
    showEditModal.value = true;
-   console.log('Edit user ID:', userId);
 };
 
 const handleClose = () => {
@@ -71,7 +70,6 @@ const handleUpdateUserRole = async (userRole: string, userId: string): Promise<v
       role: userRole
    };
 
-   console.log('userData:', updatedUserData);
    try {
       await usersStore.updateUserRole(userId, authStore.getUserId!, updatedUserData, authStore.getToken!);
 
@@ -87,7 +85,7 @@ const handleUpdateUserRole = async (userRole: string, userId: string): Promise<v
 onMounted(async () => {
    await usersStore.fetchUsers();
    await rolesStore.fetchRoles();
-}); 
+});
 </script>
 
 <style scoped>

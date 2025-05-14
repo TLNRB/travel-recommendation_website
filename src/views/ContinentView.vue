@@ -126,7 +126,7 @@ watch(
 
 const countriesWithImages = computed(() => {
   if (!countriesWithContent.value?.length || !countriesStore.countryImages?.length) {
-    return [] // Or return countriesWithContent.value if you want them without images
+    return []
   }
 
   return countriesWithContent.value.map((country): Country & { image?: string } => {

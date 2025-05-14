@@ -21,7 +21,6 @@ export const useCitiesStore = defineStore('citiesStore', {
 
    actions: {
       async fetchUniqueCities() {
-         console.log('Fetching unique cities...')
          const placesStore = usePlacesStore()
 
          // If the places are not loaded, fetch them
@@ -54,11 +53,9 @@ export const useCitiesStore = defineStore('citiesStore', {
 
       async fetchCityImages(force = false): Promise<void> {
          if (!force && (this.isCityImagesLoaded || this.isLoading)) {
-            console.log('City images already loaded or loading')
             return
          }
 
-         console.log('Fetching city images...')
 
          this.isLoading = true
 
@@ -95,7 +92,6 @@ export const useCitiesStore = defineStore('citiesStore', {
                this.isCityImagesLoaded = true
                this.error = null
             } else {
-               console.log('No city images found.')
                throw new Error('No city images found.')
             }
          }
@@ -150,7 +146,6 @@ export const useCitiesStore = defineStore('citiesStore', {
             }
             else {
                const responseData = await response.json()
-               console.log('Add response:', responseData)
 
                await this.fetchCityImages(true) // Fetch the updated city images
             }
@@ -203,7 +198,6 @@ export const useCitiesStore = defineStore('citiesStore', {
                cityImageData.images = imagesData;
             }
 
-            console.log('City image data before sending:', cityImageData.images)
 
             // Remove _id property from each image object
             const cleanImages = cityImageData.images.map(image => ({
@@ -213,7 +207,6 @@ export const useCitiesStore = defineStore('citiesStore', {
 
             cityImageData.images = cleanImages // Clean the images object to remove any unnecessary properties
 
-            console.log('City image data after cleaning:', cityImageData.images)
 
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/cities-images/${cityImageId}`, {
                method: 'PUT',
@@ -229,9 +222,6 @@ export const useCitiesStore = defineStore('citiesStore', {
                throw new Error(errorResponse.error || 'Failed to update city images')
             }
             else {
-               const responseData = await response.json()
-               console.log('Update response:', responseData)
-
                await this.fetchCityImages(true) // Fetch the updated city images
             }
          }
@@ -261,9 +251,6 @@ export const useCitiesStore = defineStore('citiesStore', {
                throw new Error(errorResponse.error || 'Failed to delete city images')
             }
             else {
-               const responseData = await response.json()
-               console.log('Delete response:', responseData)
-
                await this.fetchCityImages(true) // Fetch the updated city images
             }
          }

@@ -46,7 +46,7 @@
     <div v-else-if="place">
       <!-- Info and Gallery Tab Content -->
       <div v-show="activeTab === 'info'">
-        <!-- Place Info (unchanged) -->
+        <!-- Place Info  -->
         <div class="bg-white rounded-xl shadow p-6 mb-8">
           <div class="flex justify-between">
             <h2 class="text-2xl font-bold text-green-800 mb-4">{{ place.name }}</h2>
@@ -120,7 +120,7 @@
           </div>
         </div>
 
-        <!-- Gallery (unchanged) -->
+        <!-- Gallery -->
         <div>
           <h3 class="text-xl font-semibold text-green-800 mb-4">Gallery</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -145,10 +145,10 @@
         <!-- Recommendations Grid -->
         <div class="flex-1 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
           <div v-for="(rec, idx) in recommendations" :key="idx"
-            class="bg-white rounded-xl relative shadow p-5 hover:shadow-lg transition-shadow">
+            class="bg-white rounded-xl relative shadow p-5 min-w-3xs 2xl:min-w-auto hover:shadow-lg transition-shadow">
             <h4 class="text-lg font-bold text-green-700 mb-2">
               {{ rec.title }}
-              <span class="ms-2 text-sm text-gray-400 font-light">
+              <span class="text-sm text-gray-400 font-light">
                 {{ typeof rec._createdBy === 'object' ? rec._createdBy.username : '' }}
               </span>
             </h4>
@@ -175,6 +175,9 @@
             </button>
           </div>
         </div>
+         <!-- No recommendations message -->
+      <div v-if="!recommendations.length" class="text-gray-500 mt-6">No recommendations yet. Be the first to add one!
+      </div>
 
         <!-- Form Column -->
         <div v-if="authStore.userId!" class="w-full lg:w-[400px] xl:w-[450px] shrink-0">
@@ -206,10 +209,6 @@
         </div>
 
       </div>
-
-      <!-- No recommendations message -->
-      <div v-if="!recommendations.length" class="text-gray-500 mt-6">No recommendations yet. Be the first to add one!
-      </div>
     </div>
   </div>
 </template>
@@ -219,7 +218,6 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 // Interfaces
 import type { Recommendation, AddRecommendation } from '@/interfaces/recommendationTypes';
-import type { Place } from '@/interfaces/placeTypes';
 // Stores
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -253,7 +251,6 @@ const place = computed(() => {
 
 const recommendations = computed(() => {
   if (place.value?._id) {
-    console.log("Fteching rec-----------: ", recommendationsStore.getRecommendationsByPlaceId(place.value._id))
     return recommendationsStore.getRecommendationsByPlaceId(place.value._id);
   }
   return [];
@@ -304,9 +301,7 @@ const submitRecommendation = async () => {
     _createdBy: authStore.userId!
   };
 
-  console.log("Submitting recommendation payload:", newRec);
 
-  // Try adding the recommendation using the store
   try {
     await recommendationsStore.addRecommendation(newRec, authStore.token!);
 
@@ -350,8 +345,6 @@ const handleDelete = async (rec: Recommendation) => {
 //-- Upvotes
 // Place
 const isPlaceUpvoted = computed(() => {
-  console.log("Checking if place is upvoted:", place.value);
-  console.log("IsUpvoted:", placesStore.getIsPlaceUpvoted(place.value!._id, authStore.userId!));
   return placesStore.getIsPlaceUpvoted(place.value!._id, authStore.userId!);
 });
 

@@ -105,7 +105,6 @@ const props = defineProps({
 })
 
 //-- Edit
-console.log('Edit Collection:', props.collection)
 const editCollection = ref<AddCollection>({
    _createdBy: props.userId,
    name: props.collection.name,
