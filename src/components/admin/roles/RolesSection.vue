@@ -20,6 +20,10 @@
             @edit="handleEdit" />
          <div v-else class="text-gray-500">No user roles to display.</div>
 
+         <!-- Add Card -->
+         <RoleAddModal v-if="showAddModal" :addError="rolesStore.getAddError" :loading="rolesStore.getIsLoading"
+            @submit="handleAddRole" @close="handleCloseAdd" />
+
          <!-- Edit Card -->
          <!-- <UserEditModal v-if="showEditModal" :user="usersStore.getUserById(editUserId!)!" :roles="roles"
             :error="usersStore.getUpdateError" :loading="usersStore.getIsLoading" @submit="handleUpdateUserRole"
@@ -32,14 +36,17 @@
 import { ref, computed, onMounted } from 'vue';
 // Components
 import RoleCard from '@/components/admin/roles/RoleCard.vue';
+import RoleAddModal from '@/components/admin/roles/RoleAddModal.vue';
 /* import RoleEditModal from '@/components/admin/roles/RoleEditModal.vue'; */
 // Stores
-import { useRolesStore } from '@/stores/rolesStore';
+import { useRolesStore } from '@/stores/crud/rolesStore'
+import { usePermissionsStore } from '@/stores/permissionsStore';
 import { useAuthStore } from '@/stores/authStore';
 // Interfaces
-import type { Role } from '@/interfaces/interfaces';
+import type { Role, AddRole } from '@/interfaces/roleTypes';
 
 const rolesStore = useRolesStore();
+const permissionsStore = usePermissionsStore();
 const authStore = useAuthStore();
 
 const roles = computed(() => rolesStore.getRoles);
@@ -47,11 +54,6 @@ const roles = computed(() => rolesStore.getRoles);
 //-- Add Place
 const showAddModal = ref<boolean>(false);
 
-const failedRecommendationPlaceId = ref<string | null>(null);
-const failedRecommendation = ref<AddRecommendation | null>(null);
-const showRecommendationModal = ref<boolean>(false);
-
-// Place
 const handleAdd = () => {
    showAddModal.value = true;
 };
@@ -61,9 +63,17 @@ const handleCloseAdd = () => {
    rolesStore.clearErrors();
 };
 
-/* const handleAddPlace = async (newRole: AddRole): Promise<void> => {
+const handleAddRole = async (newRole: AddRole): Promise<void> => {
+   try {
+      await rolesStore.addRole(newRole, authStore.getToken!);
 
-}; */
+      if (!rolesStore.getAddError) {
+         handleCloseAdd();
+      }
+   } catch (error) {
+      console.error('Error adding role:', error);
+   }
+};
 
 //-- Edit
 // Edit Modal
@@ -87,6 +97,7 @@ const handleClose = () => {
 
 onMounted(async () => {
    await rolesStore.fetchRoles();
+   await permissionsStore.fetchPermissions();
 }); 
 </script>
 
