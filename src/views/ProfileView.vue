@@ -18,7 +18,7 @@ import RecommendationsSection from '@/components/profile/RecommendationsSection.
 import CollectionsSection from '@/components/profile/collections/CollectionsSection.vue';
 // Stores
 import { useUsersStore } from '@/stores/crud/usersStore';
-import { useRolesStore } from '@/stores/rolesStore';
+import { useRolesStore } from '@/stores/crud/rolesStore'
 import { useCollectionsStore } from '@/stores/crud/collectionsStore'
 
 const usersStore = useUsersStore();

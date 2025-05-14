@@ -188,7 +188,7 @@ import type { AddPlace } from '@/interfaces/placeTypes'
 import type { AddRecommendation } from '@/interfaces/recommendationTypes'
 // Store
 import { useUserStore } from '@/stores/userStore'
-import { useRolesStore } from '@/stores/rolesStore'
+import { useRolesStore } from '@/stores/crud/rolesStore'
 // Data
 import { continents } from '@/data/continents.json'
 

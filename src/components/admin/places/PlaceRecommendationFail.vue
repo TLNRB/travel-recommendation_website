@@ -145,7 +145,7 @@ import type { AddRecommendation } from '@/interfaces/recommendationTypes'
 import type { Place } from '@/interfaces/placeTypes'
 // Store
 import { useUserStore } from '@/stores/userStore'
-import { useRolesStore } from '@/stores/rolesStore'
+import { useRolesStore } from '@/stores/crud/rolesStore'
 
 const userStore = useUserStore()
 const rolesStore = useRolesStore()

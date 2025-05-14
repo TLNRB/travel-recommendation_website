@@ -26,7 +26,7 @@ import UserCard from '@/components/admin/users/UserCard.vue';
 import UserEditModal from '@/components/admin/users/UserEditModal.vue';
 // Stores
 import { useUsersStore } from '@/stores/crud/usersStore';
-import { useRolesStore } from '@/stores/rolesStore';
+import { useRolesStore } from '@/stores/crud/rolesStore'
 import { useAuthStore } from '@/stores/authStore';
 // Interfaces
 import type { User, UpdateProfile } from '@/interfaces/userTypes'

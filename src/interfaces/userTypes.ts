@@ -1,4 +1,5 @@
-import type { Role, Social } from '@/interfaces/interfaces'
+import type { Role } from '@/interfaces/roleTypes'
+import type { Social } from '@/interfaces/interfaces'
 
 export type User = {
    _id: string,

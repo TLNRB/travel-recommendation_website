@@ -39,8 +39,7 @@
                <div v-if="typeof permission === 'object'" class="flex items-start gap-2">
                   <span>-</span>
                   <div>
-                     <div class="font-medium text-sm text-gray-800">{{ permission.name }}
-                     </div>
+                     <div class="font-medium text-sm text-gray-800">{{ permission.name }} </div>
                      <div class="text-gray-600 text-xs">{{ permission.description }}</div>
                   </div>
                </div>
@@ -59,7 +58,7 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import type { PropType } from 'vue'
 // Interfaces
-import type { Role } from '@/interfaces/interfaces'
+import type { Role } from '@/interfaces/roleTypes'
 // Data
 import { baseRoles } from '@/data/baseRoles.json'
 

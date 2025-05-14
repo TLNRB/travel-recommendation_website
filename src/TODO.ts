@@ -15,7 +15,7 @@
  * - User role creation
  *    - dashboard access should be looked at after this
  * 
- * - unit tests
+ * - refactor = rolesStore getPermissionIdByPermissionName maybe move to permissionsStore (?)
  * 
  * - Report recommendation (?)
  */

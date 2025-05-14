@@ -45,7 +45,7 @@ import CityImagesSection from '@/components/admin/cityImages/CityImagesSection.v
 import CountryImagesSection from '@/components/admin/countryImages/CountryImagesSection.vue';
 // Stores
 import { useUserStore } from '@/stores/userStore';
-import { useRolesStore } from '@/stores/rolesStore';
+import { useRolesStore } from '@/stores/crud/rolesStore'
 
 const userStore = useUserStore();
 const rolesStore = useRolesStore();
