@@ -10,14 +10,14 @@
             &times;
          </button>
 
-         <h2 class="text-xl font-semibold mb-4">Add New Role</h2>
+         <h2 class="text-xl font-semibold mb-4">Edit Role</h2>
 
          <form @submit.prevent="submit">
             <div class="space-y-4">
                <!-- Name -->
                <div>
                   <label class="block text-sm font-medium mb-1">Name</label>
-                  <input v-model="newRole.name" type="text" placeholder="Role Name" required
+                  <input v-model="editRole.name" type="text" placeholder="Role Name" required
                      class="w-full px-3 py-2 border rounded-lg" />
                </div>
 
@@ -38,8 +38,8 @@
                   </div>
 
                   <!-- Display Selected Permissions -->
-                  <div v-if="newRole.permissions!.length > 0" class="space-y-2">
-                     <div v-for="(permission, index) in newRole.permissions" :key="index"
+                  <div v-if="editRole.permissions!.length > 0" class="space-y-2">
+                     <div v-for="(permission, index) in editRole.permissions" :key="index"
                         class="flex items-center gap-3 justify-between p-2 border border-gray-200 rounded-lg">
                         <div class="flex items-start gap-2">
                            <span>-</span>
@@ -59,7 +59,7 @@
             </div>
 
             <!-- Display Error -->
-            <div v-if="props.addError" class="mt-4 text-red-500 text-sm italic">{{ props.addError }}</div>
+            <div v-if="props.updateError" class="mt-4 text-red-500 text-sm italic">{{ props.updateError }}</div>
 
             <div class="mt-6 flex justify-end gap-3">
                <button type="button" @click="close"
@@ -77,22 +77,24 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { PropType } from 'vue'
 // Interfaces
-import type { AddRole } from '@/interfaces/roleTypes'
+import type { Role, AddRole } from '@/interfaces/roleTypes'
 // Store
 import { usePermissionsStore } from '@/stores/permissionsStore'
 
 const permissionsStore = usePermissionsStore()
 
 const props = defineProps({
-   loading: { type: Boolean, default: false },
-   addError: { type: [String, null], default: null }
+   role: { type: Object as PropType<Role>, required: true },
+   updateError: { type: [String, null], default: null },
+   loading: { type: Boolean, default: false }
 })
 
-//-- Add
-const newRole = ref<AddRole>({
-   name: '',
-   permissions: []
+//-- Edit
+const editRole = ref<AddRole>({
+   name: props.role.name,
+   permissions: [...props.role.permissions] as any
 })
 
 // Add Permission
@@ -104,19 +106,19 @@ const addPermission = () => {
    if (selectedPermissions.value === null) return
 
    // Check if the selected permission is already in the array
-   const alreadyAdded = newRole.value.permissions?.find((permission) => typeof permission === 'object' ? permission._id === selectedPermissions.value?._id : permission === selectedPermissions.value?._id)
+   const alreadyAdded = editRole.value.permissions?.find((permission) => typeof permission === 'object' ? permission._id === selectedPermissions.value?._id : permission === selectedPermissions.value?._id)
    if (alreadyAdded) {
       permissionError.value = 'This permission is already added.'
       return
    }
 
-   newRole.value.permissions?.push(selectedPermissions.value)
+   editRole.value.permissions?.push(selectedPermissions.value)
    selectedPermissions.value = null
    permissionError.value = null
 }
 
 const removePermission = (index: number) => {
-   newRole.value.permissions?.splice(index, 1)
+   editRole.value.permissions?.splice(index, 1)
    permissionError.value = null
 }
 
@@ -125,7 +127,7 @@ const emit = defineEmits(['submit', 'close'])
 
 const close = () => emit('close')
 const submit = () => {
-   emit('submit', newRole.value)
+   emit('submit', editRole.value, props.role._id)
 }
 </script>
 

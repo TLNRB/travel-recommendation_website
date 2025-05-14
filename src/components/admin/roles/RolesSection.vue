@@ -17,7 +17,7 @@
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
          <!-- Display Cards -->
          <RoleCard v-if="roles" v-for="(role, index) in roles" :key="index" :role="role" :loading="rolesStore.isLoading"
-            @edit="handleEdit" />
+            :deleteError="rolesStore.getDeleteError" @edit="handleEdit" @delete="handleDeleteRole" />
          <div v-else class="text-gray-500">No user roles to display.</div>
 
          <!-- Add Card -->
@@ -25,9 +25,9 @@
             @submit="handleAddRole" @close="handleCloseAdd" />
 
          <!-- Edit Card -->
-         <!-- <UserEditModal v-if="showEditModal" :user="usersStore.getUserById(editUserId!)!" :roles="roles"
-            :error="usersStore.getUpdateError" :loading="usersStore.getIsLoading" @submit="handleUpdateUserRole"
-            @close="handleClose" /> -->
+         <RoleEditModal v-if="showEditModal" :role="rolesStore.getRoleById(editRoleId!)!"
+            :updateError="rolesStore.getUpdateError" :loading="rolesStore.getIsLoading" @submit="handleUpdateRole"
+            @close="handleCloseEdit" />
       </div>
    </section>
 </template>
@@ -37,13 +37,13 @@ import { ref, computed, onMounted } from 'vue';
 // Components
 import RoleCard from '@/components/admin/roles/RoleCard.vue';
 import RoleAddModal from '@/components/admin/roles/RoleAddModal.vue';
-/* import RoleEditModal from '@/components/admin/roles/RoleEditModal.vue'; */
+import RoleEditModal from '@/components/admin/roles/RoleEditModal.vue';
 // Stores
 import { useRolesStore } from '@/stores/crud/rolesStore'
 import { usePermissionsStore } from '@/stores/permissionsStore';
 import { useAuthStore } from '@/stores/authStore';
 // Interfaces
-import type { Role, AddRole } from '@/interfaces/roleTypes';
+import type { AddRole } from '@/interfaces/roleTypes';
 
 const rolesStore = useRolesStore();
 const permissionsStore = usePermissionsStore();
@@ -51,7 +51,8 @@ const authStore = useAuthStore();
 
 const roles = computed(() => rolesStore.getRoles);
 
-//-- Add Place
+//-- Add
+// Add Modal
 const showAddModal = ref<boolean>(false);
 
 const handleAdd = () => {
@@ -83,17 +84,38 @@ const editRoleId = ref<string | null>(null);
 const handleEdit = (roleId: string) => {
    editRoleId.value = roleId;
    showEditModal.value = true;
-   console.log('Edit role ID:', roleId);
 };
 
-const handleClose = () => {
+const handleCloseEdit = () => {
    showEditModal.value = false;
    editRoleId.value = null;
    rolesStore.clearErrors();
 };
 
-/* const handleUpdateUserRole = async (userRole: string, userId: string): Promise<void> => {
-}; */
+const handleUpdateRole = async (updatedRole: AddRole, roleId: string): Promise<void> => {
+   try {
+      await rolesStore.updateRole(updatedRole, roleId, authStore.getToken!);
+
+      if (!rolesStore.getUpdateError) {
+         handleCloseEdit();
+      }
+   } catch (error) {
+      console.error('Error updating role:', error);
+   }
+};
+
+//-- Delete
+const handleDeleteRole = async (roleId: string): Promise<void> => {
+   try {
+      await rolesStore.deleteRole(roleId, authStore.getToken!)
+
+      if (!rolesStore.getDeleteError) {
+         handleCloseEdit();
+      }
+   } catch (error) {
+      console.error('Error deleting role: ', error)
+   }
+}
 
 onMounted(async () => {
    await rolesStore.fetchRoles();

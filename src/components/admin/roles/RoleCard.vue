@@ -50,6 +50,9 @@
             </li>
          </ul>
          <div v-else class="text-gray-500 text-sm">No permissions</div>
+
+         <!-- Display error -->
+         <div v-if="props.deleteError" class="mt-4 text-red-500 text-sm italic">{{ props.deleteError }}</div>
       </div>
    </div>
 </template>
@@ -65,6 +68,7 @@ import { baseRoles } from '@/data/baseRoles.json'
 const props = defineProps({
    role: { type: Object as PropType<Role>, required: true },
    loading: { type: Boolean, default: false },
+   deleteError: { type: [String, null], default: null }
 });
 
 // Check if the role is a base role
