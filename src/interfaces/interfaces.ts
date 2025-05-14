@@ -52,6 +52,7 @@ export type City = {
 }
 
 export type Place = {
+  _id: string,
   name: string,
   description: string,
   images: (File | string)[],

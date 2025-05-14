@@ -20,7 +20,7 @@
       </RouterLink>
     </div>
 
-        <div class="container-fluid flex h-14 lg:w-1/2 absolute right-0 bottom-0 justify-center md:justify-end md:pe-4">
+        <div class="container-fluid flex h-14 ms-4 justify-end md:pe-4">
 
           <input
             v-model="searchTerm"

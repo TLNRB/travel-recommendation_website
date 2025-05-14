@@ -99,9 +99,7 @@ const cityImage = computed(() => {
 
   let countryName: string | undefined;
 
-  if (typeof city.value?.country === 'string') {
-    countryName = city.value.country.toLowerCase();
-  } else if (typeof city.value?.country === 'object' && city.value.country?.name) {
+  if (typeof city.value?.country === 'object' && city.value.country?.name) {
     countryName = city.value.country.name.toLowerCase();
   }
 
