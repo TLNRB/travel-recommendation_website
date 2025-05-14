@@ -1,32 +1,16 @@
 <template>
   <div class="max-w-6xl w-full mx-auto py-16 px-4 space-y-8 md:px-6">
     <div v-if="usersStore.getIsLoading" class="loader"></div>
-    <ProfileCard v-else-if="user?._id" :user="user!" :roleName="roleName!" />
+    <ProfileCard v-else-if="user" :user="user!" :roleName="roleName!" />
 
-    <RecommendationsSection v-if="user?._id" :userId="user?._id" />
+    <RecommendationsSection v-if="user" :userId="user?._id" />
 
-    <CollectionsSection v-if="user?._id" :userId="user?._id" />
-
-    <!-- Collections Section -->
-    <!-- <h2 class="text-xl font-bold mt-16 mb-4">Collections</h2>
-    <div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-sm">
-          <p class="font-medium">Hidden Beaches 🌊</p>
-        </div>
-        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-sm">
-          <p class="font-medium">Weekend Getaways 🚗</p>
-        </div>
-        <div class="bg-gray-100 rounded-lg p-4 text-center shadow-sm">
-          <p class="font-medium">Foodie Heaven 🍜</p>
-        </div>
-      </div>
-    </div> -->
+    <CollectionsSection v-if="user" :userId="user?._id" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 // Components
 import ProfileCard from '@/components/profile/ProfileCard.vue';
@@ -34,7 +18,7 @@ import RecommendationsSection from '@/components/profile/RecommendationsSection.
 import CollectionsSection from '@/components/profile/collections/CollectionsSection.vue';
 // Stores
 import { useUsersStore } from '@/stores/crud/usersStore';
-import { useRolesStore } from '@/stores/rolesStore';
+import { useRolesStore } from '@/stores/crud/rolesStore'
 import { useCollectionsStore } from '@/stores/crud/collectionsStore'
 
 const usersStore = useUsersStore();
@@ -50,6 +34,13 @@ const user = computed(() => { return usersStore.getUserById(route.params.id as s
 const roleName = computed(() => {
   return rolesStore.getRoleById(user.value?.role as string)?.name
 });
+
+// Watch for changes in params and fetch user data
+watch(() => route.params.id, async (newId) => {
+  if (newId) {
+    await collectionsStore.fecthCollectionsByUserId(user.value?._id as string, true, 'false');
+  }
+})
 
 onMounted(async () => {
   await usersStore.fetchUsers();

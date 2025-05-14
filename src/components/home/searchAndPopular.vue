@@ -75,7 +75,7 @@
 
       </div>
       <div class="absolute bottom-2 right-2 text-white font-semibold text-sm drop-shadow-lg">
-        ⬆️ {{ place.upvotes }}
+        ⬆️ {{ place.upvotes.length }}
       </div>
     </div>
   </div>
@@ -148,7 +148,7 @@ const mostRatedPlaces = computed(() => {
   if (!places.value) return []
 
   return [...places.value]
-    .sort((a, b) => b.upvotes - a.upvotes)
+    .sort((a, b) => b.upvotes.length - a.upvotes.length)
     .slice(0, 6)
 })
 </script>

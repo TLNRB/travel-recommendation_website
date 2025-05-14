@@ -1,13 +1,9 @@
 import type { CountryImage } from "./countryImageTypes"
 
-export type Role = {
+export type Permission = {
   _id: string,
   name: string,
-  permissions: string[] | Array<{
-    _id: string,
-    description: string
-    name: string
-  }>,
+  description: string
 }
 
 export type Social = {
@@ -67,7 +63,7 @@ export type Place = {
     street: string,
     streetNumber: string
   },
-  upvotes: number,
+  upvotes: string[],
   tags: string[],
   approved: boolean,
   _createdBy: string

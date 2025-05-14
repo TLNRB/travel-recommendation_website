@@ -211,16 +211,6 @@ const handleDeletePlace = async (placeId: string): Promise<void> => {
 
 onMounted(async () => {
    await placesStore.fetchPlaces();
-
-   /* for (const place of placesStore.places) {
-      if (place.approved) {
-         try {
-            await recommendationsStore.fetchRecommendationsByPlace(place._id);
-         } catch (error) {
-            console.error(`Error fetching recommendations for place ${place._id}:`, error);
-         }
-      }
-   }; */
 });
 </script>
 

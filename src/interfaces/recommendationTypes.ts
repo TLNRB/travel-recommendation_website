@@ -10,7 +10,7 @@ export type Recommendation = {
    dateOfVisit: string,
    dateOfWriting: string,
    rating: number,
-   upvotes: number
+   upvotes: string[]
 }
 
 export type AddRecommendation = Omit<Recommendation, '_id' | '_createdBy' | 'place' | 'dateOfWriting'>

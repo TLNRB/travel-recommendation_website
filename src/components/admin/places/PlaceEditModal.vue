@@ -113,13 +113,6 @@
                   </div>
                </div>
 
-               <!-- Upvotes -->
-               <div>
-                  <label class="block text-sm font-medium mb-1">Upvotes</label>
-                  <input v-model="editPlace.upvotes" type="number" required min="0"
-                     class="w-full px-3 py-2 border rounded-lg" />
-               </div>
-
                <!-- Tags -->
                <div>
                   <label class="block text-sm font-medium mb-1">Tags</label>
@@ -199,7 +192,7 @@ const editPlace = ref<EditPlace>({
       street: props.place.location.street,
       streetNumber: props.place.location.streetNumber
    },
-   upvotes: props.place.upvotes,
+   upvotes: [...props.place.upvotes],
    tags: [...props.place.tags],
    approved: props.place.approved,
 })

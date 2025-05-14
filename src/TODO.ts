@@ -1,15 +1,16 @@
 /**
- * == ADMIN ==
- * - Error update (?)
- *    - make it to an object so it stores id and message thus only appears on one card
- * - Place request recommendation appears twice until refresh after adding
+ * == ISSUES ==
+ * - test named place takes to wrong place page
+ * - you can search for a place that are a request in search bar as well as through the url
  * - homepage top destinations card writes one place instead of 2 for cairo
  * 
- * == USER PROFILE ==
- * - Collections
- *    - click on place goes to place
+ * == Updates ==
+ * - Error update (?)
+ *    - make it to an object so it stores id and message thus only appears on one card
  * 
- * == Recommendations ==
- *    - click goes to place
- *    - edit & delete on place page
+ * == TODOs == 
+ * - Place Upvotes
+ *    - conditional styling and updateUpvote on placeView but it needs place fetch refactor from pinia store
+ * 
+ * - refactor = rolesStore getPermissionIdByPermissionName maybe move to permissionsStore (?)
  */

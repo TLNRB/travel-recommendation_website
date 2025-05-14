@@ -6,7 +6,9 @@
 
     <!-- Recommendations -->
     <div v-else-if="!recommendationsStore.getIsLoading && recommendations.length > 0" class="flex flex-col gap-6">
-      <div v-for="recommendation in recommendations" :key="recommendation._id"
+      <RouterLink
+        :to="{ path: `/place/${typeof recommendation.place === 'object' ? recommendation.place.name : '#'}`, query: { activeTab: 'recommendations' } }"
+        v-for="recommendation in isMoreShown ? recommendations : recommendations.slice(0, 2)" :key="recommendation._id"
         class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex gap-4">
         <!-- Place Image -->
         <div v-if="typeof recommendation.place === 'object' && recommendation.place.images.length"
@@ -51,10 +53,13 @@
               <p>Visited: {{ formatDate(recommendation.dateOfVisit) }}</p>
               <p>Written: {{ formatDate(recommendation.dateOfWriting) }}</p>
             </div>
-            <div class="text-sm">👍 {{ recommendation.upvotes }}</div>
+            <div class="flex justify-center items-center gap-1 text-sm">
+              <i class='bx bxs-upvote text-blue-500 duration-200 ease-in-out'></i>
+              <span class="text-sm text-gray-500 font-semibold">{{ recommendation.upvotes.length }}</span>
+            </div>
           </div>
         </div>
-      </div>
+      </RouterLink>
     </div>
 
     <!-- Error -->
@@ -62,11 +67,20 @@
       }}</div>
 
     <div v-else class="text-gray-500">No recommendations to display.</div>
+
+    <!-- More Recommendation Count -->
+    <button v-if="recommendations.length > 2" @click="toggleMore"
+      class="text-xs text-gray-500 mt-4 cursor-pointer hover:text-blue-500 duration-[.2s] ease-in-out">
+      <span v-if="!isMoreShown">Show more ({{ recommendations.length - 2 }})</span>
+      <span v-else>Hide</span>
+    </button>
+
+
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { onMounted } from 'vue';
 // Stores 
 import { useRecommendationsStore } from '@/stores/crud/recommendationsStore';
@@ -78,9 +92,21 @@ const props = defineProps({
   userId: { type: String, required: true }
 });
 
+//-- Recommendations
 const recommendations = computed(() => {
-  return recommendationsStore.getRecommendationsByUserId(props.userId);
+  const unOrderedRecommendation = recommendationsStore.getApprovedRecommendationsByUserId(props.userId);
+
+  // Order recommendations by date
+  return unOrderedRecommendation.sort((a, b) => {
+    return new Date(b.dateOfWriting).getTime() - new Date(a.dateOfWriting).getTime();
+  });
 });
+
+const isMoreShown = ref(false);
+
+const toggleMore = () => {
+  isMoreShown.value = !isMoreShown.value;
+};
 
 //-- Date formatting function
 const formatDate = (dateString: string) => {

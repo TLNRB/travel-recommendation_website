@@ -54,7 +54,7 @@ import { ref } from 'vue'
 import type { PropType } from 'vue'
 // Interfaces
 import type { User } from '@/interfaces/userTypes'
-import type { Role } from '@/interfaces/interfaces'
+import type { Role } from '@/interfaces/roleTypes'
 
 const props = defineProps({
    user: { type: Object as PropType<User>, required: true },

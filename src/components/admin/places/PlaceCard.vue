@@ -33,7 +33,7 @@
             </span>
          </div>
          <div class="text-gray-500 text-sm font-medium">
-            👍 {{ props.place.upvotes }}
+            👍 {{ props.place.upvotes.length }}
          </div>
       </div>
 

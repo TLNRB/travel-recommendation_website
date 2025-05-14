@@ -92,7 +92,7 @@ router.beforeEach(async (to, from, next) => {
   else if (isAuthenticated && to.name === 'dashboard') {
     const user = userStore.getUser;
 
-    if (typeof user?.role === 'object' && (user?.role?.name === 'admin' || user?.role?.name === 'editor')) {
+    if (typeof user?.role === 'object' && user?.role?.permissions.length > 0) {
       return next()
     } else {
       return next({ name: 'home' })

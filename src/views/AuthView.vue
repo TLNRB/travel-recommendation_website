@@ -72,14 +72,13 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
-/* import { useUsers } from '@/modules/auth/useUsers'; */
 import { useAuthStore } from '@/stores/authStore';
 
 const authStore = useAuthStore();
 const router = useRouter();
 
 const loading = ref(false);
-const activeTab = ref<'login' | 'register'>('register');
+const activeTab = ref<'login' | 'register'>('login');
 
 const loginAndRedirect = async (email: string, password: string): Promise<void> => {
   loading.value = true;

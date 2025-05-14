@@ -67,7 +67,7 @@
                <!-- Upvotes -->
                <div v-if="canManagePlaces">
                   <label class="block text-sm font-medium mb-1">Upvotes</label>
-                  <div class="w-full px-3 py-2 border rounded-lg opacity-50">{{ props.place.upvotes }}</div>
+                  <div class="w-full px-3 py-2 border rounded-lg opacity-50">{{ props.place.upvotes.length }}</div>
                </div>
 
                <!-- Tags -->
@@ -145,7 +145,7 @@ import type { AddRecommendation } from '@/interfaces/recommendationTypes'
 import type { Place } from '@/interfaces/placeTypes'
 // Store
 import { useUserStore } from '@/stores/userStore'
-import { useRolesStore } from '@/stores/rolesStore'
+import { useRolesStore } from '@/stores/crud/rolesStore'
 
 const userStore = useUserStore()
 const rolesStore = useRolesStore()
@@ -179,7 +179,7 @@ const recommendation = ref<AddRecommendation>({
    content: props.recommendation.content,
    dateOfVisit: props.recommendation.dateOfVisit,
    rating: props.recommendation.rating,
-   upvotes: props.recommendation.upvotes,
+   upvotes: [...props.recommendation.upvotes],
 })
 
 //-- Emits

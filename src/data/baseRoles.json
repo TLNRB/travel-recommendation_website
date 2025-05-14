@@ -1,0 +1,7 @@
+{
+   "baseRoles": [
+      "admin",
+      "editor",
+      "user"
+   ]
+}

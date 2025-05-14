@@ -8,7 +8,7 @@
         :class="{
           'border-blue-600 text-blue-600': activeTab === tab,
           'border-transparent text-gray-500 hover:text-gray-700 cursor-pointer': activeTab !== tab,
-          'hidden': tab === 'Users' && !canEditUsers,
+          'hidden': (tab === 'Users' && !canEditUsers) || (tab === 'User Roles' && !canManageRoles),
         }">
         {{ tab }}
       </button>
@@ -28,6 +28,9 @@
 
     <!-- Users Tab -->
     <UsersSection v-else-if="activeTab === 'Users' && canEditUsers" />
+
+    <!-- Roles Tab -->
+    <RolesSection v-else-if="activeTab === 'User Roles' && canManageRoles" />
   </div>
 </template>
 
@@ -37,11 +40,12 @@ import { ref, computed, onMounted } from 'vue';
 import PlaceRequestsSection from '@/components/admin/requests/PlaceRequestsSection.vue';
 import PlacesSections from '@/components/admin/places/PlacesSection.vue';
 import UsersSection from '@/components/admin/users/UsersSection.vue';
+import RolesSection from '@/components/admin/roles/RolesSection.vue';
 import CityImagesSection from '@/components/admin/cityImages/CityImagesSection.vue';
 import CountryImagesSection from '@/components/admin/countryImages/CountryImagesSection.vue';
 // Stores
 import { useUserStore } from '@/stores/userStore';
-import { useRolesStore } from '@/stores/rolesStore';
+import { useRolesStore } from '@/stores/crud/rolesStore'
 
 const userStore = useUserStore();
 const rolesStore = useRolesStore();
@@ -69,8 +73,22 @@ const canEditPlaces = computed(() => {
   return userRole.permissions.some(permission => typeof permission === 'string' ? permission === permissionIdPlaces.value : permission._id === permissionIdPlaces.value);
 })
 
+// Get the permission Id for the ability to edit roles
+const permissionIdManageRoles = computed((): string | null => rolesStore.getPermissionIdByPermissionName('user:manageRoles')!);
+
+// Check if the user has the permission to edit users
+const canManageRoles = computed(() => {
+  const userRole = userStore.getUser!.role;
+  if (!permissionIdManageRoles.value || typeof userRole === 'string') return false; // No permission Id found
+
+  console.log('userRole', userRole);
+  console.log('permissionIdManageRoles', permissionIdManageRoles.value);
+
+  return userRole.permissions.some(permission => typeof permission === 'string' ? permission === permissionIdManageRoles.value : permission._id === permissionIdManageRoles.value);
+})
+
 //-- Tabs
-const tabs = ['Requests', 'Places', 'Users', 'City Images', 'Country Images'];
+const tabs = ['Requests', 'Places', 'Users', 'User Roles', 'City Images', 'Country Images'];
 const activeTab = ref('Requests');
 
 onMounted(async () => {

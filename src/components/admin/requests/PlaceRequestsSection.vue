@@ -109,17 +109,7 @@ const handleDeleteRecommendation = async (recommendationId: string, placeId: str
 
 onMounted(async () => {
    await placesStore.fetchPlaces();
-   await recommendationsStore.fetchRecommendations();
-
-   /* for (const place of placesStore.places) {
-      if (place.approved) {
-         try {
-            await recommendationsStore.fetchRecommendationsByPlace(place._id);
-         } catch (error) {
-            console.error(`Error fetching recommendations for place ${place._id}:`, error);
-         }
-      }
-   }; */
+   await recommendationsStore.fetchRecommendations(false, 'true');
 });
 </script>
 
