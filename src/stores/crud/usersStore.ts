@@ -3,11 +3,10 @@ import { ref } from 'vue';
 import type { User, UpdateProfile } from "@/interfaces/userTypes";
 import { useImages } from "@/composables/useImages";
 import { normalize } from "@/composables/normalizeString";
-// External API
-import { externalAPI } from "@/modules/api/externalFetch";
+// Stores
+import { useExternalAPIStore } from '@/stores/externalAPIStore'
 
 const { uploadImages } = useImages()
-const { validateCountry, validateCity } = externalAPI()
 
 export const useUsersStore = defineStore('usersStore', {
    state: () => ({
@@ -105,11 +104,13 @@ export const useUsersStore = defineStore('usersStore', {
          userData = this.normalizeUser(userData)
 
          try {
+            const externalAPIStore = useExternalAPIStore();
+
             // Validate country
             let country: any;
             if (userData.country !== '') {
                console.log('Country provided:', userData.country)
-               country = await validateCountry(userData.country!);
+               country = await externalAPIStore.validateCountry(userData.country!);
                if (!country) {
                   throw new Error('Invalid country');
                }
@@ -120,7 +121,7 @@ export const useUsersStore = defineStore('usersStore', {
             // Validate city
             if (country && userData.city !== '') {
                console.log('City provided:', userData.city)
-               const isValidCity = await validateCity(userData.city!, country.objectId);
+               const isValidCity = await externalAPIStore.validateCity(userData.city!, country.objectId);
                if (!isValidCity) {
                   throw new Error('Invalid city');
                }

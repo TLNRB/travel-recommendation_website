@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading || placesStore.getIsLoading" class="flex justify-center items-center h-screen">
+  <div v-if="externalAPIStore.getLoading || placesStore.getIsLoading" class="flex justify-center items-center h-screen">
     <!-- Loading Spinner -->
     <div class="text-2xl animate-pulse">Loading...</div>
   </div>
@@ -55,22 +55,21 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { externalAPI } from '@/modules/api/externalFetch';
 // Stores
 import { useCountriesStore } from '@/stores/crud/countriesStore'
 import { useCitiesStore } from '@/stores/crud/citiesStore'
 import { usePlacesStore } from '@/stores/crud/placesStore'
-
-const { fetchCountryAndCities, allCities, country, loading } = externalAPI()
+import { useExternalAPIStore } from '@/stores/externalAPIStore'
 
 const route = useRoute()
 const countryId = ref(route.params.id as string)
 const citiesStore = useCitiesStore()
 const countriesStore = useCountriesStore()
 const placesStore = usePlacesStore()
+const externalAPIStore = useExternalAPIStore()
 
 onMounted(async () => {
-  await fetchCountryAndCities(countryId.value)
+  await externalAPIStore.fetchCountryAndCities(countryId.value)
   await placesStore.fetchPlaces()
   await citiesStore.fetchUniqueCities()
   await citiesStore.fetchCityImages()
@@ -81,7 +80,7 @@ watch(
   () => route.params.id,
   (newId) => {
     countryId.value = newId as string
-    fetchCountryAndCities(countryId.value)
+    externalAPIStore.fetchCountryAndCities(countryId.value)
     placesStore.fetchPlaces()
   }
 )
@@ -106,6 +105,8 @@ const countryHeaderStyle = computed(() => {
 
 
 const places = computed(() => placesStore.filterPlacesByApproved(true));
+const allCities = computed(() => externalAPIStore.getCities)
+const country = computed(() => externalAPIStore.getCountry)
 
 const citiesWithPlaces = computed(() => {
   const citiesWithContent = new Set(
