@@ -2,7 +2,11 @@
 
 API: https://travel-recommendations-api.onrender.com/api/docs/
 
-Live Site: 
+Live Site: https://travel-recommendation-website.onrender.com/
+
+Credentials:
+  - Email: admin@email.com
+  - Password: 123456
 
 ## Recommended IDE Setup
 
