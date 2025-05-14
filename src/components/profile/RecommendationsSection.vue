@@ -64,7 +64,7 @@
 
     <!-- Error -->
     <div v-else-if="recommendationsStore.getError" class="text-red-500 text-sm">{{ recommendationsStore.getError
-      }}</div>
+    }}</div>
 
     <div v-else class="text-gray-500">No recommendations to display.</div>
 
@@ -119,7 +119,7 @@ const formatDate = (dateString: string) => {
 };
 
 onMounted(async () => {
-  await recommendationsStore.fetchRecommendations(false, 'true');
+  await recommendationsStore.fetchRecommendations(true, 'true');
 });
 </script>
 

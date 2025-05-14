@@ -148,9 +148,10 @@
             class="bg-white rounded-xl relative shadow p-5 min-w-3xs 2xl:min-w-auto hover:shadow-lg transition-shadow">
             <h4 class="text-lg font-bold text-green-700 mb-2">
               {{ rec.title }}
-              <span class="text-sm text-gray-400 font-light">
+              <RouterLink :to="`/profile/${typeof rec._createdBy === 'object' ? rec._createdBy._id : rec._createdBy}`"
+                class="text-sm text-gray-400 font-light">
                 {{ typeof rec._createdBy === 'object' ? rec._createdBy.username : '' }}
-              </span>
+              </RouterLink>
             </h4>
             <p class="text-sm text-gray-700 mb-4">{{ rec.content }}</p>
             <div class="text-sm text-gray-500 mt-4">
@@ -175,9 +176,9 @@
             </button>
           </div>
         </div>
-         <!-- No recommendations message -->
-      <div v-if="!recommendations.length" class="text-gray-500 mt-6">No recommendations yet. Be the first to add one!
-      </div>
+        <!-- No recommendations message -->
+        <div v-if="!recommendations.length" class="text-gray-500 mt-6">No recommendations yet. Be the first to add one!
+        </div>
 
         <!-- Form Column -->
         <div v-if="authStore.userId!" class="w-full lg:w-[400px] xl:w-[450px] shrink-0">
