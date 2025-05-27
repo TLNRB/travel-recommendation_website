@@ -17,6 +17,28 @@
       </RouterLink>
     </div>
 
+      <!-- Mobile & Tablet: Fixed bottom full-width -->
+<div class="fixed bottom-0 left-0 right-0 z-20 flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 p-2 bg-white border-t border-gray-200 lg:hidden">
+  <button
+    @click="activeTab = 'info'"
+    :class="[
+      'flex-1 text-center rounded-t-xl py-2 px-4 font-medium transition',
+      activeTab === 'info' ? 'bg-white text-black shadow' : 'bg-gray-100 text-gray-600'
+    ]"
+  >
+    Info & Gallery
+  </button>
+  <button
+    @click="activeTab = 'recommendations'"
+    :class="[
+      'flex-1 text-center rounded-t-xl py-2 px-4 font-medium transition',
+      activeTab === 'recommendations' ? 'bg-white text-black shadow' : 'bg-gray-100 text-gray-600'
+    ]"
+  >
+    Recommendations
+  </button>
+</div>
+
     <!-- Desktop (lg+): Original floating style -->
     <div class="absolute bottom-0 right-4 z-20 hidden lg:flex gap-4">
       <button @click="activeTab = 'info'" :class="[
